@@ -1,0 +1,48 @@
+name: Terraform Plan and Apply for the Shared Resource Group
+
+on:
+  push:
+    branches: [ main, feature/tf_actions ]
+    paths:
+    - 'terraform/shared_rg/**'
+
+jobs:
+  tfplan:
+    name: Execute TF for shared resource group
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './terraform/shared_rg'
+    env:
+      ARM_CLIENT_ID: 2620bfcd-13ee-4f8b-81fd-bd128efdb707
+      ARM_CLIENT_SECRET: ${{secrets.TF_ARM_CLIENT_SECRET}}
+      ARM_SUBSCRIPTION_ID: f3fba52d-c7db-46f8-9e7a-766ca869972e
+      ARM_TENANT_ID: 99804659-431f-48fa-84c1-65c9609de05b
+      ARM_ACCESS_KEY: ${{secrets.TF_ARM_ACCESS_KEY}}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init (Shared RG)
+        run: terraform init
+
+      # Workspaces allows us to have multiple plans, which works well with our multi trials structure
+      - name: Terraform workspace
+        run: terraform workspace select sharedrg || terraform workspace new sharedrg
+
+      - name: Terraform Format (Shared RG)
+        run: terraform fmt -check
+
+      # Plan TF (Shared rg)
+      - name: Plan Shared RG
+        run: |
+          terraform plan
+
+      # Apply TF (Shared rg)
+      - name: Apply Shared RG
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Merged to main. applying shared RG"
+          terraform apply -auto-approve

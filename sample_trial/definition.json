@@ -1,0 +1,8 @@
+{
+    "name": "sampletrial",
+    "id": "sample1",
+    "version": 1,
+    "rootUser": "jondoe@contoso.com",
+    "site_image": "nginx",
+    "site_image_tag": "latest"
+}

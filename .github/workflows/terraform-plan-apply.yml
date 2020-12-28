@@ -1,0 +1,103 @@
+name: Terraform Plan and Apply for Trials
+
+on:
+  push:
+    branches: [ main, feature/tf_actions ]
+    paths-ignore:
+    - 'terraform/shared_rg/**'
+
+jobs:
+  prepare-run-matrix:
+    name: Detect changed definitions and prepare matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v2
+
+      # Get a list of changed .json files
+      - name: Check changed files
+        id: calc_files_diff
+        run: |
+          git fetch origin main:main
+
+          export FILES=$(git diff --name-only main | grep .json)
+
+          echo "Files changed since last commit..."
+          echo "$FILES"
+
+          # Escape newlines (replace \n with %0A)
+          echo "::set-output name=diff::$( echo "$FILES" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+
+      # Create an execution plan, which includes each found file
+      - name: Set matrix for TF plan and apply
+        id: set-matrix
+        run: |
+          FILES="${{ steps.calc_files_diff.outputs.diff }}"
+          JSON="{\"include\":["
+
+          # Iterate diff files and add each for the run matrix
+          while read path; do
+            echo "current path: $path"
+
+            # Extract values for the trial
+            trialName=`echo $(jq -r '.name' ./$path)`
+            trialId=`echo $(jq -r '.id' ./$path)`
+            siteImage=`echo $(jq -r '.site_image' ./$path)`
+            siteImageTag=`echo $(jq -r '.site_image_tag' ./$path)`
+
+            JSONline="{\"trial_id\": \"$trialId\", \"path\": \"$path\", \"trial_name\": \"$trialName\",\"site_image\": \"$siteImage\",\"site_image_tag\": \"$siteImageTag\"},"
+            JSON="$JSON$JSONline"
+          done <<< "$FILES"
+
+          # Remove last "," and add closing brackets
+          if [[ $JSON == *, ]]; then
+            JSON="${JSON%?}"
+          fi
+          JSON="$JSON]}"
+          echo $JSON
+
+          # Set output
+          echo "::set-output name=matrix::$( echo "$JSON" )"
+
+  tfplan:
+    name: Execute TF on "${{ matrix.trial_name }}":${{ matrix.path }}
+    needs: prepare-run-matrix
+    strategy:
+      matrix: ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './terraform'
+    env:
+      ARM_CLIENT_ID: 2620bfcd-13ee-4f8b-81fd-bd128efdb707
+      ARM_CLIENT_SECRET: ${{secrets.TF_ARM_CLIENT_SECRET}}
+      ARM_SUBSCRIPTION_ID: f3fba52d-c7db-46f8-9e7a-766ca869972e
+      ARM_TENANT_ID: 99804659-431f-48fa-84c1-65c9609de05b
+      ARM_ACCESS_KEY: ${{secrets.TF_ARM_ACCESS_KEY}}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform workspace
+        run: terraform workspace select ${{ matrix.trial_id }} || terraform workspace new ${{ matrix.trial_id }}
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      # Plan TF
+      - name: Plan TF for "${{ matrix.trial_name }}"
+        run: |
+          terraform plan -var="trial_name=${{ matrix.trial_name }}"
+
+      # Apply, only on merge to main
+      - name: Apply TF for "${{ matrix.trial_name }}"
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Merged to main. applying trial's RG"
+          terraform apply -var="trial_name=${{ matrix.trial_name }}" -auto-approve
