@@ -3,6 +3,16 @@
     "id": "sample1",
     "version": 1,
     "rootUser": "jondoe@contoso.com",
-    "site_image": "nginx",
-    "site_image_tag": "latest"
+    "site_service": {
+        "image_name": "nginx",
+        "image_tag": "latest"
+    },
+    "practitioner_service": {
+        "image_name": "nginx",
+        "image_tag": "latest"
+    },
+    "config_server_service": {
+        "image_name": "ghcr.io/ndph-arts/global-trial-config-mock",
+        "image_tag": "latest"
+    }
 }

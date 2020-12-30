@@ -2,7 +2,7 @@ name: Terraform Plan and Apply for the Shared Resource Group
 
 on:
   push:
-    branches: [ main, feature/tf_actions ]
+    branches: [ main, feature/** ]
     paths:
     - 'terraform/shared_rg/**'
 
@@ -42,7 +42,7 @@ jobs:
 
       # Apply TF (Shared rg)
       - name: Apply Shared RG
-        if: github.ref == 'refs/heads/main'
+        # if: github.ref == 'refs/heads/main'
         run: |
           echo "Merged to main. applying shared RG"
           terraform apply -auto-approve

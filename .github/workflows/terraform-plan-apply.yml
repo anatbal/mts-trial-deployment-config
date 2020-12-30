@@ -2,7 +2,7 @@ name: Terraform Plan and Apply for Trials
 
 on:
   push:
-    branches: [ main, feature/tf_actions ]
+    branches: [ main, feature/** ]
     paths-ignore:
     - 'terraform/shared_rg/**'
 
@@ -19,9 +19,9 @@ jobs:
       - name: Check changed files
         id: calc_files_diff
         run: |
-          git fetch origin main:main
+          git fetch origin main:localmain
 
-          export FILES=$(git diff --name-only main | grep .json)
+          export FILES=$(git diff --name-only localmain | grep .json)
 
           echo "Files changed since last commit..."
           echo "$FILES"
@@ -43,11 +43,22 @@ jobs:
             # Extract values for the trial
             trialName=`echo $(jq -r '.name' ./$path)`
             trialId=`echo $(jq -r '.id' ./$path)`
-            siteImage=`echo $(jq -r '.site_image' ./$path)`
-            siteImageTag=`echo $(jq -r '.site_image_tag' ./$path)`
+            siteImage=`echo $(jq -r '.site_service.image_name' ./$path)`
+            siteImageTag=`echo $(jq -r '.site_service.image_tag' ./$path)`
+            practitionerImage=`echo $(jq -r '.practitioner_service.image_name' ./$path)`
+            practitionerImageTag=`echo $(jq -r '.practitioner_service.image_tag' ./$path)`
+            configServerImage=`echo $(jq -r '.config_server_service.image_name' ./$path)`
+            configServerImageTag=`echo $(jq -r '.config_server_service.image_tag' ./$path)`
 
-            JSONline="{\"trial_id\": \"$trialId\", \"path\": \"$path\", \"trial_name\": \"$trialName\",\"site_image\": \"$siteImage\",\"site_image_tag\": \"$siteImageTag\"},"
-            JSON="$JSON$JSONline"
+            # in this section we add to the output (the matrix), a new block, which
+            # contains all the read content from the definition file (e.g. the trial name,
+            #  id, images, tags, etc... that are relevant for the following steps)
+            MatrixItem="{\"trial_id\": \"$trialId\", \"path\": \"$path\", \"trial_name\": \"$trialName\","
+            MatrixItem="$MatrixItem \"site_image_name\": \"$siteImage\",\"site_image_tag\": \"$siteImageTag\","
+            MatrixItem="$MatrixItem \"practitioner_image_name\": \"$practitionerImage\",\"practitioner_image_tag\": \"$practitionerImageTag\","
+            MatrixItem="$MatrixItem \"trial_config_service_image_name\": \"$configServerImage\",\"trial_config_service_image_tag\": \"$configServerImageTag\","
+            MatrixItem="$MatrixItem },"
+            JSON="$JSON$MatrixItem"
           done <<< "$FILES"
 
           # Remove last "," and add closing brackets
@@ -93,11 +104,11 @@ jobs:
       # Plan TF
       - name: Plan TF for "${{ matrix.trial_name }}"
         run: |
-          terraform plan -var="trial_name=${{ matrix.trial_name }}"
+          terraform plan -var="trial_name=${{ matrix.trial_name }}" -var="site_image_name=${{ matrix.site_image_name }}" -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}"
 
       # Apply, only on merge to main
       - name: Apply TF for "${{ matrix.trial_name }}"
-        if: github.ref == 'refs/heads/main'
+        # if: github.ref == 'refs/heads/main'
         run: |
           echo "Merged to main. applying trial's RG"
-          terraform apply -var="trial_name=${{ matrix.trial_name }}" -auto-approve
+          terraform apply -var="trial_name=${{ matrix.trial_name }}" -var="site_image_name=${{ matrix.site_image_name }}" -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}" -auto-approve

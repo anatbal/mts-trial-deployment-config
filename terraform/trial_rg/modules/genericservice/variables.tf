@@ -1,16 +1,17 @@
 variable "rg_name" {
   type        = string
   description = "The Resource group where this appservice will be deployed"
+
+  validation {
+    # https://github.com/toddkitta/azure-content/blob/master/articles/guidance/guidance-naming-conventions.md
+    condition     = length(var.rg_name) > 3 && length(var.rg_name) < 64 && can(regex("[a-z,0-9,-,_]", var.rg_name))
+    error_message = "The rg_name must consist of lowercase letters, numbers underscores, and hyphens only."
+  }
 }
 
-variable "plan_id" {
+variable "app_service_plan_id" {
   type        = string
   description = "service plan id to be connected to this appservice"
-}
-
-variable "tenant_id" {
-  type        = string
-  description = "The Tenant id"
 }
 
 variable "trial_name" {
@@ -31,6 +32,7 @@ variable "docker_image" {
 variable "docker_image_tag" {
   type        = string
   description = "Docker image tag"
+  default     = "latest"
 }
 
 variable "environment" {
