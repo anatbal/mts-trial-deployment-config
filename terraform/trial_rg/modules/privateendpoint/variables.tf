@@ -26,27 +26,26 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "app_service_plan_id" {
+variable "resource_name" {
   type        = string
-  description = "The app service plan id."
+  description = "The resource name that is connected to the private link."
 }
 
-variable "fhir_image_name" {
+variable "resource_id" {
   type        = string
-  description = "Fhir image name (fqdn)."
-  default     = "mcr.microsoft.com/healthcareapis/r4-fhir-server"
+  description = "The resource id that is connected to the private link."
 }
 
-variable "fhir_image_tag" {
+variable "vnet-cidr" {
   type        = string
-  description = "Fhir image tag."
-  default     = "latest"
+  description = "The CIDR of the VNET"
+  default     = "10.0.0.0/16"
 }
 
-variable "fhir_sqluser" {
+variable "db-subnet-cidr" {
   type        = string
-  description = "Fhir sql server user."
-  default     = "myfhiruser"
+  description = "The CIDR for the Backoffice subnet"
+  default     = "10.0.1.0/24"
 }
 
 variable "subnet_id" {
@@ -57,4 +56,21 @@ variable "subnet_id" {
 variable "vnet_id" {
   type        = string
   description = "The vnet id."
+}
+
+variable "kv" {
+  type        = bool
+  description = "is related to kv."
+  default     = false
+}
+
+variable "sql" {
+  type        = bool
+  description = "is related to sql."
+  default     = false
+}
+
+variable "application" {
+  type        = string
+  description = "The application this endpoints relates to (workload)."
 }

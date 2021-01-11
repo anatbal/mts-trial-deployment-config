@@ -26,29 +26,6 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "app_service_plan_id" {
-  type        = string
-  description = "The app service plan id."
-}
-
-variable "fhir_image_name" {
-  type        = string
-  description = "Fhir image name (fqdn)."
-  default     = "mcr.microsoft.com/healthcareapis/r4-fhir-server"
-}
-
-variable "fhir_image_tag" {
-  type        = string
-  description = "Fhir image tag."
-  default     = "latest"
-}
-
-variable "fhir_sqluser" {
-  type        = string
-  description = "Fhir sql server user."
-  default     = "myfhiruser"
-}
-
 variable "subnet_id" {
   type        = string
   description = "The subnet id."
@@ -57,4 +34,29 @@ variable "subnet_id" {
 variable "vnet_id" {
   type        = string
   description = "The vnet id."
+}
+
+variable "db_name" {
+  type        = string
+  description = "The db name."
+}
+
+variable "app_name" {
+  type        = string
+  description = "The name of the app to use the sql server."
+}
+
+variable "sql_user" {
+  type        = string
+  description = "The SQL user."
+}
+
+variable "sql_pass" {
+  type        = string
+  description = "The SQL pass."
+}
+
+variable "application" {
+  type        = string
+  description = "The application this endpoints relates to (workload)."
 }

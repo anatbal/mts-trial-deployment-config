@@ -28,5 +28,15 @@ variable "environment" {
 variable "location" {
   type        = string
   description = "Azure region where to create resources."
-  default     = "UK south"
+  default     = "uksouth"
+}
+
+variable "vnet_id" {
+  type        = string
+  description = "The vnet to be integrated into."
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "The subnet to be integrated into."
 }

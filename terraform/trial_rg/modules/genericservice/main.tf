@@ -2,7 +2,7 @@
 # Service application generic module that loads a docker image
 
 resource "azurerm_app_service" "generic_service" {
-  name                = "trial-${var.trial_name}-app-service-${var.app_name}"
+  name                = "as-${var.trial_name}-${var.app_name}-${var.environment}"
   location            = var.location
   resource_group_name = var.rg_name
   app_service_plan_id = var.app_service_plan_id

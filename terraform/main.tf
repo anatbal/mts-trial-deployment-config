@@ -10,4 +10,14 @@ module "trial_rg" {
   # Initialisation?
   trial_config_service_image_name = var.trial_config_service_image_name
   trial_config_service_image_tag  = var.trial_config_service_image_tag
+
+  # Spring cloud
+  trial_sc_gateway_image_name = var.trial_sc_gateway_image_name
+  trial_sc_gateway_image_tag  = var.trial_sc_gateway_image_tag
+
+  trial_sc_discovery_image_name = var.trial_sc_discovery_image_name
+  trial_sc_discovery_image_tag  = var.trial_sc_discovery_image_tag
+
+  trial_sc_config_image_name = var.trial_sc_config_image_name
+  trial_sc_config_image_tag  = var.trial_sc_config_image_tag
 }

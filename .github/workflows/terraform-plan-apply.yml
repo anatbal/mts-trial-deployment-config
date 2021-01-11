@@ -61,14 +61,27 @@ jobs:
             practitionerImageTag=`echo $(jq -r '.practitioner_service.image_tag' ./$path)`
             configServerImage=`echo $(jq -r '.config_server_service.image_name' ./$path)`
             configServerImageTag=`echo $(jq -r '.config_server_service.image_tag' ./$path)`
+            scGatewayImage=`echo $(jq -r '.spring_cloud.gateway_service.image_name' ./$path)`
+            scGatewayImageTag=`echo $(jq -r '.spring_cloud.gateway_service.image_tag' ./$path)`
+            scDiscoveryImage=`echo $(jq -r '.spring_cloud.discovery_service.image_name' ./$path)`
+            scDiscoveryImageTag=`echo $(jq -r '.spring_cloud.discovery_service.image_tag' ./$path)`
+            scConfigImage=`echo $(jq -r '.spring_cloud.config_service.image_name' ./$path)`
+            scConfigImageTag=`echo $(jq -r '.spring_cloud.config_service.image_tag' ./$path)`
 
             # in this section we add to the output (the matrix), a new block, which
             # contains all the read content from the definition file (e.g. the trial name,
             #  id, images, tags, etc... that are relevant for the following steps)
             MatrixItem="{\"trial_id\": \"$trialId\", \"path\": \"$path\", \"trial_name\": \"$trialName\","
+
+            # Apps
             MatrixItem="$MatrixItem \"site_image_name\": \"$siteImage\",\"site_image_tag\": \"$siteImageTag\","
             MatrixItem="$MatrixItem \"practitioner_image_name\": \"$practitionerImage\",\"practitioner_image_tag\": \"$practitionerImageTag\","
             MatrixItem="$MatrixItem \"trial_config_service_image_name\": \"$configServerImage\",\"trial_config_service_image_tag\": \"$configServerImageTag\","
+
+            # Spring cloud apps
+            MatrixItem="$MatrixItem \"trial_sc_gateway_image_name\": \"$scGatewayImage\",\"trial_sc_gateway_image_tag\": \"$scGatewayImageTag\","
+            MatrixItem="$MatrixItem \"trial_sc_discovery_image_name\": \"$scDiscoveryImage\",\"trial_sc_discovery_image_tag\": \"$scDiscoveryImageTag\","
+            MatrixItem="$MatrixItem \"trial_sc_config_image_name\": \"$scConfigImage\",\"trial_sc_config_image_tag\": \"$scConfigImageTag\","
             MatrixItem="$MatrixItem },"
             JSON="$JSON$MatrixItem"
           done <<< "$FILES"
@@ -117,11 +130,36 @@ jobs:
       # Plan TF
       - name: Plan TF for "${{ matrix.trial_name }}"
         run: |
-          terraform plan -var="trial_name=${{ matrix.trial_name }}" -var="site_image_name=${{ matrix.site_image_name }}" -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}"
+          terraform plan -var="trial_name=${{ matrix.trial_name }}" \
+                         -var="site_image_name=${{ matrix.site_image_name }}" \
+                         -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" \
+                         -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}" \
+                         -var="trial_sc_gateway_image_name=${{ matrix.trial_sc_gateway_image_name }}" \
+                         -var="trial_sc_discovery_image_name=${{ matrix.trial_sc_discovery_image_name }}" \
+                         -var="trial_sc_config_image_name=${{ matrix.trial_sc_config_image_name }}" \
+                         -var="site_image_tag=${{ matrix.site_image_tag }}" \
+                         -var="practitioner_image_tag=${{ matrix.practitioner_image_tag }}" \
+                         -var="trial_config_service_image_tag=${{ matrix.trial_config_service_image_tag }}" \
+                         -var="trial_sc_gateway_image_tag=${{ matrix.trial_sc_gateway_image_tag }}" \
+                         -var="trial_sc_discovery_image_tag=${{ matrix.trial_sc_discovery_image_tag }}" \
+                         -var="trial_sc_config_image_tag=${{ matrix.trial_sc_config_image_tag }}" \
 
       # Apply, only on merge to main
       - name: Apply TF for "${{ matrix.trial_name }}"
         # if: github.ref == 'refs/heads/main'
         run: |
           echo "Merged to main. applying trial's RG"
-          terraform apply -var="trial_name=${{ matrix.trial_name }}" -var="site_image_name=${{ matrix.site_image_name }}" -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}" -auto-approve
+          terraform apply -var="trial_name=${{ matrix.trial_name }}" \
+                          -var="site_image_name=${{ matrix.site_image_name }}" \
+                          -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" \
+                          -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}" \
+                          -var="trial_sc_gateway_image_name=${{ matrix.trial_sc_gateway_image_name }}" \
+                          -var="trial_sc_discovery_image_name=${{ matrix.trial_sc_discovery_image_name }}" \
+                          -var="trial_sc_config_image_name=${{ matrix.trial_sc_config_image_name }}" \
+                          -var="site_image_tag=${{ matrix.site_image_tag }}" \
+                          -var="practitioner_image_tag=${{ matrix.practitioner_image_tag }}" \
+                          -var="trial_config_service_image_tag=${{ matrix.trial_config_service_image_tag }}" \
+                          -var="trial_sc_gateway_image_tag=${{ matrix.trial_sc_gateway_image_tag }}" \
+                          -var="trial_sc_discovery_image_tag=${{ matrix.trial_sc_discovery_image_tag }}" \
+                          -var="trial_sc_config_image_tag=${{ matrix.trial_sc_config_image_tag }}" \
+                          -auto-approve

@@ -12,7 +12,21 @@
         "image_tag": "latest"
     },
     "config_server_service": {
-        "image_name": "ghcr.io/ndph-arts/global-trial-config-mock",
-        "image_tag": "latest"
+        "image_name": "ghcr.io/ndph-arts/trial-config-service",
+        "image_tag": "2d193042bc0766be588f04af705e6439e379acb8"
+    },
+    "spring_cloud": {
+        "gateway_service": {
+            "image_name": "nginx",
+            "image_tag": "latest"
+        },
+        "discovery_service": {
+            "image_name": "nginx",
+            "image_tag": "latest"
+        },
+        "config_service": {
+            "image_name": "nginx",
+            "image_tag": "latest"
+        }
     }
 }
