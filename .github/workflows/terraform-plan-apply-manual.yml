@@ -1,0 +1,194 @@
+# This is a basic workflow that is manually triggered
+
+name: Manual Terraform Plan and Apply for Trials
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+# Leaving the initial test inputs until teh manula workflow is tested and we can accept input vars
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  prepare-run-matrix:
+    name: Detect changed definitions and prepare matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      is_empty_matrix: ${{ steps.set-matrix.outputs.is_empty_matrix }}
+    steps:
+      - uses: actions/checkout@v2
+
+      # Get a list of changed .json files
+      - name: Check changed files
+        id: calc_files_diff
+        run: |
+          git fetch origin main:localmain
+
+          export FILES=$(git diff --name-only localmain | grep .json)
+
+          echo "Files changed since last commit..."
+          echo "$FILES"
+
+          # Escape newlines (replace \n with %0A)
+          echo "::set-output name=diff::$( echo "$FILES" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+
+      # Create an execution plan, which includes each found file
+      - name: Set matrix for TF plan and apply
+        id: set-matrix
+        run: |
+          FILES="${{ steps.calc_files_diff.outputs.diff }}"
+          JSON="{\"include\":["
+
+          # Iterate diff files and add each for the run matrix
+          echo "about to start checking diff files"
+
+          while read path; do
+
+            # if no file was changed. all values are empty, and the matrix should be empty
+            if [ -z "$path" ]
+            then
+              echo "::set-output name=is_empty_matrix::true"
+              echo "No definition (json) files were changed. will skip ALL TF jobs."
+              break
+            else
+              echo "::set-output name=is_empty_matrix::false"
+            fi
+
+            echo "current definition file path: $path"
+
+            # Extract values for the trial
+            trialName=`echo $(jq -r '.name' ./$path)`
+            trialId=`echo $(jq -r '.id' ./$path)`
+            siteImage=`echo $(jq -r '.site_service.image_name' ./$path)`
+            siteImageTag=`echo $(jq -r '.site_service.image_tag' ./$path)`
+            practitionerImage=`echo $(jq -r '.practitioner_service.image_name' ./$path)`
+            practitionerImageTag=`echo $(jq -r '.practitioner_service.image_tag' ./$path)`
+            configServerImage=`echo $(jq -r '.config_server_service.image_name' ./$path)`
+            configServerImageTag=`echo $(jq -r '.config_server_service.image_tag' ./$path)`
+            scGatewayImage=`echo $(jq -r '.spring_cloud.gateway_service.image_name' ./$path)`
+            scGatewayImageTag=`echo $(jq -r '.spring_cloud.gateway_service.image_tag' ./$path)`
+            scDiscoveryImage=`echo $(jq -r '.spring_cloud.discovery_service.image_name' ./$path)`
+            scDiscoveryImageTag=`echo $(jq -r '.spring_cloud.discovery_service.image_tag' ./$path)`
+            scConfigImage=`echo $(jq -r '.spring_cloud.config_service.image_name' ./$path)`
+            scConfigImageTag=`echo $(jq -r '.spring_cloud.config_service.image_tag' ./$path)`
+
+            # in this section we add to the output (the matrix), a new block, which
+            # contains all the read content from the definition file (e.g. the trial name,
+            #  id, images, tags, etc... that are relevant for the following steps)
+            MatrixItem="{\"trial_id\": \"$trialId\", \"path\": \"$path\", \"trial_name\": \"$trialName\","
+
+            # Apps
+            MatrixItem="$MatrixItem \"site_image_name\": \"$siteImage\",\"site_image_tag\": \"$siteImageTag\","
+            MatrixItem="$MatrixItem \"practitioner_image_name\": \"$practitionerImage\",\"practitioner_image_tag\": \"$practitionerImageTag\","
+            MatrixItem="$MatrixItem \"trial_config_service_image_name\": \"$configServerImage\",\"trial_config_service_image_tag\": \"$configServerImageTag\","
+
+            # Spring cloud apps
+            MatrixItem="$MatrixItem \"trial_sc_gateway_image_name\": \"$scGatewayImage\",\"trial_sc_gateway_image_tag\": \"$scGatewayImageTag\","
+            MatrixItem="$MatrixItem \"trial_sc_discovery_image_name\": \"$scDiscoveryImage\",\"trial_sc_discovery_image_tag\": \"$scDiscoveryImageTag\","
+            MatrixItem="$MatrixItem \"trial_sc_config_image_name\": \"$scConfigImage\",\"trial_sc_config_image_tag\": \"$scConfigImageTag\","
+            MatrixItem="$MatrixItem },"
+            JSON="$JSON$MatrixItem"
+          done <<< "$FILES"
+
+          # Remove last "," and add closing brackets
+          if [[ $JSON == *, ]]; then
+            JSON="${JSON%?}"
+          fi
+          JSON="$JSON]}"
+          echo $JSON
+
+          # Set output
+          echo "::set-output name=matrix::$( echo "$JSON" )"
+
+  tfplan:
+    name: Execute TF on "${{ matrix.trial_name }}":${{ matrix.path }}
+    needs: prepare-run-matrix
+    if: ${{ needs.prepare-run-matrix.outputs.is_empty_matrix == 'false' }}
+    strategy:
+      matrix: ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './terraform'
+    env:
+      ARM_CLIENT_ID: 2620bfcd-13ee-4f8b-81fd-bd128efdb707
+      ARM_CLIENT_SECRET: ${{secrets.TF_ARM_CLIENT_SECRET}}
+      ARM_SUBSCRIPTION_ID: f3fba52d-c7db-46f8-9e7a-766ca869972e
+      ARM_TENANT_ID: 99804659-431f-48fa-84c1-65c9609de05b
+      ARM_ACCESS_KEY: ${{secrets.TF_ARM_ACCESS_KEY}}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform workspace
+        run: terraform workspace select ${{ matrix.trial_id }} || terraform workspace new ${{ matrix.trial_id }}
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      # Plan TF
+      - name: Plan TF for "${{ matrix.trial_name }}"
+        run: |
+          echo "definition env is - env"
+          echo "definition env is - ${env}"
+          echo "definition env is - ${{env}}"
+          echo "definition env is - {env}"
+          echo "definition env is - 'env'"
+          echo "definition env is - '${env}'"
+          echo "definition env is - '${{env}}'"
+          echo "definition env is - '{env}'"
+          echo "definition env is - '{{env}}'"
+          echo "definition env is - '{env}'"
+          echo "definition env is - 'env'"
+
+
+          terraform plan -var="trial_name=${{ matrix.trial_name }}" \
+                         -var="site_image_name=${{ matrix.site_image_name }}" \
+                         -var="environment=$ENV" \
+                         -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" \
+                         -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}" \
+                         -var="trial_sc_gateway_image_name=${{ matrix.trial_sc_gateway_image_name }}" \
+                         -var="trial_sc_discovery_image_name=${{ matrix.trial_sc_discovery_image_name }}" \
+                         -var="trial_sc_config_image_name=${{ matrix.trial_sc_config_image_name }}" \
+                         -var="site_image_tag=${{ matrix.site_image_tag }}" \
+                         -var="practitioner_image_tag=${{ matrix.practitioner_image_tag }}" \
+                         -var="trial_config_service_image_tag=${{ matrix.trial_config_service_image_tag }}" \
+                         -var="trial_sc_gateway_image_tag=${{ matrix.trial_sc_gateway_image_tag }}" \
+                         -var="trial_sc_discovery_image_tag=${{ matrix.trial_sc_discovery_image_tag }}" \
+                         -var="trial_sc_config_image_tag=${{ matrix.trial_sc_config_image_tag }}" \
+
+      # Apply, only on merge to main
+      - name: Apply TF for "${{ matrix.trial_name }}"
+        # if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Merged to main. applying trial's RG"
+          terraform apply -var="trial_name=${{ matrix.trial_name }}" \
+                          -var="site_image_name=${{ matrix.site_image_name }}" \
+                          -var="environment=${ENV}" \
+                          -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" \
+                          -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}" \
+                          -var="trial_sc_gateway_image_name=${{ matrix.trial_sc_gateway_image_name }}" \
+                          -var="trial_sc_discovery_image_name=${{ matrix.trial_sc_discovery_image_name }}" \
+                          -var="trial_sc_config_image_name=${{ matrix.trial_sc_config_image_name }}" \
+                          -var="site_image_tag=${{ matrix.site_image_tag }}" \
+                          -var="practitioner_image_tag=${{ matrix.practitioner_image_tag }}" \
+                          -var="trial_config_service_image_tag=${{ matrix.trial_config_service_image_tag }}" \
+                          -var="trial_sc_gateway_image_tag=${{ matrix.trial_sc_gateway_image_tag }}" \
+                          -var="trial_sc_discovery_image_tag=${{ matrix.trial_sc_discovery_image_tag }}" \
+                          -var="trial_sc_config_image_tag=${{ matrix.trial_sc_config_image_tag }}" \
+                          -auto-approve
