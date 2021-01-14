@@ -43,8 +43,15 @@ module "trial_app_service_config" {
   docker_image        = var.trial_config_service_image_name
   docker_image_tag    = var.trial_config_service_image_tag
 
+  settings = {
+    "always_on"   = "true",
+    "JDBC_DRIVER" = "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+    "JDBC_URL"    = "jdbc:sqlserver://${module.roles_sql_server.sqlserver_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
+  }
+
   depends_on = [
     azurerm_app_service_plan.apps_service_plan,
+    module.roles_sql_server,
   ]
 }
 
@@ -83,7 +90,6 @@ module "trial_sc_discovery" {
   ]
 }
 
-# still needed ? same as service_config_service?
 module "trial_sc_config" {
   source              = "./modules/genericservice"
   app_name            = "sc-config"

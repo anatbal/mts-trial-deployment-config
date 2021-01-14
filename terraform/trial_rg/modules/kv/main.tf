@@ -12,7 +12,6 @@ resource "azurerm_key_vault" "trial_keyvault" {
   network_acls {
     default_action             = "Deny"
     bypass                     = "AzureServices"
-  #  virtual_network_subnet_ids = [ var.subnet_id ]
   }
 }
 

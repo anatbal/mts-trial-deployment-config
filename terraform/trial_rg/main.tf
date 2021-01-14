@@ -55,7 +55,7 @@ module "fhir_server" {
   rg_name             = azurerm_resource_group.trial_rg.name
   app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
   vnet_id             = module.trial_vnet.id
-  subnet_id           = module.trial_vnet.sql_subnet_id
+  endpointsubnet      = module.trial_vnet.endpointsubnet
 
   # needs an app service plan and an existing vnet
   depends_on = [
@@ -73,7 +73,7 @@ module "trial_keyvault" {
   rg_name     = azurerm_resource_group.trial_rg.name
   tenant_id   = "99804659-431f-48fa-84c1-65c9609de05b"
   vnet_id     = module.trial_vnet.id
-  subnet_id   = module.trial_vnet.kv_subnet_id
+  subnet_id   = module.trial_vnet.endpointsubnet
 
   depends_on = [
     module.trial_vnet,
@@ -84,7 +84,8 @@ module "trial_keyvault" {
 # loop-like style
 locals {
   service_ids = [module.fhir_server.service_id, module.trial_app_service_site.service_id,
-  module.trial_app_service_practitioner.service_id, module.trial_app_service_config.service_id,
+  module.trial_app_service_practitioner.service_id,
+  module.trial_app_service_config.service_id,
   module.trial_sc_gateway.service_id, module.trial_sc_discovery.service_id,
   module.trial_sc_config.service_id]
 }
@@ -93,7 +94,7 @@ locals {
 resource "azurerm_app_service_virtual_network_swift_connection" "vnet_app_service_conn" {
   count           = length(local.service_ids)
   app_service_id  = local.service_ids[count.index]
-  subnet_id       = module.trial_vnet.webapps_subnet_id
+  subnet_id       = module.trial_vnet.integrationsubnet
 
   depends_on = [
     module.trial_vnet,
@@ -115,15 +116,31 @@ resource "random_password" "roles_sql_password" {
 
 # Create a roles and permissions SQL
 # Deploy a sql server and db for fhir before we create the web app
-module "fhir_sql_server" {
+module "roles_sql_server" {
   source      = "./modules/sql"
   trial_name  = var.trial_name
   rg_name     = azurerm_resource_group.trial_rg.name
   vnet_id     = module.trial_vnet.id
-  subnet_id   = module.trial_vnet.sql_subnet_id
+  subnet_id   = module.trial_vnet.endpointsubnet
   db_name     = "ROLES"
   app_name    = "roles"
   sql_user    = "rolesuser"
   sql_pass    = random_password.roles_sql_password.result
   application = "sql-roles"
+}
+
+# Storage account for UI elemenet
+resource "azurerm_storage_account" "uistorageaccount" {
+  name                      = "sa${var.trial_name}ui${var.environment}"
+  resource_group_name       = azurerm_resource_group.trial_rg.name
+  location                  = azurerm_resource_group.trial_rg.location
+  account_kind              = "StorageV2"
+  account_tier              = "Standard"
+  account_replication_type  = "LRS"
+  enable_https_traffic_only = true
+  allow_blob_public_access  = true
+
+  static_website {
+    index_document = "index.html"
+  }
 }

@@ -1,16 +1,11 @@
-output "webapps_subnet_id" {
-  value       = azurerm_subnet.web_apps_subnet.id
-  description = "The generated subnet id."
+output "integrationsubnet" {
+  value       = azurerm_subnet.integrationsubnet.id
+  description = "The generated integration id."
 }
 
-output "sql_subnet_id" {
-  value       = azurerm_subnet.sql_subnet.id
-  description = "The generated subnet id."
-}
-
-output "kv_subnet_id" {
-  value       = azurerm_subnet.kv_subnet.id
-  description = "The generated subnet id."
+output "endpointsubnet" {
+  value       = azurerm_subnet.endpointsubnet.id
+  description = "The generated endpointsubnet id."
 }
 
 output "id" {

@@ -49,7 +49,7 @@ variable "fhir_sqluser" {
   default     = "myfhiruser"
 }
 
-variable "subnet_id" {
+variable "endpointsubnet" {
   type        = string
   description = "The subnet id."
 }

@@ -46,3 +46,11 @@ variable "location" {
   description = "Azure region where to create resources."
   default     = "uksouth"
 }
+
+variable "settings" {
+  type    = map
+  default = {
+    "always_on" = "true"
+  }
+  sensitive   = true
+}
