@@ -1,157 +1,71 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Json Config File",
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {
-    "name": {
-      "type": "string"
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "title" : "Json Config File",
+  "type" : "object",
+  "additionalProperties" : false,
+  "properties" : {
+    "name" : {
+      "type" : "string"
     },
-    "id": {
-      "type": "string"
+    "id" : {
+      "type" : "string"
     },
-    "version": {
-      "type": "integer",
-      "default": 1
+    "version" : {
+      "type" : "integer",
+      "default" : 1
     },
-    "rootUser": {
-      "type": "string",
-      "format": "email"
+    "rootUser" : {
+      "type" : "string"
     },
-    "site_service": {
-      "$ref": "#/definitions/SiteService"
+    "tenant_id" : {
+      "type" : "string"
     },
-    "practitioner_service": {
-      "$ref": "#/definitions/PractitionerService"
+    "ui_client_id" : {
+      "type" : "string"
     },
-    "config_server_service": {
-      "$ref": "#/definitions/ConfigServerService"
+    "site_service" : {
+      "$ref" : "#/definitions/Service"
     },
-    "spring_cloud": {
-      "$ref": "#/definitions/SpringCloud"
+    "practitioner_service" : {
+      "$ref" : "#/definitions/Service"
+    },
+    "config_server_service" : {
+      "$ref" : "#/definitions/Service"
+    },
+    "spring_cloud" : {
+      "$ref" : "#/definitions/SpringCloud"
     }
   },
-  "required": [
-    "name",
-    "id",
-    "version",
-    "rootUser",
-    "site_service",
-    "practitioner_service",
-    "config_server_service",
-    "spring_cloud"
-  ],
-  "definitions": {
-    "SiteService": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "image_name": {
-          "type": "string"
+  "required" : [ "name", "id", "version", "rootUser", "tenant_id", "ui_client_id", "site_service", "practitioner_service", "config_server_service", "spring_cloud" ],
+  "definitions" : {
+    "Service" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "image_name" : {
+          "type" : "string"
         },
-        "image_tag": {
-          "type": "string"
+        "image_tag" : {
+          "type" : "string"
         }
       },
-      "required": [
-        "image_name",
-        "image_tag"
-      ]
+      "required" : [ "image_name", "image_tag" ]
     },
-    "PractitionerService": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "image_name": {
-          "type": "string"
+    "SpringCloud" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "gateway_service" : {
+          "$ref" : "#/definitions/Service"
         },
-        "image_tag": {
-          "type": "string"
+        "discovery_service" : {
+          "$ref" : "#/definitions/Service"
+        },
+        "config_service" : {
+          "$ref" : "#/definitions/Service"
         }
       },
-      "required": [
-        "image_name",
-        "image_tag"
-      ]
-    },
-    "ConfigServerService": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "image_name": {
-          "type": "string"
-        },
-        "image_tag": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "image_name",
-        "image_tag"
-      ]
-    },
-    "SpringCloud": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "gateway_service": {
-          "$ref": "#/definitions/GatewayService"
-        },
-        "discovery_service": {
-          "$ref": "#/definitions/DiscoveryService"
-        },
-        "config_service": {
-          "$ref": "#/definitions/ConfigService"
-        }
-      }
-    },
-    "GatewayService": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "image_name": {
-          "type": "string"
-        },
-        "image_tag": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "image_name",
-        "image_tag"
-      ]
-    },
-    "DiscoveryService": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "image_name": {
-          "type": "string"
-        },
-        "image_tag": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "image_name",
-        "image_tag"
-      ]
-    },
-    "ConfigService": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "image_name": {
-          "type": "string"
-        },
-        "image_tag": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "image_name",
-        "image_tag"
-      ]
+      "required" : [ "gateway_service", "discovery_service", "config_service" ]
     }
   }
 }

@@ -1,8 +1,10 @@
 {
-    "name": "mytrial",
-    "id": "sample2",
+    "name": "cpdemo2",
+    "id": "cpdemo",
     "version": 1,
     "rootUser": "jondoe1@contoso.com",
+    "tenant_id": "5d23383f-2acb-448e-8353-4b4573b82276",
+    "ui_client_id": "f352ce15-0142-4dfa-8e18-801ee6391557",
     "site_service": {
         "image_name": "nginx",
         "image_tag": "latest"
