@@ -1,34 +1,38 @@
 {
-    "name": "cpdemo2",
-    "id": "cpdemo",
+    "name": "trial0",
+    "id": "t01",
     "version": 1,
     "rootUser": "jondoe1@contoso.com",
     "tenant_id": "5d23383f-2acb-448e-8353-4b4573b82276",
     "ui_client_id": "f352ce15-0142-4dfa-8e18-801ee6391557",
     "site_service": {
-        "image_name": "nginx",
-        "image_tag": "latest"
+        "image_name": "ghcr.io/ndph-arts/site-service",
+        "image_tag": "main-latest"
     },
     "practitioner_service": {
-        "image_name": "nginx",
-        "image_tag": "latest"
+        "image_name": "ghcr.io/ndph-arts/practitioner-service",
+        "image_tag": "main-latest"
     },
     "config_server_service": {
         "image_name": "ghcr.io/ndph-arts/trial-config-service",
-        "image_tag": "2d193042bc0766be588f04af705e6439e379acb8"
+        "image_tag": "main-latest"
+    },
+    "role_service": {
+        "image_name": "ghcr.io/ndph-arts/role-service",
+        "image_tag": "main-latest"
     },
     "spring_cloud": {
         "gateway_service": {
-            "image_name": "nginx",
-            "image_tag": "latest"
+            "image_name": "ghcr.io/ndph-arts/sc-gateway-service",
+            "image_tag": "main-latest"
         },
         "discovery_service": {
-            "image_name": "nginx",
-            "image_tag": "latest"
+            "image_name": "ghcr.io/ndph-arts/sc-discovery-service",
+            "image_tag": "main-latest"
         },
-        "config_service": {
-            "image_name": "nginx",
-            "image_tag": "latest"
+        "config_server": {
+            "image_name": "ghcr.io/ndph-arts/sc-config-server",
+            "image_tag": "main-latest"
         }
     }
 }

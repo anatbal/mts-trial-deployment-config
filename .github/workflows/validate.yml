@@ -1,7 +1,6 @@
 name: ValidateTrialJsonSchema
 on:
-  push:
-    branches: [ main, feature/** ]
+  push
 
 
 jobs:

@@ -32,11 +32,14 @@
     "config_server_service" : {
       "$ref" : "#/definitions/Service"
     },
+    "role_service" : {
+      "$ref" : "#/definitions/Service"
+    },
     "spring_cloud" : {
       "$ref" : "#/definitions/SpringCloud"
     }
   },
-  "required" : [ "name", "id", "version", "rootUser", "tenant_id", "ui_client_id", "site_service", "practitioner_service", "config_server_service", "spring_cloud" ],
+  "required" : [ "name", "id", "version", "rootUser", "tenant_id", "ui_client_id", "site_service", "practitioner_service", "role_service", "config_server_service", "spring_cloud" ],
   "definitions" : {
     "Service" : {
       "type" : "object",
@@ -61,11 +64,11 @@
         "discovery_service" : {
           "$ref" : "#/definitions/Service"
         },
-        "config_service" : {
+        "config_server" : {
           "$ref" : "#/definitions/Service"
         }
       },
-      "required" : [ "gateway_service", "discovery_service", "config_service" ]
+      "required" : [ "gateway_service", "discovery_service", "config_server" ]
     }
   }
 }
