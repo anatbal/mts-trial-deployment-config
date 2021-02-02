@@ -74,8 +74,8 @@ jobs:
             siteImageTag=`echo $(jq -r '.site_service.image_tag' ./$path)`
             practitionerImage=`echo $(jq -r '.practitioner_service.image_name' ./$path)`
             practitionerImageTag=`echo $(jq -r '.practitioner_service.image_tag' ./$path)`
-            configServerImage=`echo $(jq -r '.config_server_service.image_name' ./$path)`
-            configServerImageTag=`echo $(jq -r '.config_server_service.image_tag' ./$path)`
+            initServiceImage=`echo $(jq -r '.init_service.image_name' ./$path)`
+            initServiceImageTag=`echo $(jq -r '.init_service.image_tag' ./$path)`
             scGatewayImage=`echo $(jq -r '.spring_cloud.gateway_service.image_name' ./$path)`
             scGatewayImageTag=`echo $(jq -r '.spring_cloud.gateway_service.image_tag' ./$path)`
             scDiscoveryImage=`echo $(jq -r '.spring_cloud.discovery_service.image_name' ./$path)`
@@ -91,12 +91,12 @@ jobs:
             # Apps
             MatrixItem="$MatrixItem \"site_image_name\": \"$siteImage\",\"site_image_tag\": \"$siteImageTag\","
             MatrixItem="$MatrixItem \"practitioner_image_name\": \"$practitionerImage\",\"practitioner_image_tag\": \"$practitionerImageTag\","
-            MatrixItem="$MatrixItem \"trial_config_service_image_name\": \"$configServerImage\",\"trial_config_service_image_tag\": \"$configServerImageTag\","
+            MatrixItem="$MatrixItem \"init_service_image_name\": \"$initServiceImage\",\"init_service_image_tag\": \"$initServiceImageTag\","
 
             # Spring cloud apps
-            MatrixItem="$MatrixItem \"trial_sc_gateway_image_name\": \"$scGatewayImage\",\"trial_sc_gateway_image_tag\": \"$scGatewayImageTag\","
-            MatrixItem="$MatrixItem \"trial_sc_discovery_image_name\": \"$scDiscoveryImage\",\"trial_sc_discovery_image_tag\": \"$scDiscoveryImageTag\","
-            MatrixItem="$MatrixItem \"trial_sc_config_image_name\": \"$scConfigImage\",\"trial_sc_config_image_tag\": \"$scConfigImageTag\","
+            MatrixItem="$MatrixItem \"sc_gateway_image_name\": \"$scGatewayImage\",\"sc_gateway_image_tag\": \"$scGatewayImageTag\","
+            MatrixItem="$MatrixItem \"sc_discovery_image_name\": \"$scDiscoveryImage\",\"sc_discovery_image_tag\": \"$scDiscoveryImageTag\","
+            MatrixItem="$MatrixItem \"sc_config_image_name\": \"$scConfigImage\",\"sc_config_image_tag\": \"$scConfigImageTag\","
             MatrixItem="$MatrixItem },"
             JSON="$JSON$MatrixItem"
           done <<< "$FILES"
@@ -162,16 +162,16 @@ jobs:
                          -var="site_image_name=${{ matrix.site_image_name }}" \
                          -var="environment=$ENV" \
                          -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" \
-                         -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}" \
-                         -var="trial_sc_gateway_image_name=${{ matrix.trial_sc_gateway_image_name }}" \
-                         -var="trial_sc_discovery_image_name=${{ matrix.trial_sc_discovery_image_name }}" \
-                         -var="trial_sc_config_image_name=${{ matrix.trial_sc_config_image_name }}" \
+                         -var="init_service_image_name=${{ matrix.init_service_image_name }}" \
+                         -var="sc_gateway_image_name=${{ matrix.sc_gateway_image_name }}" \
+                         -var="sc_discovery_image_name=${{ matrix.sc_discovery_image_name }}" \
+                         -var="sc_config_image_name=${{ matrix.sc_config_image_name }}" \
                          -var="site_image_tag=${{ matrix.site_image_tag }}" \
                          -var="practitioner_image_tag=${{ matrix.practitioner_image_tag }}" \
-                         -var="trial_config_service_image_tag=${{ matrix.trial_config_service_image_tag }}" \
-                         -var="trial_sc_gateway_image_tag=${{ matrix.trial_sc_gateway_image_tag }}" \
-                         -var="trial_sc_discovery_image_tag=${{ matrix.trial_sc_discovery_image_tag }}" \
-                         -var="trial_sc_config_image_tag=${{ matrix.trial_sc_config_image_tag }}" \
+                         -var="init_service_image_tag=${{ matrix.init_service_image_tag }}" \
+                         -var="sc_gateway_image_tag=${{ matrix.sc_gateway_image_tag }}" \
+                         -var="sc_discovery_image_tag=${{ matrix.sc_discovery_image_tag }}" \
+                         -var="sc_config_image_tag=${{ matrix.sc_config_image_tag }}" \
 
       # Apply, only on merge to main
       - name: Apply TF for "${{ matrix.trial_name }}"
@@ -182,14 +182,14 @@ jobs:
                           -var="site_image_name=${{ matrix.site_image_name }}" \
                           -var="environment=${ENV}" \
                           -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" \
-                          -var="trial_config_service_image_name=${{ matrix.trial_config_service_image_name }}" \
-                          -var="trial_sc_gateway_image_name=${{ matrix.trial_sc_gateway_image_name }}" \
-                          -var="trial_sc_discovery_image_name=${{ matrix.trial_sc_discovery_image_name }}" \
-                          -var="trial_sc_config_image_name=${{ matrix.trial_sc_config_image_name }}" \
+                          -var="init_service_image_name=${{ matrix.init_service_image_name }}" \
+                          -var="sc_gateway_image_name=${{ matrix.sc_gateway_image_name }}" \
+                          -var="sc_discovery_image_name=${{ matrix.sc_discovery_image_name }}" \
+                          -var="sc_config_image_name=${{ matrix.sc_config_image_name }}" \
                           -var="site_image_tag=${{ matrix.site_image_tag }}" \
                           -var="practitioner_image_tag=${{ matrix.practitioner_image_tag }}" \
-                          -var="trial_config_service_image_tag=${{ matrix.trial_config_service_image_tag }}" \
-                          -var="trial_sc_gateway_image_tag=${{ matrix.trial_sc_gateway_image_tag }}" \
-                          -var="trial_sc_discovery_image_tag=${{ matrix.trial_sc_discovery_image_tag }}" \
-                          -var="trial_sc_config_image_tag=${{ matrix.trial_sc_config_image_tag }}" \
+                          -var="init_service_image_tag=${{ matrix.init_service_image_tag }}" \
+                          -var="sc_gateway_image_tag=${{ matrix.sc_gateway_image_tag }}" \
+                          -var="sc_discovery_image_tag=${{ matrix.sc_discovery_image_tag }}" \
+                          -var="sc_config_image_tag=${{ matrix.sc_config_image_tag }}" \
                           -auto-approve

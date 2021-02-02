@@ -1,6 +1,6 @@
 {
   "$schema" : "http://json-schema.org/draft-07/schema#",
-  "title" : "Json Config File",
+  "title" : "Trial Config File",
   "type" : "object",
   "additionalProperties" : false,
   "properties" : {
@@ -29,8 +29,8 @@
     "practitioner_service" : {
       "$ref" : "#/definitions/Service"
     },
-    "config_server_service" : {
-      "$ref" : "#/definitions/Service"
+    "init_service": {
+      "$ref": "#/definitions/Service"
     },
     "role_service" : {
       "$ref" : "#/definitions/Service"
@@ -39,7 +39,7 @@
       "$ref" : "#/definitions/SpringCloud"
     }
   },
-  "required" : [ "name", "id", "version", "rootUser", "tenant_id", "ui_client_id", "site_service", "practitioner_service", "role_service", "config_server_service", "spring_cloud" ],
+  "required" : [ "name", "id", "version", "rootUser", "tenant_id", "ui_client_id", "site_service", "practitioner_service", "init_service", "role_service", "spring_cloud" ],
   "definitions" : {
     "Service" : {
       "type" : "object",
@@ -65,10 +65,29 @@
           "$ref" : "#/definitions/Service"
         },
         "config_server" : {
-          "$ref" : "#/definitions/Service"
+          "$ref" : "#/definitions/ConfigServer"
         }
       },
       "required" : [ "gateway_service", "discovery_service", "config_server" ]
+    },
+    "ConfigServer" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "image_name" : {
+          "type" : "string"
+        },
+        "image_tag" : {
+          "type" : "string"
+        },
+        "git_uri" : {
+          "type" : "string"
+        },
+        "search_paths" : {
+          "type" : "string"
+        }
+      },
+      "required" : [ "image_name", "image_tag", "git_uri", "search_paths" ]
     }
   }
 }

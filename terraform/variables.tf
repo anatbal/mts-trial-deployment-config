@@ -38,46 +38,56 @@ variable "practitioner_image_tag" {
   default     = "latest"
 }
 
-variable "trial_config_service_image_name" {
+variable "init_service_image_name" {
   type        = string
   description = "trial configuration service image name (fqdn)."
 }
 
-variable "trial_config_service_image_tag" {
+variable "init_service_image_tag" {
   type        = string
   description = "trial configuration service image tag."
   default     = "latest"
 }
 
-variable "trial_sc_gateway_image_name" {
+variable "sc_gateway_image_name" {
   type        = string
   description = "SC gateway image name."
 }
 
-variable "trial_sc_gateway_image_tag" {
+variable "sc_gateway_image_tag" {
   type        = string
   description = "SC gateway image tag."
   default     = "latest"
 }
 
-variable "trial_sc_discovery_image_name" {
+variable "sc_discovery_image_name" {
   type        = string
   description = "SC discovery image name."
 }
 
-variable "trial_sc_discovery_image_tag" {
+variable "sc_discovery_image_tag" {
   type        = string
   description = "SC discovery image tag."
   default     = "latest"
 }
 
-variable "trial_sc_config_image_name" {
+variable "sc_config_image_name" {
   type        = string
   description = "SC config image name."
 }
 
-variable "trial_sc_config_image_tag" {
+variable "sc_config_image_tag" {
   type        = string
   description = "SC config image tag."
   default     = "latest"
+}
+
+variable "sc_config_git_uri" {
+  type        = string
+  description = "Git configuration uri, from which to pull all the applications configuration"
+}
+
+variable "sc_config_search_paths" {
+  type        = string
+  description = "Search path within the git uri, to find different configs for the different apps."
 }

@@ -14,8 +14,8 @@ jobs:
         run: |
           git fetch origin main:localmain
 
-          # Gets changed json files excluding the json schema
-          export FILES=$(git diff --name-only localmain | grep .json | grep -v "trial-json-schema")
+          # Gets changed json files excluding the json schema, right now only validating definition.json
+          export FILES=$(git diff --name-only localmain | grep definition.json)
 
           echo "Files changed since last commit..."
           echo "$FILES"

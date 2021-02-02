@@ -13,8 +13,8 @@
         "image_name": "ghcr.io/ndph-arts/practitioner-service",
         "image_tag": "main-latest"
     },
-    "config_server_service": {
-        "image_name": "ghcr.io/ndph-arts/trial-config-service",
+    "init_service": {
+        "image_name": "ghcr.io/ndph-arts/init-service",
         "image_tag": "main-latest"
     },
     "role_service": {
@@ -31,8 +31,10 @@
             "image_tag": "main-latest"
         },
         "config_server": {
-            "image_name": "ghcr.io/ndph-arts/sc-config-server",
-            "image_tag": "main-latest"
+            "image_name": "ghcr.io/ndph-arts/config-server",
+            "image_tag": "main-latest",
+            "git_uri": "https://github.com/NDPH-ARTS/mts-trial-deployment-config.git",
+            "search_paths": "sample_trial/services, sample_trial/services/*"
         }
     }
 }
