@@ -76,7 +76,7 @@ jobs:
             scConfigImage=`echo $(jq -r '.spring_cloud.config_server.image_name' ./$path)`
             scConfigImageTag=`echo $(jq -r '.spring_cloud.config_server.image_tag' ./$path)`
             scConfigGitUri=`echo $(jq -r '.spring_cloud.config_server.git_uri' ./$path)`
-            scConfigSearchPaths=`echo $(jq -r '.spring_cloud.config_server.search_paths' ./$path)`
+            scConfigSearchPaths=`echo $(jq '.spring_cloud.config_server.search_paths' ./$path)`
 
             # in this section we add to the output (the matrix), a new block, which
             # contains all the read content from the definition file (e.g. the trial name,
@@ -92,7 +92,7 @@ jobs:
             MatrixItem="$MatrixItem \"sc_gateway_image_name\": \"$scGatewayImage\",\"sc_gateway_image_tag\": \"$scGatewayImageTag\","
             MatrixItem="$MatrixItem \"sc_discovery_image_name\": \"$scDiscoveryImage\",\"sc_discovery_image_tag\": \"$scDiscoveryImageTag\","
             MatrixItem="$MatrixItem \"sc_config_image_name\": \"$scConfigImage\",\"sc_config_image_tag\": \"$scConfigImageTag\","
-            MatrixItem="$MatrixItem \"sc_config_git_uri\": \"$scConfigGitUri\",\"sc_config_search_paths\": \"$scConfigSearchPaths\","
+            MatrixItem="$MatrixItem \"sc_config_git_uri\": \"$scConfigGitUri\",\"sc_config_search_paths\": $scConfigSearchPaths,"
 
             MatrixItem="$MatrixItem },"
             JSON="$JSON$MatrixItem"
