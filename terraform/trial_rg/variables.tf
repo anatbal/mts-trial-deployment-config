@@ -95,3 +95,13 @@ variable "sc_config_search_paths" {
   type        = string
   description = "Search path within the git uri, to find different configs for the different apps."
 }
+
+variable "spring_profile" {
+  type        = string
+  description = "Spring cloud profile (dev, prod, etc)."
+}
+
+variable "spring_config_label" {
+  type        = string
+  description = "Spring cloud label (branch)."
+}

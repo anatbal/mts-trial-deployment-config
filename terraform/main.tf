@@ -22,4 +22,7 @@ module "trial_rg" {
   sc_config_image_tag    = var.sc_config_image_tag
   sc_config_git_uri      = var.sc_config_git_uri
   sc_config_search_paths = var.sc_config_search_paths
+
+  spring_profile      = var.spring_profile
+  spring_config_label = var.spring_config_label
 }

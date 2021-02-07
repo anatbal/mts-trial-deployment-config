@@ -30,8 +30,8 @@ module "trial_app_service_practitioner" {
   # todo use private endpoint
   settings = {
     "SPRING_APPLICATION_NAME"     = "practitioner-service",
-    "SPRING_CLOUD_CONFIG_PROFILE" = "default",
-    "SPRING_CLOUD_CONFIG_LABEL"   = "main",
+    "SPRING_PROFILES_ACTIVE"      = var.spring_profile,
+    "SPRING_CLOUD_CONFIG_LABEL"   = var.spring_config_label,
     "SPRING_CLOUD_CONFIG_URI"     = "https://${module.trial_sc_config.name}.azurewebsites.net"
     "WEBSITES_PORT"               = "8080"
   }

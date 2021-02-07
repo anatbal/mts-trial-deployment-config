@@ -67,6 +67,9 @@ jobs:
             initServiceImage=`echo $(jq -r '.init_service.image_name' ./$path)`
             initServiceImageTag=`echo $(jq -r '.init_service.image_tag' ./$path)`
 
+            springProfile=`echo $(jq -r '.spring_profile' ./$path)`
+            springConfigLabel=`echo $(jq -r '.spring_config_label' ./$path)`
+
             scGatewayImage=`echo $(jq -r '.spring_cloud.gateway_service.image_name' ./$path)`
             scGatewayImageTag=`echo $(jq -r '.spring_cloud.gateway_service.image_tag' ./$path)`
 
@@ -87,6 +90,9 @@ jobs:
             MatrixItem="$MatrixItem \"site_image_name\": \"$siteImage\",\"site_image_tag\": \"$siteImageTag\","
             MatrixItem="$MatrixItem \"practitioner_image_name\": \"$practitionerImage\",\"practitioner_image_tag\": \"$practitionerImageTag\","
             MatrixItem="$MatrixItem \"init_service_image_name\": \"$initServiceImage\",\"init_service_image_tag\": \"$initServiceImageTag\","
+
+            # Spring cloud properties
+            MatrixItem="$MatrixItem \"spring_profile\": \"$springProfile\",\"spring_config_label\": \"$springConfigLabel\","
 
             # Spring cloud apps
             MatrixItem="$MatrixItem \"sc_gateway_image_name\": \"$scGatewayImage\",\"sc_gateway_image_tag\": \"$scGatewayImageTag\","
@@ -159,6 +165,9 @@ jobs:
                          -var="sc_config_image_tag=${{ matrix.sc_config_image_tag }}" \
                          -var="sc_config_git_uri=${{ matrix.sc_config_git_uri }}" \
                          -var="sc_config_search_paths=${{ matrix.sc_config_search_paths }}" \
+                         -var="spring_profile=${{ matrix.spring_profile }}" \
+                         -var="spring_config_label=${{ matrix.spring_config_label }}" \
+
 
       # Apply, only on merge to main
       - name: Apply TF for "${{ matrix.trial_name }}"
@@ -180,6 +189,8 @@ jobs:
                           -var="sc_config_image_tag=${{ matrix.sc_config_image_tag }}" \
                           -var="sc_config_git_uri=${{ matrix.sc_config_git_uri }}" \
                           -var="sc_config_search_paths=${{ matrix.sc_config_search_paths }}" \
+                          -var="spring_profile=${{ matrix.spring_profile }}" \
+                          -var="spring_config_label=${{ matrix.spring_config_label }}" \
                           -auto-approve
 
           # '-raw' is important so no other characters will be added

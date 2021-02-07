@@ -23,23 +23,29 @@
     "ui_client_id" : {
       "type" : "string"
     },
+    "spring_profile" : {
+      "type" : "string"
+    },
+    "spring_config_label" : {
+      "type" : "string"
+    },
     "site_service" : {
+      "$ref" : "#/definitions/Service"
+    },
+    "role_service" : {
       "$ref" : "#/definitions/Service"
     },
     "practitioner_service" : {
       "$ref" : "#/definitions/Service"
     },
-    "init_service": {
-      "$ref": "#/definitions/Service"
-    },
-    "role_service" : {
+    "init_service" : {
       "$ref" : "#/definitions/Service"
     },
     "spring_cloud" : {
       "$ref" : "#/definitions/SpringCloud"
     }
   },
-  "required" : [ "name", "id", "version", "rootUser", "tenant_id", "ui_client_id", "site_service", "practitioner_service", "init_service", "role_service", "spring_cloud" ],
+  "required" : [ "name", "id", "version", "rootUser", "tenant_id", "ui_client_id", "spring_profile", "spring_config_label", "site_service", "role_service", "practitioner_service", "init_service", "spring_cloud" ],
   "definitions" : {
     "Service" : {
       "type" : "object",
