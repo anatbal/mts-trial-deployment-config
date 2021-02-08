@@ -38,6 +38,17 @@ variable "practitioner_image_tag" {
   default     = "latest"
 }
 
+variable "role_image_name" {
+  type        = string
+  description = "role image name (fqdn)."
+}
+
+variable "role_image_tag" {
+  type        = string
+  description = "role image tag."
+  default     = "latest"
+}
+
 variable "init_service_image_name" {
   type        = string
   description = "trial configuration service image name (fqdn)."

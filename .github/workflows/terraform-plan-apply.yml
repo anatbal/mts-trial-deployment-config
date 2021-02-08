@@ -19,6 +19,9 @@ jobs:
       - name: Check changed files
         id: calc_files_diff
         run: |
+          set -o errexit
+          set -o nounset
+
           git fetch origin main:localmain
 
           # Gets changed json files excluding the json schema
@@ -34,6 +37,9 @@ jobs:
       - name: Set matrix for TF plan and apply
         id: set-matrix
         run: |
+          set -o errexit
+          set -o nounset
+
           FILES="${{ steps.calc_files_diff.outputs.diff }}"
           JSON="{\"include\":["
 
@@ -64,6 +70,9 @@ jobs:
             practitionerImage=`echo $(jq -r '.practitioner_service.image_name' ./$path)`
             practitionerImageTag=`echo $(jq -r '.practitioner_service.image_tag' ./$path)`
 
+            roleImage=`echo $(jq -r '.role_service.image_name' ./$path)`
+            roleImageTag=`echo $(jq -r '.role_service.image_tag' ./$path)`
+
             initServiceImage=`echo $(jq -r '.init_service.image_name' ./$path)`
             initServiceImageTag=`echo $(jq -r '.init_service.image_tag' ./$path)`
 
@@ -89,6 +98,7 @@ jobs:
             # Apps
             MatrixItem="$MatrixItem \"site_image_name\": \"$siteImage\",\"site_image_tag\": \"$siteImageTag\","
             MatrixItem="$MatrixItem \"practitioner_image_name\": \"$practitionerImage\",\"practitioner_image_tag\": \"$practitionerImageTag\","
+            MatrixItem="$MatrixItem \"role_image_name\": \"$roleImage\",\"role_image_tag\": \"$roleImageTag\","
             MatrixItem="$MatrixItem \"init_service_image_name\": \"$initServiceImage\",\"init_service_image_tag\": \"$initServiceImageTag\","
 
             # Spring cloud properties
@@ -147,51 +157,51 @@ jobs:
       - name: Terraform Format
         run: terraform fmt -check
 
+      - name: Prepare tfvars file
+        run: |
+          set -o errexit
+          set -o nounset
+
+          echo "trial_name=\"${{ matrix.trial_name }}\"
+          site_image_name=\"${{ matrix.site_image_name }}\"
+          practitioner_image_name=\"${{ matrix.practitioner_image_name }}\"
+          role_image_name=\"${{ matrix.role_image_name }}\"
+          init_service_image_name=\"${{ matrix.init_service_image_name }}\"
+          sc_gateway_image_name=\"${{ matrix.sc_gateway_image_name }}\"
+          sc_discovery_image_name=\"${{ matrix.sc_discovery_image_name }}\"
+          sc_config_image_name=\"${{ matrix.sc_config_image_name }}\"
+          site_image_tag=\"${{ matrix.site_image_tag }}\"
+          practitioner_image_tag=\"${{ matrix.practitioner_image_tag }}\"
+          role_image_tag=\"${{ matrix.role_image_tag }}\"
+          init_service_image_tag=\"${{ matrix.init_service_image_tag }}\"
+          sc_gateway_image_tag=\"${{ matrix.sc_gateway_image_tag }}\"
+          sc_discovery_image_tag=\"${{ matrix.sc_discovery_image_tag }}\"
+          sc_config_image_tag=\"${{ matrix.sc_config_image_tag }}\"
+          sc_config_git_uri=\"${{ matrix.sc_config_git_uri }}\"
+          sc_config_search_paths=\"${{ matrix.sc_config_search_paths }}\"
+          spring_profile=\"${{ matrix.spring_profile }}\"
+          spring_config_label=\"${{ matrix.spring_config_label }}\"
+          " >> ${{ matrix.trial_name }}.tfvars
+
+          cat ${{ matrix.trial_name }}.tfvars
+
       # Plan TF
       - name: Plan TF for "${{ matrix.trial_name }}"
         run: |
-          terraform plan -var="trial_name=${{ matrix.trial_name }}" \
-                         -var="site_image_name=${{ matrix.site_image_name }}" \
-                         -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" \
-                         -var="init_service_image_name=${{ matrix.init_service_image_name }}" \
-                         -var="sc_gateway_image_name=${{ matrix.sc_gateway_image_name }}" \
-                         -var="sc_discovery_image_name=${{ matrix.sc_discovery_image_name }}" \
-                         -var="sc_config_image_name=${{ matrix.sc_config_image_name }}" \
-                         -var="site_image_tag=${{ matrix.site_image_tag }}" \
-                         -var="practitioner_image_tag=${{ matrix.practitioner_image_tag }}" \
-                         -var="init_service_image_tag=${{ matrix.init_service_image_tag }}" \
-                         -var="sc_gateway_image_tag=${{ matrix.sc_gateway_image_tag }}" \
-                         -var="sc_discovery_image_tag=${{ matrix.sc_discovery_image_tag }}" \
-                         -var="sc_config_image_tag=${{ matrix.sc_config_image_tag }}" \
-                         -var="sc_config_git_uri=${{ matrix.sc_config_git_uri }}" \
-                         -var="sc_config_search_paths=${{ matrix.sc_config_search_paths }}" \
-                         -var="spring_profile=${{ matrix.spring_profile }}" \
-                         -var="spring_config_label=${{ matrix.spring_config_label }}" \
+          set -o errexit
+          set -o nounset
 
+          terraform plan -var-file=${{ matrix.trial_name }}.tfvars
 
       # Apply, only on merge to main
       - name: Apply TF for "${{ matrix.trial_name }}"
         # if: github.ref == 'refs/heads/main'
         run: |
+          set -o errexit
+          set -o nounset
+
           echo "Merged to main. applying trial's RG"
-          terraform apply -var="trial_name=${{ matrix.trial_name }}" \
-                          -var="site_image_name=${{ matrix.site_image_name }}" \
-                          -var="practitioner_image_name=${{ matrix.practitioner_image_name }}" \
-                          -var="init_service_image_name=${{ matrix.init_service_image_name }}" \
-                          -var="sc_gateway_image_name=${{ matrix.sc_gateway_image_name }}" \
-                          -var="sc_discovery_image_name=${{ matrix.sc_discovery_image_name }}" \
-                          -var="sc_config_image_name=${{ matrix.sc_config_image_name }}" \
-                          -var="site_image_tag=${{ matrix.site_image_tag }}" \
-                          -var="practitioner_image_tag=${{ matrix.practitioner_image_tag }}" \
-                          -var="init_service_image_tag=${{ matrix.init_service_image_tag }}" \
-                          -var="sc_gateway_image_tag=${{ matrix.sc_gateway_image_tag }}" \
-                          -var="sc_discovery_image_tag=${{ matrix.sc_discovery_image_tag }}" \
-                          -var="sc_config_image_tag=${{ matrix.sc_config_image_tag }}" \
-                          -var="sc_config_git_uri=${{ matrix.sc_config_git_uri }}" \
-                          -var="sc_config_search_paths=${{ matrix.sc_config_search_paths }}" \
-                          -var="spring_profile=${{ matrix.spring_profile }}" \
-                          -var="spring_config_label=${{ matrix.spring_config_label }}" \
-                          -auto-approve
+          terraform apply -var-file=${{ matrix.trial_name }}.tfvars -auto-approve
 
           # '-raw' is important so no other characters will be added
           ui_storage_conn_string=$(terraform output -raw ui_conn_string)
@@ -208,11 +218,17 @@ jobs:
       # Get release zip file
       - name: UI component -  Get assets zip
         run: |
+          set -o errexit
+          set -o nounset
+
           wget https://github.com/NDPH-ARTS/mts-trial-ui/releases/download/latest/mts-trial-ui.zip
 
       # Unzip & Customzie (replace values)
       - name: UI component - Unzip and modify
         run: |
+          set -o errexit
+          set -o nounset
+
           unzip mts-trial-ui.zip
 
           sed -i 's/{{clientId}}/${{ env.ui_client_id }}/' mts-trial-ui/index.html
@@ -222,4 +238,7 @@ jobs:
       # Upload to storage account (to $web container)
       - name: UI component - Upload to storage
         run: |
+          set -o errexit
+          set -o nounset
+
           az storage blob upload-batch --connection-string ${ui_storage_conn_string} --source mts-trial-ui --destination '$web'

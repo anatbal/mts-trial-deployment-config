@@ -7,6 +7,8 @@ module "trial_rg" {
   site_image_tag          = var.site_image_tag
   practitioner_image_name = var.practitioner_image_name
   practitioner_image_tag  = var.practitioner_image_tag
+  role_image_name         = var.role_image_name
+  role_image_tag          = var.role_image_tag
 
   init_service_image_name = var.init_service_image_name
   init_service_image_tag  = var.init_service_image_tag

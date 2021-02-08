@@ -44,6 +44,7 @@ resource "azurerm_app_service" "fhir_server" {
 
   app_settings = {
     FHIRServer__Security__Enabled                     = "false"
+    # TODO: replace with KeyVault reference
     SqlServer__ConnectionString                       = "Server=tcp:${module.fhir_sql_server.sqlserver_name}.database.windows.net,1433;Initial Catalog=FHIR;Persist Security Info=False;User ID=${module.fhir_sql_server.db_user};Password=${module.fhir_sql_server.db_password};MultipleActiveResultSets=False;Connection Timeout=30;"
     SqlServer__AllowDatabaseCreation                  = "true"
     SqlServer__Initialize                             = "true"

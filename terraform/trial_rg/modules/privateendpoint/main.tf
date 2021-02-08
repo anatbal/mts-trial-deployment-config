@@ -1,7 +1,7 @@
 # Create a Resource's Private DNS Zone
 resource "azurerm_private_dns_zone" "endpoint-dns-private-zone" {
-  name                = var.sql ? "${var.resource_name}.database.windows.net" : "${var.resource_name}.vault.azure.net"
-  # name                = "privatelink.database.windows.net"
+  # name                = var.sql ? "${var.resource_name}.database.windows.net" : "${var.resource_name}.vault.azure.net"
+  name                = var.sql ? "privatelink.database.windows.net" : "privatelink.vaultcore.azure.net"
   resource_group_name = var.rg_name
 }
 
