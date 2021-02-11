@@ -1,6 +1,6 @@
 {
     "name": "trial0",
-    "id": "t02",
+    "id": "t01",
     "version": 1,
     "rootUser": "jondoe1@contoso.com",
     "tenant_id": "5d23383f-2acb-448e-8353-4b4573b82276",
@@ -29,7 +29,7 @@
             "image_tag": "main-latest"
         },
         "discovery_service": {
-            "image_name": "ghcr.io/ndph-arts/sc-discovery-service",
+            "image_name": "ghcr.io/ndph-arts/discovery-server",
             "image_tag": "main-latest"
         },
         "config_server": {
