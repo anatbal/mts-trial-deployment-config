@@ -28,12 +28,14 @@ module "trial_app_service_site" {
     "WEBSITES_PORT"                           = "80"
     "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"    = "${module.trial_sc_discovery.hostname}/eureka/"
     "EUREKA_INSTANCE_HOSTNAME"                = "${local.site_name}.azurewebsites.net"
+    "FHIR_URI"                                = module.fhir_server.hostname
   }
 
   depends_on = [
     azurerm_app_service_plan.apps_service_plan,
     module.trial_sc_config,
     module.trial_sc_discovery,
+    module.fhir_server,
   ]
 }
 
@@ -56,12 +58,18 @@ module "trial_app_service_practitioner" {
     "WEBSITES_PORT"                           = "80"
     "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"    = "${module.trial_sc_discovery.hostname}/eureka/"
     "EUREKA_INSTANCE_HOSTNAME"                = "${local.practitioner_name}.azurewebsites.net"
+    "FHIR_URI"                                = module.fhir_server.hostname
+    "ROLE_SERVICE_URI"                        = module.trial_app_service_role.hostname
+    "SITE_SERVICE_URI"                        = module.trial_app_service_site.hostname
   }
 
   depends_on = [
     azurerm_app_service_plan.apps_service_plan,
     module.trial_sc_config,
     module.trial_sc_discovery,
+    module.trial_app_service_site,
+    module.trial_app_service_role,
+    module.fhir_server,
   ]
 }
 

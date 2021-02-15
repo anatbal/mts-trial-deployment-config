@@ -1,14 +1,6 @@
 server:
   error:
     include-message: always
-fhir:
-  uri: http://fhir-api:8080
-role:
-  service:
-    uri: http://role-service:8080
-site:
-  service:
-    uri: http://role-service:8080
 
 ---
 config:
