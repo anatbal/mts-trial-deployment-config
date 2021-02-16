@@ -25,7 +25,7 @@
     },
     "spring_cloud": {
         "gateway_service": {
-            "image_name": "ghcr.io/ndph-arts/sc-gateway-service",
+            "image_name": "ghcr.io/ndph-arts/gateway-server",
             "image_tag": "main-latest"
         },
         "discovery_service": {
