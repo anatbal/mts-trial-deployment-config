@@ -3,7 +3,7 @@ server:
     include-message: always
 
 ---
-# this is the default 'development' trial site config - CCO/REGION/COUNTRY/LCC
+# config for ARTS-182 AC6 - CCO, REGION, COUNTRY, SUB-COUNTRY, LCC, SUB-LCC
 site:
   name: Organization
   displayName: site
@@ -58,7 +58,7 @@ site:
           child:
             - name: Organization
               displayName: site
-              type: LCC
+              type: SUB-COUNTRY
               attributes:
                 - name: name
                   displayName: Name
@@ -72,3 +72,37 @@ site:
                 - name: siteType
                   displayName: Site Type
                   validationRegex: ''
+              child:
+                - name: Organization
+                  displayName: site
+                  type: LCC
+                  attributes:
+                    - name: name
+                      displayName: Name
+                      validationRegex: '^[a-zA-Z\s]{1,35}$'
+                    - name: alias
+                      displayName: Alias
+                      validationRegex: '^[a-zA-Z\s]{1,35}$'
+                    - name: parentSiteId
+                      displayName: Parent Site Id
+                      validationRegex: ''
+                    - name: siteType
+                      displayName: Site Type
+                      validationRegex: ''
+                  child:
+                    - name: Organization
+                      displayName: site
+                      type: SUB-LCC
+                      attributes:
+                        - name: name
+                          displayName: Name
+                          validationRegex: '^[a-zA-Z\s]{1,35}$'
+                        - name: alias
+                          displayName: Alias
+                          validationRegex: '^[a-zA-Z\s]{1,35}$'
+                        - name: parentSiteId
+                          displayName: Parent Site Id
+                          validationRegex: ''
+                        - name: siteType
+                          displayName: Site Type
+                          validationRegex: ''

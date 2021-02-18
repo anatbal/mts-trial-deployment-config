@@ -3,7 +3,7 @@ server:
     include-message: always
 
 ---
-# this is the default 'development' trial site config - CCO/REGION/COUNTRY/LCC
+# config for ARTS-182 AC5 - CCO, COUNTRY, LCC, SUB-LCC 
 site:
   name: Organization
   displayName: site
@@ -24,7 +24,7 @@ site:
   child:
     - name: Organization
       displayName: site
-      type: REGION
+      type: COUNTRY
       attributes:
         - name: name
           displayName: Name
@@ -41,7 +41,7 @@ site:
       child:
         - name: Organization
           displayName: site
-          type: COUNTRY
+          type: LCC
           attributes:
             - name: name
               displayName: Name
@@ -58,7 +58,7 @@ site:
           child:
             - name: Organization
               displayName: site
-              type: LCC
+              type: SUB-LCC
               attributes:
                 - name: name
                   displayName: Name

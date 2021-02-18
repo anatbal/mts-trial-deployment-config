@@ -3,7 +3,7 @@ server:
     include-message: always
 
 ---
-# this is the default 'development' trial site config - CCO/REGION/COUNTRY/LCC
+# this is the default 'development' trial site config - CCO/REGION/COUNTRY/LCC - also AC1 in ARTS-182
 site:
   name: Organization
   displayName: site

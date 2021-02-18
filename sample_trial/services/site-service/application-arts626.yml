@@ -1,0 +1,40 @@
+server:
+  error:
+    include-message: always
+
+---
+# config for checking ARTS-626 ticket - ROOT/SITE
+site:
+  name: Organization
+  displayName: site
+  type: ROOT
+  attributes:
+    - name: name
+      displayName: Name
+      validationRegex: '^[a-zA-Z\s]{1,35}$'
+    - name: alias
+      displayName: Alias
+      validationRegex: '^[a-zA-Z\s]{1,35}$'
+    - name: parentSiteId
+      displayName: Parent Site Id
+      validationRegex: ''
+    - name: siteType
+      displayName: Site Type
+      validationRegex: ''
+  child:
+    - name: Organization
+      displayName: site
+      type: SITE
+      attributes:
+        - name: name
+          displayName: Name
+          validationRegex: '^[a-zA-Z\s]{1,35}$'
+        - name: alias
+          displayName: Alias
+          validationRegex: '^[a-zA-Z\s]{1,35}$'
+        - name: parentSiteId
+          displayName: Parent Site Id
+          validationRegex: ''
+        - name: siteType
+          displayName: Site Type
+          validationRegex: ''

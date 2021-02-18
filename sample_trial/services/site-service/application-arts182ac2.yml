@@ -3,7 +3,7 @@ server:
     include-message: always
 
 ---
-# this is the default 'development' trial site config - CCO/REGION/COUNTRY/LCC
+# config for ARTS-182 AC2 - CCO, COUNTRY, LCC 
 site:
   name: Organization
   displayName: site
@@ -24,7 +24,7 @@ site:
   child:
     - name: Organization
       displayName: site
-      type: REGION
+      type: COUNTRY
       attributes:
         - name: name
           displayName: Name
@@ -41,7 +41,7 @@ site:
       child:
         - name: Organization
           displayName: site
-          type: COUNTRY
+          type: LCC
           attributes:
             - name: name
               displayName: Name
@@ -55,20 +55,3 @@ site:
             - name: siteType
               displayName: Site Type
               validationRegex: ''
-          child:
-            - name: Organization
-              displayName: site
-              type: LCC
-              attributes:
-                - name: name
-                  displayName: Name
-                  validationRegex: '^[a-zA-Z\s]{1,35}$'
-                - name: alias
-                  displayName: Alias
-                  validationRegex: '^[a-zA-Z\s]{1,35}$'
-                - name: parentSiteId
-                  displayName: Parent Site Id
-                  validationRegex: ''
-                - name: siteType
-                  displayName: Site Type
-                  validationRegex: ''
