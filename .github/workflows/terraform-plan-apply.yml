@@ -38,7 +38,9 @@ jobs:
         id: set-matrix
         run: |
           set -o errexit
+          set -o pipefail
           set -o nounset
+          # set -o xtrace
 
           FILES="${{ steps.calc_files_diff.outputs.diff }}"
           JSON="{\"include\":["
@@ -59,58 +61,11 @@ jobs:
             echo "current definition file path: $path"
 
             # Extract values for the trial
-            trialName=`echo $(jq -r '.name' ./$path)`
-            trialId=`echo $(jq -r '.id' ./$path)`
-            tenantId=`echo $(jq -r '.tenant_id' ./$path)`
-            uiClientId=`echo $(jq -r '.ui_client_id' ./$path)`
+            trialName=$(jq -r '.name' ./$path)
+            trialId=$(jq -r '.id' ./$path)
+            trial_dir=$(dirname $(realpath $path))
+            MatrixItem="{\"trial_id\": \"$trialId\", \"path\": \"$path\", \"trial_name\": \"$trialName\", \"trial_dir\": \"$trial_dir\",},"
 
-            siteImage=`echo $(jq -r '.site_service.image_name' ./$path)`
-            siteImageTag=`echo $(jq -r '.site_service.image_tag' ./$path)`
-
-            practitionerImage=`echo $(jq -r '.practitioner_service.image_name' ./$path)`
-            practitionerImageTag=`echo $(jq -r '.practitioner_service.image_tag' ./$path)`
-
-            roleImage=`echo $(jq -r '.role_service.image_name' ./$path)`
-            roleImageTag=`echo $(jq -r '.role_service.image_tag' ./$path)`
-
-            initServiceImage=`echo $(jq -r '.init_service.image_name' ./$path)`
-            initServiceImageTag=`echo $(jq -r '.init_service.image_tag' ./$path)`
-
-            springProfile=`echo $(jq -r '.spring_profile' ./$path)`
-            springConfigLabel=`echo $(jq -r '.spring_config_label' ./$path)`
-
-            scGatewayImage=`echo $(jq -r '.spring_cloud.gateway_service.image_name' ./$path)`
-            scGatewayImageTag=`echo $(jq -r '.spring_cloud.gateway_service.image_tag' ./$path)`
-
-            scDiscoveryImage=`echo $(jq -r '.spring_cloud.discovery_service.image_name' ./$path)`
-            scDiscoveryImageTag=`echo $(jq -r '.spring_cloud.discovery_service.image_tag' ./$path)`
-
-            scConfigImage=`echo $(jq -r '.spring_cloud.config_server.image_name' ./$path)`
-            scConfigImageTag=`echo $(jq -r '.spring_cloud.config_server.image_tag' ./$path)`
-            scConfigGitUri=`echo $(jq -r '.spring_cloud.config_server.git_uri' ./$path)`
-            scConfigSearchPaths=`echo $(jq '.spring_cloud.config_server.search_paths' ./$path)`
-
-            # in this section we add to the output (the matrix), a new block, which
-            # contains all the read content from the definition file (e.g. the trial name,
-            #  id, images, tags, etc... that are relevant for the following steps)
-            MatrixItem="{\"trial_id\": \"$trialId\", \"path\": \"$path\", \"trial_name\": \"$trialName\", \"ui_client_id\": \"$uiClientId\", \"tenant_id\": \"$tenantId\","
-
-            # Apps
-            MatrixItem="$MatrixItem \"site_image_name\": \"$siteImage\",\"site_image_tag\": \"$siteImageTag\","
-            MatrixItem="$MatrixItem \"practitioner_image_name\": \"$practitionerImage\",\"practitioner_image_tag\": \"$practitionerImageTag\","
-            MatrixItem="$MatrixItem \"role_image_name\": \"$roleImage\",\"role_image_tag\": \"$roleImageTag\","
-            MatrixItem="$MatrixItem \"init_service_image_name\": \"$initServiceImage\",\"init_service_image_tag\": \"$initServiceImageTag\","
-
-            # Spring cloud properties
-            MatrixItem="$MatrixItem \"spring_profile\": \"$springProfile\",\"spring_config_label\": \"$springConfigLabel\","
-
-            # Spring cloud apps
-            MatrixItem="$MatrixItem \"sc_gateway_image_name\": \"$scGatewayImage\",\"sc_gateway_image_tag\": \"$scGatewayImageTag\","
-            MatrixItem="$MatrixItem \"sc_discovery_image_name\": \"$scDiscoveryImage\",\"sc_discovery_image_tag\": \"$scDiscoveryImageTag\","
-            MatrixItem="$MatrixItem \"sc_config_image_name\": \"$scConfigImage\",\"sc_config_image_tag\": \"$scConfigImageTag\","
-            MatrixItem="$MatrixItem \"sc_config_git_uri\": \"$scConfigGitUri\",\"sc_config_search_paths\": $scConfigSearchPaths,"
-
-            MatrixItem="$MatrixItem },"
             JSON="$JSON$MatrixItem"
           done <<< "$FILES"
 
@@ -125,7 +80,7 @@ jobs:
           echo "::set-output name=matrix::$( echo "$JSON" )"
 
   tfplan:
-    name: Execute TF on "${{ matrix.trial_name }}":${{ matrix.path }}
+    name: "Execute TF on ${{ matrix.trial_name }}: ${{ matrix.path }}"
     needs: prepare-run-matrix
     if: ${{ needs.prepare-run-matrix.outputs.is_empty_matrix == 'false' }}
     strategy:
@@ -158,30 +113,40 @@ jobs:
         run: terraform fmt -check
 
       - name: Prepare tfvars file
+        env:
+          TFVARS_TEMPLATE: 'tfvars.template'
         run: |
           set -o errexit
+          set -o pipefail
           set -o nounset
+          # set -o xtrace
 
-          echo "trial_name=\"${{ matrix.trial_name }}\"
-          site_image_name=\"${{ matrix.site_image_name }}\"
-          practitioner_image_name=\"${{ matrix.practitioner_image_name }}\"
-          role_image_name=\"${{ matrix.role_image_name }}\"
-          init_service_image_name=\"${{ matrix.init_service_image_name }}\"
-          sc_gateway_image_name=\"${{ matrix.sc_gateway_image_name }}\"
-          sc_discovery_image_name=\"${{ matrix.sc_discovery_image_name }}\"
-          sc_config_image_name=\"${{ matrix.sc_config_image_name }}\"
-          site_image_tag=\"${{ matrix.site_image_tag }}\"
-          practitioner_image_tag=\"${{ matrix.practitioner_image_tag }}\"
-          role_image_tag=\"${{ matrix.role_image_tag }}\"
-          init_service_image_tag=\"${{ matrix.init_service_image_tag }}\"
-          sc_gateway_image_tag=\"${{ matrix.sc_gateway_image_tag }}\"
-          sc_discovery_image_tag=\"${{ matrix.sc_discovery_image_tag }}\"
-          sc_config_image_tag=\"${{ matrix.sc_config_image_tag }}\"
-          sc_config_git_uri=\"${{ matrix.sc_config_git_uri }}\"
-          sc_config_search_paths=\"${{ matrix.sc_config_search_paths }}\"
-          spring_profile=\"${{ matrix.spring_profile }}\"
-          spring_config_label=\"${{ matrix.spring_config_label }}\"
-          " >> ${{ matrix.trial_name }}.tfvars
+          # Return 0 if file $1 exists and ending by end of line character, else return 1
+          check_ending_eol() {
+            [[ -s "$1" && -z "$(tail -c 1 "$1")" ]]
+          }
+
+          if ! check_ending_eol ${TFVARS_TEMPLATE}
+          then
+            echo "ERROR: ${TFVARS_TEMPLATE} doesn't exist or doesn't end with new line." >&2
+            exit 1
+          fi
+
+          definition_path=${{ matrix.trial_dir }}/definition.json
+
+          cat ${TFVARS_TEMPLATE} | while read line
+          do
+              # no need to process comment lines that start with "#", or empty ones.
+              if [[ $line == \#* ]] || [[ -z "$line" ]]; then continue; fi
+
+              # split the line text with the = char as a separator
+              line_array=(${line//=/ })
+
+              var_name=${line_array[0]}
+              json_path=${line_array[1]}
+              json_value=$(jq -r ${json_path} ${definition_path})
+              echo "${var_name}=\"${json_value}\"" >> ${{ matrix.trial_name }}.tfvars
+          done 
 
           cat ${{ matrix.trial_name }}.tfvars
 
@@ -216,14 +181,14 @@ jobs:
           echo "::add-mask::$ui_storage_conn_string"
 
       # Get release zip file
-      - name: UI component -  Get assets zip
+      - name: UI component - Get assets zip
         run: |
           set -o errexit
           set -o nounset
 
           wget https://github.com/NDPH-ARTS/mts-trial-ui/releases/download/latest/mts-trial-ui.zip
 
-      # Unzip & Customzie (replace values)
+      # Unzip & Customize (replace values)
       - name: UI component - Unzip and modify
         run: |
           set -o errexit
@@ -235,10 +200,13 @@ jobs:
           sed -i 's/{{issuerUrl}}/https:\/\/login.microsoftonline.com\/${{ env.tenant_id }}\/v2.0/' mts-trial-ui/index.html
           sed -i 's/{{trialName}}/${{ env.trial_name }}/' mts-trial-ui/index.html
 
-      # Upload to storage account (to $web container)
+      # Upload to storage account (to $web container), only on merge to main
       - name: UI component - Upload to storage
+        # if: github.ref == 'refs/heads/main'
         run: |
           set -o errexit
           set -o nounset
 
+          # first clean up the container, then upload the new assets
+          az storage blob delete-batch --connection-string ${ui_storage_conn_string} --source "\$web" --pattern "*"
           az storage blob upload-batch --connection-string ${ui_storage_conn_string} --source mts-trial-ui --destination '$web'
