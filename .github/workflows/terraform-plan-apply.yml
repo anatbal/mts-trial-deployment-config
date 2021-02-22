@@ -146,7 +146,7 @@ jobs:
               json_path=${line_array[1]}
               json_value=$(jq -r ${json_path} ${definition_path})
               echo "${var_name}=\"${json_value}\"" >> ${{ matrix.trial_name }}.tfvars
-          done 
+          done
 
           cat ${{ matrix.trial_name }}.tfvars
 
@@ -172,6 +172,7 @@ jobs:
           ui_storage_conn_string=$(terraform output -raw ui_conn_string)
           # create an env var from the connection string, so will be available for the later steps
           echo "ui_storage_conn_string=$ui_storage_conn_string" >> $GITHUB_ENV
+          echo "trial_path=${{ matrix.trial_dir }}" >> $GITHUB_ENV
           echo "trial_name=${{ matrix.trial_name }}" >> $GITHUB_ENV
           echo "tenant_id=${{ matrix.tenant_id }}" >> $GITHUB_ENV
           echo "ui_client_id=${{ matrix.ui_client_id }}" >> $GITHUB_ENV
@@ -186,7 +187,7 @@ jobs:
           set -o errexit
           set -o nounset
 
-          wget https://github.com/NDPH-ARTS/mts-trial-ui/releases/download/latest/mts-trial-ui.zip
+          wget https://github.com/NDPH-ARTS/mts-trial-ui/releases/download/branding-assets/mts-trial-ui.zip
 
       # Unzip & Customize (replace values)
       - name: UI component - Unzip and modify
@@ -200,7 +201,16 @@ jobs:
           sed -i 's/{{issuerUrl}}/https:\/\/login.microsoftonline.com\/${{ env.tenant_id }}\/v2.0/' mts-trial-ui/index.html
           sed -i 's/{{trialName}}/${{ env.trial_name }}/' mts-trial-ui/index.html
 
-      # Upload to storage account (to $web container), only on merge to main
+      # Add Branding Assets
+      - name: UI component - Copy Logo File
+        run: |
+          set -o errexit
+          set -o nounset
+
+          echo "using trial path '${{ env.trial_path }}'"
+          cp ${{ env.trial_path }}/assets/branding/img/logo.png mts-trial-ui/assets/branding/img/
+
+      # Upload to storage account (to $web container)
       - name: UI component - Upload to storage
         # if: github.ref == 'refs/heads/main'
         run: |
