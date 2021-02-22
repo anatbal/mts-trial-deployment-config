@@ -1,0 +1,41 @@
+server:
+  error:
+    include-message: always
+
+logging:
+  level:
+    uk:
+      ac:
+        ox:
+          ndph:
+            mts: DEBUG
+    org:
+      springframework:
+        web:
+          reactive:
+            function:
+              client:
+                ExchangeFunctions: TRACE
+delay-start: 30
+---
+trial:
+  trialName: "My Dev Sample Trial"
+  persons:
+    - givenName: Bootstrap
+      familyName: User
+      prefix: Mr
+      roles:
+        - superuser
+      userAccount: some-user-account-id
+  sites:
+    - name: CCO
+      alias: CCO
+      siteType: CCO
+  roles:
+    - id: superuser
+      permissions:
+        - id: create-person
+        - id: view-person
+    - id: country-admin
+      permissions:
+        - id: create-person
