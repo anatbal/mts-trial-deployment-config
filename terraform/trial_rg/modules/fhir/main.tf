@@ -2,6 +2,9 @@ resource "random_password" "fhir_sql_password" {
   length           = 16
   special          = true
   override_special = "_%@"
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
 }
 
 # Deploy a sql server and db for fhir before we create the web app

@@ -90,7 +90,6 @@ module "trial_app_service_role" {
 
   settings = {
     "INIT_SERVICE_IDENTITY" = module.trial_app_service_init.identity
-    "always_on"             = "true"
     "JDBC_DRIVER"           = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
     # TODO: replace with KeyVault reference
     "JDBC_URL"                             = "jdbc:sqlserver://${module.roles_sql_server.sqlserver_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
@@ -124,16 +123,22 @@ module "trial_app_service_init" {
   docker_image_tag    = var.init_service_image_tag
 
   settings = {
-    "always_on"     = "true"
-    "WEBSITES_PORT" = "8080" # The container is listening on 8080
+    "SPRING_PROFILES_ACTIVE"               = var.spring_profile
+    "SPRING_CLOUD_CONFIG_LABEL"            = var.spring_config_label
+    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE" = "${module.trial_sc_discovery.hostname}/eureka/"
+    # TODO: remove this when discovery is available
+    "ROLE_SERVICE_URI"         = "https://${local.role_name}.azurewebsites.net"
+    "SITE_SERVICE_URI"         = "https://${local.site_name}.azurewebsites.net"
+    "PRACTITIONER_SERVICE_URI" = "https://${local.practitioner_name}.azurewebsites.net"
+    "SERVER_PORT"                      = "80"
+    "WEBSITES_PORT"                    = "80"
+    "SPRING_MAIN_WEB_APPLICATION_TYPE" = "" # brings up the spring web app despite being a console app
   }
-
 
   depends_on = [
     azurerm_app_service_plan.apps_service_plan,
     module.trial_sc_config,
     module.trial_sc_discovery,
-    module.trial_sc_gateway,
   ]
 }
 

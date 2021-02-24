@@ -112,6 +112,9 @@ resource "random_password" "roles_sql_password" {
   length           = 16
   special          = true
   override_special = "_%@"
+  min_upper        = 1
+  min_lower        = 1
+  min_numeric      = 1
 }
 
 # Create a roles and permissions SQL
