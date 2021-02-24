@@ -116,3 +116,9 @@ variable "spring_config_label" {
   type        = string
   description = "Spring cloud label (branch)."
 }
+
+variable "owner" {
+  type        = string
+  description = "The owner of the trial environment."
+  default     = "unknown"
+}

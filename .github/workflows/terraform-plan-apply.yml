@@ -156,7 +156,7 @@ jobs:
           set -o errexit
           set -o nounset
 
-          terraform plan -var-file=${{ matrix.trial_name }}.tfvars
+          terraform plan -var-file=${{ matrix.trial_name }}.tfvars -var="owner=${{ github.actor }}"
 
       # Apply, only on merge to main
       - name: Apply TF for "${{ matrix.trial_name }}"
@@ -166,7 +166,7 @@ jobs:
           set -o nounset
 
           echo "Merged to main. applying trial's RG"
-          terraform apply -var-file=${{ matrix.trial_name }}.tfvars -auto-approve
+          terraform apply -var-file=${{ matrix.trial_name }}.tfvars -var="owner=${{ github.actor }}" -auto-approve
 
           # '-raw' is important so no other characters will be added
           ui_storage_conn_string=$(terraform output -raw ui_conn_string)
