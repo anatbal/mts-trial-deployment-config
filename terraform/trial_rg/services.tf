@@ -1,13 +1,13 @@
 ## Service application
 
 locals {
-  site_name = "as-${var.trial_name}-site-${var.environment}"
+  site_name         = "as-${var.trial_name}-site-${var.environment}"
   practitioner_name = "as-${var.trial_name}-practitioner-${var.environment}"
-  role_name = "as-${var.trial_name}-role-${var.environment}"
-  init_name = "as-${var.trial_name}-init-${var.environment}"
-  gateway_name = "as-${var.trial_name}-sc-gateway-${var.environment}"
-  discovery_name = "as-${var.trial_name}-sc-discovery-${var.environment}"
-  config_name = "as-${var.trial_name}-sc-config-${var.environment}"
+  role_name         = "as-${var.trial_name}-role-${var.environment}"
+  init_name         = "as-${var.trial_name}-init-${var.environment}"
+  gateway_name      = "as-${var.trial_name}-sc-gateway-${var.environment}"
+  discovery_name    = "as-${var.trial_name}-sc-discovery-${var.environment}"
+  config_name       = "as-${var.trial_name}-sc-config-${var.environment}"
 }
 
 # Site service
@@ -22,13 +22,14 @@ module "trial_app_service_site" {
   docker_image_tag    = var.site_image_tag
 
   settings = {
-    "SPRING_PROFILES_ACTIVE"                  = var.spring_profile
-    "SPRING_CLOUD_CONFIG_LABEL"               = var.spring_config_label
-    "SERVER_PORT"                             = "80"
-    "WEBSITES_PORT"                           = "80"
-    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"    = "${module.trial_sc_discovery.hostname}/eureka/"
-    "EUREKA_INSTANCE_HOSTNAME"                = "${local.site_name}.azurewebsites.net"
-    "FHIR_URI"                                = module.fhir_server.hostname
+    "INIT_SERVICE_IDENTITY"                = module.trial_app_service_init.identity
+    "SPRING_PROFILES_ACTIVE"               = var.spring_profile
+    "SPRING_CLOUD_CONFIG_LABEL"            = var.spring_config_label
+    "SERVER_PORT"                          = "80"
+    "WEBSITES_PORT"                        = "80"
+    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE" = "${module.trial_sc_discovery.hostname}/eureka/"
+    "EUREKA_INSTANCE_HOSTNAME"             = "${local.site_name}.azurewebsites.net"
+    "FHIR_URI"                             = module.fhir_server.hostname
   }
 
   depends_on = [
@@ -36,6 +37,7 @@ module "trial_app_service_site" {
     module.trial_sc_config,
     module.trial_sc_discovery,
     module.fhir_server,
+    module.trial_app_service_init,
   ]
 }
 
@@ -52,13 +54,16 @@ module "trial_app_service_practitioner" {
 
   # todo use private endpoint
   settings = {
-    "SPRING_PROFILES_ACTIVE"                  = var.spring_profile
-    "SPRING_CLOUD_CONFIG_LABEL"               = var.spring_config_label
-    "SERVER_PORT"                             = "80"
-    "WEBSITES_PORT"                           = "80"
-    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"    = "${module.trial_sc_discovery.hostname}/eureka/"
-    "EUREKA_INSTANCE_HOSTNAME"                = "${local.practitioner_name}.azurewebsites.net"
-    "FHIR_URI"                                = module.fhir_server.hostname
+    "INIT_SERVICE_IDENTITY"                = module.trial_app_service_init.identity
+    "SPRING_PROFILES_ACTIVE"               = var.spring_profile
+    "SPRING_CLOUD_CONFIG_LABEL"            = var.spring_config_label
+    "SERVER_PORT"                          = "80"
+    "WEBSITES_PORT"                        = "80"
+    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE" = "${module.trial_sc_discovery.hostname}/eureka/"
+    "EUREKA_INSTANCE_HOSTNAME"             = "${local.practitioner_name}.azurewebsites.net"
+    "FHIR_URI"                             = module.fhir_server.hostname
+    "ROLE_SERVICE_URI"                     = module.trial_app_service_role.hostname
+    "SITE_SERVICE_URI"                     = module.trial_app_service_site.hostname
   }
 
   depends_on = [
@@ -68,6 +73,7 @@ module "trial_app_service_practitioner" {
     module.trial_app_service_site,
     module.trial_app_service_role,
     module.fhir_server,
+    module.trial_app_service_init,
   ]
 }
 
@@ -83,16 +89,17 @@ module "trial_app_service_role" {
   docker_image_tag    = var.role_image_tag
 
   settings = {
-    "always_on"   = "true"
-    "JDBC_DRIVER" = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    "INIT_SERVICE_IDENTITY" = module.trial_app_service_init.identity
+    "always_on"             = "true"
+    "JDBC_DRIVER"           = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
     # TODO: replace with KeyVault reference
-    "JDBC_URL"    = "jdbc:sqlserver://${module.roles_sql_server.sqlserver_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
-    "SPRING_PROFILES_ACTIVE"                  = var.spring_profile
-    "SPRING_CLOUD_CONFIG_LABEL"               = var.spring_config_label
-    "SERVER_PORT"                             = "80"
-    "WEBSITES_PORT"                           = "80"
-    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"    = "${module.trial_sc_discovery.hostname}/eureka/"
-    "EUREKA_INSTANCE_HOSTNAME"                = "${local.role_name}.azurewebsites.net"
+    "JDBC_URL"                             = "jdbc:sqlserver://${module.roles_sql_server.sqlserver_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
+    "SPRING_PROFILES_ACTIVE"               = var.spring_profile
+    "SPRING_CLOUD_CONFIG_LABEL"            = var.spring_config_label
+    "SERVER_PORT"                          = "80"
+    "WEBSITES_PORT"                        = "80"
+    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE" = "${module.trial_sc_discovery.hostname}/eureka/"
+    "EUREKA_INSTANCE_HOSTNAME"             = "${local.role_name}.azurewebsites.net"
   }
 
   depends_on = [
@@ -100,6 +107,7 @@ module "trial_app_service_role" {
     module.roles_sql_server,
     module.trial_sc_config,
     module.trial_sc_discovery,
+    module.trial_app_service_init,
   ]
 }
 
@@ -116,17 +124,15 @@ module "trial_app_service_init" {
   docker_image_tag    = var.init_service_image_tag
 
   settings = {
-    "always_on"   = "true"
-    "WEBSITES_PORT"               = "8080" # The container is listening on 8080
+    "always_on"     = "true"
+    "WEBSITES_PORT" = "8080" # The container is listening on 8080
   }
+
 
   depends_on = [
     azurerm_app_service_plan.apps_service_plan,
     module.trial_sc_config,
     module.trial_sc_discovery,
-    module.trial_app_service_site,
-    module.trial_app_service_practitioner,
-    module.trial_app_service_role,
     module.trial_sc_gateway,
   ]
 }
@@ -147,12 +153,12 @@ module "trial_sc_gateway" {
   docker_image_tag    = var.sc_gateway_image_tag
 
   settings = {
-    "SPRING_PROFILES_ACTIVE"                  = var.spring_profile
-    "SPRING_CLOUD_CONFIG_LABEL"               = var.spring_config_label
-    "SERVER_PORT"                             = "80"
-    "WEBSITES_PORT"                           = "80"
-    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"    = "${module.trial_sc_discovery.hostname}/eureka/"
-    "EUREKA_INSTANCE_HOSTNAME"                = "${local.gateway_name}.azurewebsites.net"
+    "SPRING_PROFILES_ACTIVE"               = var.spring_profile
+    "SPRING_CLOUD_CONFIG_LABEL"            = var.spring_config_label
+    "SERVER_PORT"                          = "80"
+    "WEBSITES_PORT"                        = "80"
+    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE" = "${module.trial_sc_discovery.hostname}/eureka/"
+    "EUREKA_INSTANCE_HOSTNAME"             = "${local.gateway_name}.azurewebsites.net"
   }
 
   depends_on = [
@@ -173,9 +179,9 @@ module "trial_sc_discovery" {
   docker_image_tag    = var.sc_discovery_image_tag
 
   settings = {
-    "SPRING_PROFILES_ACTIVE"                     = var.spring_profile
-    "SERVER_PORT"                                = 8080
-    "WEBSITES_PORT"                              = 8080
+    "SPRING_PROFILES_ACTIVE" = var.spring_profile
+    "SERVER_PORT"            = 8080
+    "WEBSITES_PORT"          = 8080
   }
 
   depends_on = [

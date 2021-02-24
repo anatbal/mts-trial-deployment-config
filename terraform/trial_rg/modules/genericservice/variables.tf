@@ -48,9 +48,9 @@ variable "location" {
 }
 
 variable "settings" {
-  type    = map
+  type = map(any)
   default = {
     "always_on" = "true"
   }
-  sensitive   = true
+  sensitive = true
 }

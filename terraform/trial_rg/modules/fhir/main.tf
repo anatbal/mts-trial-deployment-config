@@ -1,20 +1,20 @@
 resource "random_password" "fhir_sql_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
 # Deploy a sql server and db for fhir before we create the web app
 module "fhir_sql_server" {
-  source     = "../sql"
-  trial_name = var.trial_name
-  rg_name    = var.rg_name
-  vnet_id    = var.vnet_id
-  subnet_id  = var.endpointsubnet
-  db_name    = "FHIR"
-  app_name   = "fhir"
-  sql_user   = var.fhir_sqluser
-  sql_pass   = random_password.fhir_sql_password.result
+  source      = "../sql"
+  trial_name  = var.trial_name
+  rg_name     = var.rg_name
+  vnet_id     = var.vnet_id
+  subnet_id   = var.endpointsubnet
+  db_name     = "FHIR"
+  app_name    = "fhir"
+  sql_user    = var.fhir_sqluser
+  sql_pass    = random_password.fhir_sql_password.result
   application = "sql-fhir"
 }
 
@@ -33,8 +33,8 @@ resource "azurerm_app_service" "fhir_server" {
   logs {
     http_logs {
       file_system {
-        retention_in_mb   = 30     # in Megabytes
-        retention_in_days = 30     # in days
+        retention_in_mb   = 30 # in Megabytes
+        retention_in_days = 30 # in days
       }
     }
 
@@ -43,7 +43,7 @@ resource "azurerm_app_service" "fhir_server" {
   }
 
   app_settings = {
-    FHIRServer__Security__Enabled                     = "false"
+    FHIRServer__Security__Enabled = "false"
     # TODO: replace with KeyVault reference
     SqlServer__ConnectionString                       = "Server=tcp:${module.fhir_sql_server.sqlserver_name}.database.windows.net,1433;Initial Catalog=FHIR;Persist Security Info=False;User ID=${module.fhir_sql_server.db_user};Password=${module.fhir_sql_server.db_password};MultipleActiveResultSets=False;Connection Timeout=30;"
     SqlServer__AllowDatabaseCreation                  = "true"

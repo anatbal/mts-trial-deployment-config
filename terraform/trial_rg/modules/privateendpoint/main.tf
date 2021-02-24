@@ -7,10 +7,10 @@ resource "azurerm_private_dns_zone" "endpoint-dns-private-zone" {
 
 # Create a Private DNS to VNET link
 resource "azurerm_private_dns_zone_virtual_network_link" "dns-zone-to-vnet-link" {
-  name = "${var.application}-vnet-link"
-  resource_group_name = var.rg_name
+  name                  = "${var.application}-vnet-link"
+  resource_group_name   = var.rg_name
   private_dns_zone_name = azurerm_private_dns_zone.endpoint-dns-private-zone.name
-  virtual_network_id = var.vnet_id
+  virtual_network_id    = var.vnet_id
 }
 
 resource "azurerm_private_endpoint" "private_endpoint" {
@@ -20,7 +20,7 @@ resource "azurerm_private_endpoint" "private_endpoint" {
   subnet_id           = var.subnet_id
 
   private_dns_zone_group {
-    name = "${var.application}privatednszonegroup"
+    name                 = "${var.application}privatednszonegroup"
     private_dns_zone_ids = [azurerm_private_dns_zone.endpoint-dns-private-zone.id]
   }
 
@@ -28,22 +28,22 @@ resource "azurerm_private_endpoint" "private_endpoint" {
     name                           = "psc-${var.trial_name}-${var.application}-${var.environment}"
     private_connection_resource_id = var.resource_id
     is_manual_connection           = false
-    subresource_names              = [ var.sql ? "sqlServer" : "vault" ]
+    subresource_names              = [var.sql ? "sqlServer" : "vault"]
   }
 }
 
 # Resource's Private Endpoint Connecton
 data "azurerm_private_endpoint_connection" "endpoint-connection" {
-  depends_on = [azurerm_private_endpoint.private_endpoint]
-  name = azurerm_private_endpoint.private_endpoint.name
+  depends_on          = [azurerm_private_endpoint.private_endpoint]
+  name                = azurerm_private_endpoint.private_endpoint.name
   resource_group_name = var.rg_name
 }
 
 # Create a Resource's Private DNS A Record
 resource "azurerm_private_dns_a_record" "endpoint-dns-a-record" {
-  name = lower("${var.application}-dns-record")
-  zone_name = azurerm_private_dns_zone.endpoint-dns-private-zone.name
+  name                = lower("${var.application}-dns-record")
+  zone_name           = azurerm_private_dns_zone.endpoint-dns-private-zone.name
   resource_group_name = var.rg_name
-  ttl = 300
-  records = [data.azurerm_private_endpoint_connection.endpoint-connection.private_service_connection.0.private_ip_address]
+  ttl                 = 300
+  records             = [data.azurerm_private_endpoint_connection.endpoint-connection.private_service_connection.0.private_ip_address]
 }

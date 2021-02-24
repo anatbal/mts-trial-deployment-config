@@ -23,9 +23,9 @@ resource "azurerm_subnet" "integrationsubnet" {
 
 ## endpoint subnet
 resource "azurerm_subnet" "endpointsubnet" {
-  name                 = "endpointsubnet"
-  resource_group_name  = var.rg_name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.2.0/24"]
+  name                                           = "endpointsubnet"
+  resource_group_name                            = var.rg_name
+  virtual_network_name                           = azurerm_virtual_network.vnet.name
+  address_prefixes                               = ["10.0.2.0/24"]
   enforce_private_link_endpoint_network_policies = true
 }

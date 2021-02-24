@@ -10,8 +10,8 @@ resource "azurerm_key_vault" "trial_keyvault" {
 
   # define ACLs so that the KV will be in the vnet
   network_acls {
-    default_action             = "Deny"
-    bypass                     = "AzureServices"
+    default_action = "Deny"
+    bypass         = "AzureServices"
   }
 }
 
