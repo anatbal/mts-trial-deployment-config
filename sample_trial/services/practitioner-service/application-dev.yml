@@ -1,12 +1,6 @@
 server:
   error:
     include-message: always
-role:
-  service:
-    uri: http://role-service
-site:
-  service:
-    uri: http://site-service
 ---
 config:
   name: Practitioner
