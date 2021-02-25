@@ -170,8 +170,10 @@ jobs:
 
           # '-raw' is important so no other characters will be added
           ui_storage_conn_string=$(terraform output -raw ui_conn_string)
+          gateway_host_string=$(terraform output -raw gateway_host)
           # create an env var from the connection string, so will be available for the later steps
           echo "ui_storage_conn_string=$ui_storage_conn_string" >> $GITHUB_ENV
+          echo "gateway_host_string=$gateway_host_string" >> $GITHUB_ENV
           echo "trial_path=${{ matrix.trial_dir }}" >> $GITHUB_ENV
           echo "trial_name=${{ matrix.trial_name }}" >> $GITHUB_ENV
           echo "tenant_id=${{ matrix.tenant_id }}" >> $GITHUB_ENV
@@ -200,6 +202,7 @@ jobs:
           sed -i 's/{{clientId}}/${{ env.ui_client_id }}/' mts-trial-ui/index.html
           sed -i 's/{{issuerUrl}}/https:\/\/login.microsoftonline.com\/${{ env.tenant_id }}\/v2.0/' mts-trial-ui/index.html
           sed -i 's/{{trialName}}/${{ env.trial_name }}/' mts-trial-ui/index.html
+          sed -i 's^{{gatewayUrl}}^${{ env.gateway_host_string }}/api^' mts-trial-ui/index.html
 
       # Add Branding Assets
       - name: UI component - Copy Logo File
