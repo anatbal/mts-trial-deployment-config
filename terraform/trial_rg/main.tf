@@ -1,10 +1,11 @@
 # Trial Resource Group
-
 resource "azurerm_resource_group" "trial_rg" {
   name     = "rg-trial-${var.trial_name}-${var.environment}"
   location = var.location
   tags = {
-    Owner = var.owner
+    Owner       = var.owner
+    Environment = var.environment
+    Ref         = var.github_ref
   }
 }
 
@@ -66,6 +67,7 @@ module "fhir_server" {
 
 # Key vault
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
+# TODO: HAS TO BE UNIQUE. https://ndph-arts.atlassian.net/browse/ARTS-367
 module "trial_keyvault" {
   source      = "./modules/kv"
   trial_name  = var.trial_name
@@ -133,6 +135,7 @@ module "roles_sql_server" {
 }
 
 # Storage account for UI elemenet
+# TODO: HAS TO BE UNIQUE. https://ndph-arts.atlassian.net/browse/ARTS-367
 resource "azurerm_storage_account" "uistorageaccount" {
   name                      = "sa${var.trial_name}ui${var.environment}"
   resource_group_name       = azurerm_resource_group.trial_rg.name

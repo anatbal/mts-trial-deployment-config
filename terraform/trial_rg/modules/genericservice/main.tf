@@ -1,6 +1,6 @@
 
 # Service application generic module that loads a docker image
-
+# UNIQUE
 resource "azurerm_app_service" "generic_service" {
   name                = var.app_name
   location            = var.location

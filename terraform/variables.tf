@@ -118,3 +118,9 @@ variable "owner" {
   description = "The owner of the trial environment."
   default     = "unknown"
 }
+
+variable "github_ref" {
+  type        = string
+  description = "The ref that triggered this run. usually a branch name."
+  default     = ""
+}

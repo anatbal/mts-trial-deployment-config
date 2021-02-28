@@ -7,15 +7,9 @@
     "name" : {
       "type" : "string"
     },
-    "id" : {
-      "type" : "string"
-    },
     "version" : {
       "type" : "integer",
       "default" : 1
-    },
-    "rootUser" : {
-      "type" : "string"
     },
     "tenant_id" : {
       "type" : "string"
@@ -45,7 +39,7 @@
       "$ref" : "#/definitions/SpringCloud"
     }
   },
-  "required" : [ "name", "id", "version", "rootUser", "tenant_id", "ui_client_id", "spring_profile", "spring_config_label", "site_service", "role_service", "practitioner_service", "init_service", "spring_cloud" ],
+  "required" : [ "name", "version", "tenant_id", "ui_client_id", "spring_profile", "spring_config_label", "site_service", "role_service", "practitioner_service", "init_service", "spring_cloud" ],
   "definitions" : {
     "Service" : {
       "type" : "object",
