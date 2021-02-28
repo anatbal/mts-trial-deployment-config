@@ -6,7 +6,7 @@ on:
     - 'terraform/shared_rg/**'
 
 jobs:
-  tfplan:
+  deploy:
     name: Execute TF for shared resource group
     runs-on: ubuntu-latest
     defaults:
