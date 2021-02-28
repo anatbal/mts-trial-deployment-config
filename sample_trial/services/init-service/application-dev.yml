@@ -26,7 +26,13 @@ trial:
       prefix: Mr
       roles:
         - superuser
-      userAccount: some-user-account-id
+      userAccount: 5d995fd0-a1ff-4b2c-ba93-238ba9e349b1
+    - givenName: automation
+      familyName: tester
+      prefix: Mr
+      roles:
+        - superuser
+      userAccount: dc32d94e-1ade-4968-b83e-bab949b7e90c
   sites:
     - name: CCO
       alias: CCO
