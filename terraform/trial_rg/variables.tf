@@ -142,6 +142,7 @@ variable "init_client_id" {
   description = "The init client id."
   default     = "unknown"
   sensitive   = true
+}
 
 variable "github_ref" {
   type        = string
