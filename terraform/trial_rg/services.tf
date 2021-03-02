@@ -22,7 +22,7 @@ module "trial_app_service_site" {
   docker_image_tag    = var.site_image_tag
 
   settings = {
-    "INIT_SERVICE_IDENTITY"                = module.trial_app_service_init.identity
+    "INIT_SERVICE_IDENTITY"                = "e6fd67af-ef25-4a4b-af7c-0ed8a7bd40cf" # module.trial_app_service_init.identity
     "SPRING_PROFILES_ACTIVE"               = var.spring_profile
     "SPRING_CLOUD_CONFIG_LABEL"            = var.spring_config_label
     "SERVER_PORT"                          = "80"
@@ -54,7 +54,7 @@ module "trial_app_service_practitioner" {
 
   # todo use private endpoint
   settings = {
-    "INIT_SERVICE_IDENTITY"                = module.trial_app_service_init.identity
+    "INIT_SERVICE_IDENTITY"                = "e6fd67af-ef25-4a4b-af7c-0ed8a7bd40cf" # module.trial_app_service_init.identity
     "SPRING_PROFILES_ACTIVE"               = var.spring_profile
     "SPRING_CLOUD_CONFIG_LABEL"            = var.spring_config_label
     "SERVER_PORT"                          = "80"
@@ -89,7 +89,7 @@ module "trial_app_service_role" {
   docker_image_tag    = var.role_image_tag
 
   settings = {
-    "INIT_SERVICE_IDENTITY" = module.trial_app_service_init.identity
+    "INIT_SERVICE_IDENTITY" = "e6fd67af-ef25-4a4b-af7c-0ed8a7bd40cf" # module.trial_app_service_init.identity
     "JDBC_DRIVER"           = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
     # TODO: replace with KeyVault reference
     "JDBC_URL"                             = "jdbc:sqlserver://${module.roles_sql_server.sqlserver_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
@@ -133,6 +133,9 @@ module "trial_app_service_init" {
     "SERVER_PORT"                      = "80"
     "WEBSITES_PORT"                    = "80"
     "SPRING_MAIN_WEB_APPLICATION_TYPE" = "" # brings up the spring web app despite being a console app
+    "AZURE_USERNAME"                   = var.init_username
+    "AZURE_PASSWORD"                   = var.init_password
+    "AZURE_CLIENT_ID"                  = var.init_client_id
   }
 
   depends_on = [
