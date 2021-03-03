@@ -126,10 +126,6 @@ module "trial_app_service_init" {
     "SPRING_PROFILES_ACTIVE"               = var.spring_profile
     "SPRING_CLOUD_CONFIG_LABEL"            = var.spring_config_label
     "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE" = "${module.trial_sc_discovery.hostname}/eureka/"
-    # TODO: remove this when discovery is available
-    "ROLE_SERVICE_URI"                 = "https://${local.role_name}.azurewebsites.net"
-    "SITE_SERVICE_URI"                 = "https://${local.site_name}.azurewebsites.net"
-    "PRACTITIONER_SERVICE_URI"         = "https://${local.practitioner_name}.azurewebsites.net"
     "SERVER_PORT"                      = "80"
     "WEBSITES_PORT"                    = "80"
     "SPRING_MAIN_WEB_APPLICATION_TYPE" = "" # brings up the spring web app despite being a console app
