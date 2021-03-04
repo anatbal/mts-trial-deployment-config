@@ -27,6 +27,18 @@ resource "azurerm_app_service_plan" "apps_service_plan" {
   ]
 }
 
+# Application insights
+resource "azurerm_application_insights" "app_insights" {
+  name                = "ai-${var.trial_name}-${var.environment}"
+  location            = azurerm_resource_group.trial_rg.location
+  resource_group_name = azurerm_resource_group.trial_rg.name
+  application_type    = "web"
+
+  depends_on = [
+    azurerm_resource_group.trial_rg,
+  ]
+}
+
 # Audit storage
 module "trial_audit" {
   source     = "./modules/audit"
@@ -57,10 +69,12 @@ module "fhir_server" {
   app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
   vnet_id             = module.trial_vnet.id
   endpointsubnet      = module.trial_vnet.endpointsubnet
+  app_insights_key    = azurerm_application_insights.app_insights.instrumentation_key
 
   # needs an app service plan and an existing vnet
   depends_on = [
     azurerm_app_service_plan.apps_service_plan,
+    azurerm_application_insights.app_insights,
     module.trial_vnet,
   ]
 }

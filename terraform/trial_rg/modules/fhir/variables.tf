@@ -58,3 +58,8 @@ variable "vnet_id" {
   type        = string
   description = "The vnet id."
 }
+
+variable "app_insights_key" {
+  type        = string
+  description = "The instrumentation key of app insights"
+}

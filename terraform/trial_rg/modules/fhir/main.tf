@@ -56,6 +56,7 @@ resource "azurerm_app_service" "fhir_server" {
     WEBSITES_PORT                                     = 8080
     WEBSITE_DNS_SERVER                                = "168.63.129.16"
     WEBSITE_VNET_ROUTE_ALL                            = 1
+    ApplicationInsights__InstrumentationKey           = var.app_insights_key
   }
 
   depends_on = [
