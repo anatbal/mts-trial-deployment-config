@@ -218,7 +218,7 @@ jobs:
           set -o errexit
           set -o nounset
 
-          wget https://github.com/NDPH-ARTS/mts-trial-ui/releases/download/branding-assets/mts-trial-ui.zip
+          wget https://github.com/NDPH-ARTS/mts-trial-ui/releases/latest/download/mts-trial-ui.zip
 
       # Unzip & Customize (replace values)
       - name: UI component - Unzip and modify
