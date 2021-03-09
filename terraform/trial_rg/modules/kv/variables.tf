@@ -40,3 +40,13 @@ variable "subnet_id" {
   type        = string
   description = "The subnet to be integrated into."
 }
+
+variable "dns_zone_name" {
+  type        = string
+  description = "DNS zone name for key vaults."
+}
+
+variable "dns_zone_id" {
+  type        = string
+  description = "The id of the given dns zone."
+}

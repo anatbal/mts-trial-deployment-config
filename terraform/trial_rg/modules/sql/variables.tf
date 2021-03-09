@@ -60,3 +60,14 @@ variable "application" {
   type        = string
   description = "The application this endpoints relates to (workload)."
 }
+
+variable "dns_zone_name" {
+  type        = string
+  description = "DNS zone name for sql servers."
+}
+
+variable "dns_zone_id" {
+  type        = string
+  description = "The id of the given dns zone."
+}
+

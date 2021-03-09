@@ -30,3 +30,22 @@ resource "azurerm_app_service" "generic_service" {
 
   app_settings = var.settings
 }
+
+# count = 0, if this is the gateway and no private endpoint is needed
+module "private_endpoint" {
+  count            = var.enable_private_endpoint == true ? 1 : 0
+  source           = "../privateendpoint"
+  trial_name       = var.trial_name
+  rg_name          = var.rg_name
+  resource_id      = azurerm_app_service.generic_service.id
+  vnet_id          = var.vnet_id
+  subnet_id        = var.subnet_id
+  subresource_name = "sites"
+  application      = var.app_name
+  dns_zone_name    = var.dns_zone_name
+  dns_zone_id      = var.dns_zone_id
+
+  depends_on = [
+    azurerm_app_service.generic_service,
+  ]
+}

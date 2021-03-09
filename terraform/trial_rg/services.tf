@@ -16,7 +16,9 @@ locals {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.app_insights.connection_string
     "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"  = "${module.trial_sc_discovery.hostname}/eureka/"
     # TODO: try to move back to a managed identity
-    "INIT_SERVICE_IDENTITY"    = "e6fd67af-ef25-4a4b-af7c-0ed8a7bd40cf" # module.trial_app_service_init.identity
+    "INIT_SERVICE_IDENTITY"  = "e6fd67af-ef25-4a4b-af7c-0ed8a7bd40cf" # module.trial_app_service_init.identity
+    "WEBSITE_DNS_SERVER"     = "168.63.129.16"
+    "WEBSITE_VNET_ROUTE_ALL" = 1
   }
 }
 
@@ -30,6 +32,10 @@ module "trial_app_service_site" {
   environment         = var.environment
   docker_image        = var.site_image_name
   docker_image_tag    = var.site_image_tag
+  vnet_id             = module.trial_vnet.id
+  subnet_id           = module.trial_vnet.endpointsubnet
+  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
+  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   settings = merge(
     local.common_settings,
@@ -46,6 +52,7 @@ module "trial_app_service_site" {
     module.trial_sc_discovery,
     module.fhir_server,
     module.trial_app_service_init,
+    module.trial_vnet,
   ]
 }
 
@@ -59,6 +66,10 @@ module "trial_app_service_practitioner" {
   environment         = var.environment
   docker_image        = var.practitioner_image_name
   docker_image_tag    = var.practitioner_image_tag
+  vnet_id             = module.trial_vnet.id
+  subnet_id           = module.trial_vnet.endpointsubnet
+  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
+  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   # todo use private endpoint
   settings = merge(
@@ -80,6 +91,7 @@ module "trial_app_service_practitioner" {
     module.trial_app_service_role,
     module.fhir_server,
     module.trial_app_service_init,
+    module.trial_vnet,
   ]
 }
 
@@ -93,15 +105,19 @@ module "trial_app_service_role" {
   environment         = var.environment
   docker_image        = var.role_image_name
   docker_image_tag    = var.role_image_tag
+  vnet_id             = module.trial_vnet.id
+  subnet_id           = module.trial_vnet.endpointsubnet
+  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
+  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   settings = merge(
     local.common_settings,
     {
       "EUREKA_INSTANCE_HOSTNAME" = "${local.role_name}.azurewebsites.net"
       # TODO: this setting should be fetched from the config server
-      "JDBC_DRIVER"           = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      "JDBC_DRIVER" = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # TODO: replace with KeyVault reference
-      "JDBC_URL"                 = "jdbc:sqlserver://${module.roles_sql_server.sqlserver_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
+      "JDBC_URL" = "jdbc:sqlserver://${module.roles_sql_server.sqlserver_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
     },
   )
 
@@ -112,6 +128,7 @@ module "trial_app_service_role" {
     module.trial_sc_config,
     module.trial_sc_discovery,
     module.trial_app_service_init,
+    module.trial_vnet,
   ]
 }
 
@@ -126,6 +143,10 @@ module "trial_app_service_init" {
   environment         = var.environment
   docker_image        = var.init_service_image_name
   docker_image_tag    = var.init_service_image_tag
+  vnet_id             = module.trial_vnet.id
+  subnet_id           = module.trial_vnet.endpointsubnet
+  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
+  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   settings = merge(
     local.common_settings,
@@ -142,6 +163,7 @@ module "trial_app_service_init" {
     azurerm_application_insights.app_insights,
     module.trial_sc_config,
     module.trial_sc_discovery,
+    module.trial_vnet,
   ]
 }
 
@@ -151,14 +173,22 @@ module "trial_app_service_init" {
 
 # config server service
 module "trial_sc_gateway" {
-  source              = "./modules/genericservice"
-  app_name            = local.gateway_name
-  rg_name             = azurerm_resource_group.trial_rg.name
-  app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
-  trial_name          = var.trial_name
-  environment         = var.environment
-  docker_image        = var.sc_gateway_image_name
-  docker_image_tag    = var.sc_gateway_image_tag
+  source                  = "./modules/genericservice"
+  app_name                = local.gateway_name
+  rg_name                 = azurerm_resource_group.trial_rg.name
+  app_service_plan_id     = azurerm_app_service_plan.apps_service_plan.id
+  trial_name              = var.trial_name
+  environment             = var.environment
+  docker_image            = var.sc_gateway_image_name
+  docker_image_tag        = var.sc_gateway_image_tag
+  enable_private_endpoint = false
+
+  # These variables are not used due to the fact we don't create a private endpoint
+  # for the gateway, but are required by tf
+  vnet_id       = module.trial_vnet.id
+  subnet_id     = module.trial_vnet.endpointsubnet
+  dns_zone_name = module.trial_vnet.webapp_dns_zone_name
+  dns_zone_id   = module.trial_vnet.webapp_dns_zone_id
 
   settings = merge(
     local.common_settings,
@@ -172,6 +202,7 @@ module "trial_sc_gateway" {
     azurerm_application_insights.app_insights,
     module.trial_sc_config,
     module.trial_sc_discovery,
+    module.trial_vnet,
   ]
 }
 
@@ -184,18 +215,23 @@ module "trial_sc_discovery" {
   environment         = var.environment
   docker_image        = var.sc_discovery_image_name
   docker_image_tag    = var.sc_discovery_image_tag
+  vnet_id             = module.trial_vnet.id
+  subnet_id           = module.trial_vnet.endpointsubnet
+  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
+  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   settings = {
     "SPRING_PROFILES_ACTIVE"                = var.spring_profile
     "SERVER_PORT"                           = 80
     "WEBSITES_PORT"                         = 80
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.app_insights.connection_string
-    "EUREKA_ENVIRONMENT" = var.environment # for a label in the eureka status screen
+    "EUREKA_ENVIRONMENT"                    = var.environment # for a label in the eureka status screen
   }
 
   depends_on = [
     azurerm_app_service_plan.apps_service_plan,
     azurerm_application_insights.app_insights,
+    module.trial_vnet,
   ]
 }
 
@@ -208,6 +244,10 @@ module "trial_sc_config" {
   environment         = var.environment
   docker_image        = var.sc_config_image_name
   docker_image_tag    = var.sc_config_image_tag
+  vnet_id             = module.trial_vnet.id
+  subnet_id           = module.trial_vnet.endpointsubnet
+  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
+  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   # optted not to use the common settings since it includes a config label that might casue problems here.
   settings = {
@@ -219,12 +259,15 @@ module "trial_sc_config" {
     "WEBSITES_PORT"                              = 80
     "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"       = "${module.trial_sc_discovery.hostname}/eureka/"
     "APPLICATIONINSIGHTS_CONNECTION_STRING"      = azurerm_application_insights.app_insights.connection_string
+    "WEBSITE_DNS_SERVER"                         = "168.63.129.16"
+    "WEBSITE_VNET_ROUTE_ALL"                     = 1
   }
 
   depends_on = [
     azurerm_app_service_plan.apps_service_plan,
     azurerm_application_insights.app_insights,
     module.trial_sc_discovery,
+    module.trial_vnet,
   ]
 }
 

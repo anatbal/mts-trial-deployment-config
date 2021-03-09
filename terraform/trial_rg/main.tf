@@ -70,6 +70,8 @@ module "fhir_server" {
   vnet_id             = module.trial_vnet.id
   endpointsubnet      = module.trial_vnet.endpointsubnet
   app_insights_key    = azurerm_application_insights.app_insights.instrumentation_key
+  sql_dns_zone_name   = module.trial_vnet.sql_dns_zone_name
+  sql_dns_zone_id     = module.trial_vnet.sql_dns_zone_id
 
   # needs an app service plan and an existing vnet
   depends_on = [
@@ -83,13 +85,15 @@ module "fhir_server" {
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
 # TODO: HAS TO BE UNIQUE. https://ndph-arts.atlassian.net/browse/ARTS-367
 module "trial_keyvault" {
-  source      = "./modules/kv"
-  trial_name  = var.trial_name
-  environment = var.environment
-  rg_name     = azurerm_resource_group.trial_rg.name
-  tenant_id   = "99804659-431f-48fa-84c1-65c9609de05b"
-  vnet_id     = module.trial_vnet.id
-  subnet_id   = module.trial_vnet.endpointsubnet
+  source        = "./modules/kv"
+  trial_name    = var.trial_name
+  environment   = var.environment
+  rg_name       = azurerm_resource_group.trial_rg.name
+  tenant_id     = "99804659-431f-48fa-84c1-65c9609de05b"
+  vnet_id       = module.trial_vnet.id
+  subnet_id     = module.trial_vnet.endpointsubnet
+  dns_zone_name = module.trial_vnet.kv_dns_zone_name
+  dns_zone_id   = module.trial_vnet.kv_dns_zone_id
 
   depends_on = [
     module.trial_vnet,
@@ -100,6 +104,7 @@ module "trial_keyvault" {
 # loop-like style
 locals {
   service_ids = [module.fhir_server.service_id, module.trial_app_service_site.service_id,
+    module.trial_app_service_role.service_id,
     module.trial_app_service_practitioner.service_id,
     module.trial_app_service_init.service_id,
     module.trial_sc_gateway.service_id, module.trial_sc_discovery.service_id,
@@ -116,6 +121,7 @@ resource "azurerm_app_service_virtual_network_swift_connection" "vnet_app_servic
     module.trial_vnet,
     module.fhir_server,
     module.trial_app_service_site,
+    module.trial_app_service_role,
     module.trial_app_service_practitioner,
     module.trial_app_service_init,
     module.trial_sc_gateway,
@@ -136,16 +142,18 @@ resource "random_password" "roles_sql_password" {
 # Create a roles and permissions SQL
 # Deploy a sql server and db for fhir before we create the web app
 module "roles_sql_server" {
-  source      = "./modules/sql"
-  trial_name  = var.trial_name
-  rg_name     = azurerm_resource_group.trial_rg.name
-  vnet_id     = module.trial_vnet.id
-  subnet_id   = module.trial_vnet.endpointsubnet
-  db_name     = "ROLES"
-  app_name    = "roles"
-  sql_user    = "rolesuser"
-  sql_pass    = random_password.roles_sql_password.result
-  application = "sql-roles"
+  source        = "./modules/sql"
+  trial_name    = var.trial_name
+  rg_name       = azurerm_resource_group.trial_rg.name
+  vnet_id       = module.trial_vnet.id
+  subnet_id     = module.trial_vnet.endpointsubnet
+  db_name       = "ROLES"
+  app_name      = "roles"
+  sql_user      = "rolesuser"
+  sql_pass      = random_password.roles_sql_password.result
+  application   = "sql-roles"
+  dns_zone_name = module.trial_vnet.sql_dns_zone_name
+  dns_zone_id   = module.trial_vnet.sql_dns_zone_id
 }
 
 # Storage account for UI elemenet

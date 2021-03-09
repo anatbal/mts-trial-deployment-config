@@ -9,16 +9,18 @@ resource "random_password" "fhir_sql_password" {
 
 # Deploy a sql server and db for fhir before we create the web app
 module "fhir_sql_server" {
-  source      = "../sql"
-  trial_name  = var.trial_name
-  rg_name     = var.rg_name
-  vnet_id     = var.vnet_id
-  subnet_id   = var.endpointsubnet
-  db_name     = "FHIR"
-  app_name    = "fhir"
-  sql_user    = var.fhir_sqluser
-  sql_pass    = random_password.fhir_sql_password.result
-  application = "sql-fhir"
+  source        = "../sql"
+  trial_name    = var.trial_name
+  rg_name       = var.rg_name
+  vnet_id       = var.vnet_id
+  subnet_id     = var.endpointsubnet
+  db_name       = "FHIR"
+  app_name      = "fhir"
+  sql_user      = var.fhir_sqluser
+  sql_pass      = random_password.fhir_sql_password.result
+  application   = "sql-fhir"
+  dns_zone_name = var.sql_dns_zone_name
+  dns_zone_id   = var.sql_dns_zone_id
 }
 
 # Fhir server

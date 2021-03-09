@@ -15,21 +15,20 @@ resource "azurerm_key_vault" "trial_keyvault" {
   }
 }
 
-# TODO: correct this and uncomment
-
 # Connect KV to a new private endpoint
-# module "private_endpoint" {
-#   source                = "../privateendpoint"
-#   trial_name            = var.trial_name
-#   rg_name               = var.rg_name
-#   resource_name         = azurerm_key_vault.trial_keyvault.name
-#   resource_id           = azurerm_key_vault.trial_keyvault.id
-#   vnet_id               = var.vnet_id
-#   subnet_id             = var.subnet_id
-#   kv                    = true
-#   application           = "kv"
+module "private_endpoint" {
+  source           = "../privateendpoint"
+  trial_name       = var.trial_name
+  rg_name          = var.rg_name
+  resource_id      = azurerm_key_vault.trial_keyvault.id
+  vnet_id          = var.vnet_id
+  subnet_id        = var.subnet_id
+  subresource_name = "vault"
+  application      = "kv"
+  dns_zone_name    = var.dns_zone_name
+  dns_zone_id      = var.dns_zone_id
 
-#   depends_on = [
-#     azurerm_key_vault.trial_keyvault,
-#   ]
-# }
+  depends_on = [
+    azurerm_key_vault.trial_keyvault,
+  ]
+}

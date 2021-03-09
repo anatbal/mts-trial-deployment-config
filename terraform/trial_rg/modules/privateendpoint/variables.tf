@@ -26,11 +26,6 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "resource_name" {
-  type        = string
-  description = "The resource name that is connected to the private link."
-}
-
 variable "resource_id" {
   type        = string
   description = "The resource id that is connected to the private link."
@@ -58,19 +53,23 @@ variable "vnet_id" {
   description = "The vnet id."
 }
 
-variable "kv" {
-  type        = bool
-  description = "is related to kv."
-  default     = false
-}
-
-variable "sql" {
-  type        = bool
-  description = "is related to sql."
-  default     = false
+variable "subresource_name" {
+  type = string
+  # https://docs.microsoft.com/en-us/azure/private-link/private-endpoint-overview#private-link-resource
+  description = "The subresource to protect (kv/sql/webapp)"
 }
 
 variable "application" {
   type        = string
   description = "The application this endpoints relates to (workload)."
+}
+
+variable "dns_zone_name" {
+  type        = string
+  description = "DNS zone name for web apps/kv/sqlservers."
+}
+
+variable "dns_zone_id" {
+  type        = string
+  description = "The id of the given dns zone."
 }

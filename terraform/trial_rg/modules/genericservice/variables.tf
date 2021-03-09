@@ -48,7 +48,33 @@ variable "location" {
 }
 
 variable "settings" {
-  type = map(any)
-  default = {}
+  type      = map(any)
+  default   = {}
   sensitive = true
+}
+
+variable "vnet_id" {
+  type        = string
+  description = "The vnet id."
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "The subnet id of the web app."
+}
+
+variable "dns_zone_name" {
+  type        = string
+  description = "DNS zone name for web apps."
+}
+
+variable "dns_zone_id" {
+  type        = string
+  description = "The id of the given dns zone."
+}
+
+variable "enable_private_endpoint" {
+  type        = bool
+  description = "if 'false' then for this web app, private endpoint will NOT be created."
+  default     = true
 }
