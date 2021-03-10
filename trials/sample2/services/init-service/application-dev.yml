@@ -52,6 +52,7 @@ trial:
       permissions:
         - id: create-person
         - id: view-person
+        - id: link-user
         - id: assign-role
     - id: admin
       permissions:
