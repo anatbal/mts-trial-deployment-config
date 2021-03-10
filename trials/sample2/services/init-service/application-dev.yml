@@ -37,12 +37,23 @@ trial:
       roles:
         - superuser
       userAccount: dc32d94e-1ade-4968-b83e-bab949b7e90c
+    - givenName: qacreate
+      familyName: qaadmin
+      prefix: Mr
+      roles:
+        - admin
+      userAccount: d4b73ba8-9d76-408b-b6e1-e3b8953b39e7
   sites:
     - name: CCO
       alias: CCO
       siteType: CCO
   roles:
     - id: superuser
+      permissions:
+        - id: create-person
+        - id: view-person
+        - id: assign-role
+    - id: admin
       permissions:
         - id: create-person
         - id: view-person
