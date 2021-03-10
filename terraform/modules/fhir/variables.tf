@@ -59,17 +59,12 @@ variable "vnet_id" {
   description = "The vnet id."
 }
 
-variable "app_insights_key" {
-  type        = string
-  description = "The instrumentation key of app insights"
-}
-
-variable "sql_dns_zone_name" {
-  type        = string
-  description = "DNS zone name for sql servers."
-}
-
 variable "sql_dns_zone_id" {
   type        = string
   description = "The id of the given dns zone."
+}
+
+variable "app_insights_key" {
+  type        = string
+  description = "The instrumentation key of app insights"
 }

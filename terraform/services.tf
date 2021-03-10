@@ -32,9 +32,7 @@ module "trial_app_service_site" {
   environment         = var.environment
   docker_image        = var.site_image_name
   docker_image_tag    = var.site_image_tag
-  vnet_id             = module.trial_vnet.id
   subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
   dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   settings = merge(
@@ -66,9 +64,7 @@ module "trial_app_service_practitioner" {
   environment         = var.environment
   docker_image        = var.practitioner_image_name
   docker_image_tag    = var.practitioner_image_tag
-  vnet_id             = module.trial_vnet.id
   subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
   dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   # todo use private endpoint
@@ -105,9 +101,7 @@ module "trial_app_service_role" {
   environment         = var.environment
   docker_image        = var.role_image_name
   docker_image_tag    = var.role_image_tag
-  vnet_id             = module.trial_vnet.id
   subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
   dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   settings = merge(
@@ -143,9 +137,7 @@ module "trial_app_service_init" {
   environment         = var.environment
   docker_image        = var.init_service_image_name
   docker_image_tag    = var.init_service_image_tag
-  vnet_id             = module.trial_vnet.id
   subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
   dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   settings = merge(
@@ -185,10 +177,8 @@ module "trial_sc_gateway" {
 
   # These variables are not used due to the fact we don't create a private endpoint
   # for the gateway, but are required by tf
-  vnet_id       = module.trial_vnet.id
-  subnet_id     = module.trial_vnet.endpointsubnet
-  dns_zone_name = module.trial_vnet.webapp_dns_zone_name
-  dns_zone_id   = module.trial_vnet.webapp_dns_zone_id
+  subnet_id   = module.trial_vnet.endpointsubnet
+  dns_zone_id = module.trial_vnet.webapp_dns_zone_id
 
   settings = merge(
     local.common_settings,
@@ -215,9 +205,7 @@ module "trial_sc_discovery" {
   environment         = var.environment
   docker_image        = var.sc_discovery_image_name
   docker_image_tag    = var.sc_discovery_image_tag
-  vnet_id             = module.trial_vnet.id
   subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
   dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   settings = {
@@ -244,9 +232,7 @@ module "trial_sc_config" {
   environment         = var.environment
   docker_image        = var.sc_config_image_name
   docker_image_tag    = var.sc_config_image_tag
-  vnet_id             = module.trial_vnet.id
   subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_name       = module.trial_vnet.webapp_dns_zone_name
   dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
 
   # optted not to use the common settings since it includes a config label that might casue problems here.

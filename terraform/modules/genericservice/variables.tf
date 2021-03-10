@@ -53,19 +53,9 @@ variable "settings" {
   sensitive = true
 }
 
-variable "vnet_id" {
-  type        = string
-  description = "The vnet id."
-}
-
 variable "subnet_id" {
   type        = string
   description = "The subnet id of the web app."
-}
-
-variable "dns_zone_name" {
-  type        = string
-  description = "DNS zone name for web apps."
 }
 
 variable "dns_zone_id" {

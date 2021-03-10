@@ -13,11 +13,6 @@ output "id" {
   description = "The generated vnet id."
 }
 
-output "sql_dns_zone_name" {
-  value       = azurerm_private_dns_zone.sql-endpoint-dns-private-zone.name
-  description = "DNS zone name for sql servers"
-}
-
 output "sql_dns_zone_id" {
   value       = azurerm_private_dns_zone.sql-endpoint-dns-private-zone.id
   description = "The id of the given dns zone."

@@ -9,7 +9,6 @@ resource "azurerm_mssql_server" "sql_server" {
   administrator_login_password = var.sql_pass
   # Block external communication
   public_network_access_enabled = false
-
 }
 
 # DB
@@ -30,10 +29,8 @@ module "private_endpoint" {
   trial_name       = var.trial_name
   rg_name          = var.rg_name
   resource_id      = azurerm_mssql_server.sql_server.id
-  vnet_id          = var.vnet_id
   subnet_id        = var.subnet_id
   subresource_name = "sqlServer"
   application      = var.application
-  dns_zone_name    = var.dns_zone_name
   dns_zone_id      = var.dns_zone_id
 }

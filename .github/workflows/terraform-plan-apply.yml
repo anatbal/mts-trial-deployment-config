@@ -2,8 +2,6 @@ name: Terraform Plan and Apply for Trials
 
 on:
   push:
-    paths-ignore:
-    - 'terraform/shared_rg/**'
 
 jobs:
   prepare-run-matrix:

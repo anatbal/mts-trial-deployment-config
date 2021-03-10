@@ -1,7 +1,11 @@
 variable "trial_name" {
   type        = string
-  description = "Application name. Use only lowercase letters and numbers"
-  default     = "starterterraform"
+  description = "Trial name. Use only lowercase letters and numbers"
+
+  validation {
+    condition     = length(var.trial_name) >= 3 && length(var.trial_name) < 12 && can(regex("[a-z,0-9]", var.trial_name))
+    error_message = "The trial_name must consist of lowercase letters and numbers only."
+  }
 }
 
 variable "environment" {
@@ -16,82 +20,6 @@ variable "location" {
   default     = "uksouth"
 }
 
-variable "site_image_name" {
-  type        = string
-  description = "site image name (fqdn)."
-}
-
-variable "site_image_tag" {
-  type        = string
-  description = "site image tag."
-  default     = "latest"
-}
-
-variable "practitioner_image_name" {
-  type        = string
-  description = "practitioner image name (fqdn)."
-}
-
-variable "practitioner_image_tag" {
-  type        = string
-  description = "practitioner image tag."
-  default     = "latest"
-}
-
-variable "role_image_name" {
-  type        = string
-  description = "role image name (fqdn)."
-}
-
-variable "role_image_tag" {
-  type        = string
-  description = "role image tag."
-  default     = "latest"
-}
-
-variable "init_service_image_name" {
-  type        = string
-  description = "trial configuration service image name (fqdn)."
-}
-
-variable "init_service_image_tag" {
-  type        = string
-  description = "trial configuration service image tag."
-  default     = "latest"
-}
-
-variable "sc_gateway_image_name" {
-  type        = string
-  description = "SC gateway image name."
-}
-
-variable "sc_gateway_image_tag" {
-  type        = string
-  description = "SC gateway image tag."
-  default     = "latest"
-}
-
-variable "sc_discovery_image_name" {
-  type        = string
-  description = "SC discovery image name."
-}
-
-variable "sc_discovery_image_tag" {
-  type        = string
-  description = "SC discovery image tag."
-  default     = "latest"
-}
-
-variable "sc_config_image_name" {
-  type        = string
-  description = "SC config image name."
-}
-
-variable "sc_config_image_tag" {
-  type        = string
-  description = "SC config image tag."
-  default     = "latest"
-}
 
 variable "sc_config_git_uri" {
   type        = string
@@ -129,7 +57,6 @@ variable "init_username" {
 variable "init_password" {
   type        = string
   description = "The init user password."
-  default     = "unknown"
   sensitive   = true
 }
 
@@ -143,5 +70,85 @@ variable "init_client_id" {
 variable "github_ref" {
   type        = string
   description = "The ref that triggered this run. usually a branch name."
-  default     = ""
 }
+
+## Images and Tags
+
+variable "site_image_name" {
+  type        = string
+  description = "site image name (fqdn)."
+}
+
+variable "site_image_tag" {
+  type        = string
+  description = "site image tag."
+  default     = "latest"
+}
+
+variable "practitioner_image_name" {
+  type        = string
+  description = "practitioner image name (fqdn)."
+}
+
+variable "practitioner_image_tag" {
+  type        = string
+  description = "practitioner image tag."
+  default     = "latest"
+}
+
+variable "role_image_name" {
+  type        = string
+  description = "role image name (fqdn)."
+}
+
+variable "role_image_tag" {
+  type        = string
+  description = "role image tag."
+  default     = "latest"
+}
+
+variable "init_service_image_name" {
+  type        = string
+  description = "Init service image name"
+}
+
+variable "init_service_image_tag" {
+  type        = string
+  description = "Init service image tag."
+  default     = "latest"
+}
+
+variable "sc_gateway_image_name" {
+  type        = string
+  description = "SC gateway image name."
+}
+
+variable "sc_gateway_image_tag" {
+  type        = string
+  description = "SC gateway image tag."
+  default     = "latest"
+}
+
+variable "sc_discovery_image_name" {
+  type        = string
+  description = "SC discovery image name."
+}
+
+variable "sc_discovery_image_tag" {
+  type        = string
+  description = "SC discovery image tag."
+  default     = "latest"
+}
+
+variable "sc_config_image_name" {
+  type        = string
+  description = "SC config image name."
+}
+
+variable "sc_config_image_tag" {
+  type        = string
+  description = "SC config image tag."
+  default     = "latest"
+}
+
+# End 'Images and Tags'

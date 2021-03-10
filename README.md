@@ -1,6 +1,6 @@
 # mts-trial-deployment-config
 
-This repository holds MTS resources definitions (shared and per trial) and CONTROLS the actual cloud deployment.
+This repository holds MTS resources definitions and CONTROLS the actual cloud deployment.
 
 ## Using this repository
 

@@ -21,11 +21,9 @@ module "private_endpoint" {
   trial_name       = var.trial_name
   rg_name          = var.rg_name
   resource_id      = azurerm_key_vault.trial_keyvault.id
-  vnet_id          = var.vnet_id
   subnet_id        = var.subnet_id
   subresource_name = "vault"
   application      = "kv"
-  dns_zone_name    = var.dns_zone_name
   dns_zone_id      = var.dns_zone_id
 
   depends_on = [
