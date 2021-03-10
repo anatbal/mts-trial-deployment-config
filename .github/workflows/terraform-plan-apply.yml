@@ -64,7 +64,8 @@ jobs:
 
             # Extract values for the trial
             trial_name=$(jq -r '.name' ./$path)
-            trial_dir=$(dirname $(realpath $path))
+            definition_path=$(realpath $path)
+            trial_dir=$(dirname $definition_path)
 
             # Check that trial name in the json equals to its folder name.
             last_dir_name=$(basename $trial_dir)
@@ -75,7 +76,7 @@ jobs:
             fi
 
             # Prepare the matrix item
-            MatrixItem="{\"trial_name\": \"$trial_name\", \"trial_dir\": \"$trial_dir\",},"
+            MatrixItem="{\"trial_name\": \"$trial_name\", \"trial_dir\": \"$trial_dir\", \"definition_path\": \"$definition_path\",},"
 
             JSON="$JSON$MatrixItem"
           done <<< "$FILES"
@@ -108,6 +109,34 @@ jobs:
       ARM_ACCESS_KEY: ${{secrets.TF_ARM_ACCESS_KEY}}
     steps:
       - uses: actions/checkout@v2
+
+      - name: Validate Config Server settings
+        run: |
+          set -o errexit
+          set -o pipefail
+          set -o nounset
+          # set -o xtrace
+
+          # Validate that the config server properties are set correctly
+          config_label=$(jq -r ".spring_config_label" ${{ matrix.definition_path }})
+          config_search_path=$(jq -r '.spring_cloud.config_server.search_paths | split(",") | .[0]' ${{ matrix.definition_path }})
+
+          echo "fetching the config branch..."
+          git fetch origin ${config_label}
+
+          echo "Try to get a file the config server will need..."
+          set +o errexit
+          git cat-file -e "origin/${config_label}:${config_search_path}/application.yml"
+          return_value=$?
+          set -o errexit
+
+          if [ ${return_value} -eq 0 ]
+          then
+            echo "Folder defined in the search path (${config_search_path}) was found on the label/branch (${config_label})."
+          else
+            echo "ERROR: Spring Cloud Config is likely to fail! Folder defined in the search path (${config_search_path}) does not exist on the label/branch (${config_label})." >&2
+            exit 1
+          fi
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -152,8 +181,6 @@ jobs:
             exit 1
           fi
 
-          definition_path=${{ matrix.trial_dir }}/definition.json
-
           cat ${TFVARS_TEMPLATE} | while read line
           do
               # no need to process comment lines that start with "#", or empty ones.
@@ -164,15 +191,15 @@ jobs:
 
               var_name=${line_array[0]}
               json_path=${line_array[1]}
-              json_value=$(jq -r ${json_path} ${definition_path})
+              json_value=$(jq -r ${json_path} ${{ matrix.definition_path }})
               echo "${var_name}=\"${json_value}\"" >> ${{ matrix.trial_name }}.tfvars
           done
 
           cat ${{ matrix.trial_name }}.tfvars
 
           # extract more values from the definition file
-          echo "tenant_id=$(jq -r '.tenant_id' ${definition_path})" >> $GITHUB_ENV
-          echo "ui_client_id=$(jq -r '.ui_client_id' ${definition_path})" >> $GITHUB_ENV
+          echo "tenant_id=$(jq -r '.tenant_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
+          echo "ui_client_id=$(jq -r '.ui_client_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
 
       # Plan TF
       - name: Terraform plan
