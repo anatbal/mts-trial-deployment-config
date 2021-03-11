@@ -63,3 +63,20 @@ resource "azurerm_app_service" "fhir_server" {
     module.fhir_sql_server,
   ]
 }
+
+module "private_endpoint" {
+  source           = "../privateendpoint"
+  trial_name       = var.trial_name
+  rg_name          = var.rg_name
+  resource_id      = azurerm_app_service.fhir_server.id
+  vnet_id          = var.vnet_id
+  subnet_id        = var.endpointsubnet
+  subresource_name = "sites"
+  application      = "fhir"
+  dns_zone_name    = var.webapp_dns_zone_name
+  dns_zone_id      = var.webapp_dns_zone_id
+
+  depends_on = [
+    azurerm_app_service.fhir_server,
+  ]
+}

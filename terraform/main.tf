@@ -60,6 +60,7 @@ module "fhir_server" {
   endpointsubnet      = module.trial_vnet.endpointsubnet
   app_insights_key    = azurerm_application_insights.app_insights.instrumentation_key
   sql_dns_zone_id     = module.trial_vnet.sql_dns_zone_id
+  webapp_dns_zone_id  = module.trial_vnet.webapp_dns_zone_id
 
   # needs an app service plan and an existing vnet
   depends_on = [

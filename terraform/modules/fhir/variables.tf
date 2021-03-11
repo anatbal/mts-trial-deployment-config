@@ -64,6 +64,11 @@ variable "sql_dns_zone_id" {
   description = "The id of the given dns zone."
 }
 
+variable "webapp_dns_zone_id" {
+  type        = string
+  description = "The id of the given dns zone."
+}
+
 variable "app_insights_key" {
   type        = string
   description = "The instrumentation key of app insights"
