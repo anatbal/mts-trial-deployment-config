@@ -25,7 +25,20 @@ jobs:
           git fetch origin main:localmain
 
           # Gets changed json files excluding the json schema
-          export FILES=$(git diff --name-only localmain | grep .json | grep -v "trial-json-schema" | grep -v "configuration")
+          export FILES=$(git diff --name-only localmain | grep definition.json)
+
+          # if this branch was not marked as a deploy branch, we do not allow
+          # changing any of the 'protected' envs
+          if [[ ${{ github.ref }} == *"deploy"* ]]
+          then
+            echo "Allowed to deploy to protected branches"
+          else
+            if grep -q qa1 "$FILES" || grep -q sample2 "$FILES"
+            then
+              echo "Either you changed a trial by mistake or the branch name is incorrect. use deploy/xxx"
+              exit 1
+            fi
+          fi
 
           echo "Files changed since last commit..."
           echo "$FILES"
