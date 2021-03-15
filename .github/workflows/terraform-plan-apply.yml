@@ -13,7 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Get a list of changed .json files
+      - name: Install yq
+        run: |
+          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.6.1/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      # Get a list of changed .yaml files
       - name: Check changed files
         id: calc_files_diff
         run: |
@@ -24,8 +29,8 @@ jobs:
 
           git fetch origin main:localmain
 
-          # Gets changed json files excluding the json schema
-          export FILES=$(git diff --name-only localmain | grep definition.json)
+          # Gets changed yaml files excluding the json schema
+          export FILES=$(git diff --name-only localmain | grep definition.yml)
 
           # if this branch was not marked as a deploy branch, we do not allow
           # changing any of the 'protected' envs
@@ -46,6 +51,14 @@ jobs:
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$FILES" | sed ':a;N;$!ba;s/\n/%0A/g' )"
 
+      - name: Validate YML
+        id: validate_definiton_yml
+        env:
+          INPUT_SCHEMA: .ci/trial-json-schema.json
+        run: |
+          sudo npm install -g ajv-cli
+          find . -name definition.yml -exec ajv validate -s $INPUT_SCHEMA -d {} \;
+        
       # Create an execution plan, which includes each found file
       - name: Set matrix for TF plan and apply
         id: set-matrix
@@ -74,7 +87,7 @@ jobs:
             echo "current definition file path: $path"
 
             # Extract values for the trial
-            trial_name=$(jq -r '.name' ./$path)
+            trial_name=$(yq eval '.name' ./$path)
             definition_path=$(realpath $path)
             trial_dir=$(dirname $definition_path)
 
@@ -121,6 +134,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install yq
+        run: |
+          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.6.1/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
       - name: Validate Config Server settings
         run: |
           set -o errexit
@@ -129,8 +147,8 @@ jobs:
           # set -o xtrace
 
           # Validate that the config server properties are set correctly
-          config_label=$(jq -r ".spring_config_label" ${{ matrix.definition_path }})
-          config_search_path=$(jq -r '.spring_cloud.config_server.search_paths | split(",") | .[0]' ${{ matrix.definition_path }})
+          config_label=$(yq eval ".spring_config_label" ${{ matrix.definition_path }})
+          config_search_path=$(yq eval '.spring_cloud.config_server.search_paths | split(",") | .[0]' ${{ matrix.definition_path }})
 
           echo "fetching the config branch..."
           git fetch origin ${config_label}
@@ -201,16 +219,16 @@ jobs:
               line_array=(${line//=/ })
 
               var_name=${line_array[0]}
-              json_path=${line_array[1]}
-              json_value=$(jq -r ${json_path} ${{ matrix.definition_path }})
-              echo "${var_name}=\"${json_value}\"" >> ${{ matrix.trial_name }}.tfvars
+              property_path=${line_array[1]}
+              property_value=$(yq eval ${property_path} ${{ matrix.definition_path }})
+              echo "${var_name}=\"${property_value}\"" >> ${{ matrix.trial_name }}.tfvars
           done
 
           cat ${{ matrix.trial_name }}.tfvars
 
           # extract more values from the definition file
-          echo "tenant_id=$(jq -r '.tenant_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
-          echo "ui_client_id=$(jq -r '.ui_client_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
+          echo "tenant_id=$(yq eval '.tenant_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
+          echo "ui_client_id=$(yq eval '.ui_client_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
 
       # Plan TF
       - name: Terraform plan
