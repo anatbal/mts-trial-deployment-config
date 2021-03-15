@@ -34,11 +34,12 @@ jobs:
 
           # if this branch was not marked as a deploy branch, we do not allow
           # changing any of the 'protected' envs
-          if [[ ${{ github.ref }} == *"deploy"* ]]
+          if [[ ${{ github.ref }} == *"/deploy/"* ]]
           then
             echo "Allowed to deploy to protected branches"
           else
-            if grep -q qa1 "$FILES" || grep -q sample2 "$FILES"
+            echo $FILES >> filesLst
+            if grep -q qa1 filesLst || grep -q sample2 filesLst
             then
               echo "Either you changed a trial by mistake or the branch name is incorrect. use deploy/xxx"
               exit 1
