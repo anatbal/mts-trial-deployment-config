@@ -1,6 +1,8 @@
 server:
   error:
     include-message: always
+fhir:
+  resultCount: 50
 
 ---
 # this is the default 'development' trial site config - CCO/REGION/COUNTRY/LCC
