@@ -1,0 +1,61 @@
+server:
+  error:
+    include-message: always
+
+logging:
+  level:
+    uk:
+      ac:
+        ox:
+          ndph:
+            mts: DEBUG
+    org:
+      springframework:
+        web:
+          reactive:
+            function:
+              client:
+                ExchangeFunctions: TRACE
+delay-start: 120
+
+http:
+  readTimeOutMs: 30000
+  connectTimeOutMs: 3000
+---
+trial:
+  trialName: "My Dev Sample Trial"
+  persons:
+    - givenName: Bootstrap
+      familyName: User
+      prefix: Mr
+      roles:
+        - superuser
+      userAccount: 5d995fd0-a1ff-4b2c-ba93-238ba9e349b1
+    - givenName: automation
+      familyName: tester
+      prefix: Mr
+      roles:
+        - superuser
+      userAccount: dc32d94e-1ade-4968-b83e-bab949b7e90c
+    - givenName: qacreate
+      familyName: qaadmin
+      prefix: Mr
+      roles:
+        - admin
+      userAccount: d4b73ba8-9d76-408b-b6e1-e3b8953b39e7
+  sites:
+    - name: CCO
+      alias: CCO
+      siteType: CCO
+  roles:
+    - id: superuser
+      permissions:
+        - id: create-person
+        - id: view-person
+    - id: admin
+      permissions:
+        - id: create-person
+        - id: view-person
+    - id: country-admin
+      permissions:
+        - id: create-person
