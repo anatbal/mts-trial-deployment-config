@@ -35,7 +35,7 @@ jobs:
           # We may be passed the path of a specific trial definition if the deployment 
           # was manually triggered via workflow_dispatch, rather than by PR. 
           # If not passed, calculate changed files as normal.
-          if [[ -z "${{github.event.inputs.trialDefinitionPath}}}" ]]; then
+          if [[ -z "${{github.event.inputs.trialDefinitionPath}}" ]]; then
             git fetch origin main:localmain
 
             # Gets changed yaml files excluding the json schema
