@@ -3,9 +3,11 @@ management:
     web:
       exposure:
         include: "*"
+  health:
+    probes:
+      enabled: true
 
 #security config
-
 azure:
   activedirectory:
     client-id: f352ce15-0142-4dfa-8e18-801ee6391557
