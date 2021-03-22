@@ -58,10 +58,6 @@ resource "azurerm_app_service" "fhir_server" {
     WEBSITE_VNET_ROUTE_ALL                            = 1
     ApplicationInsights__InstrumentationKey           = var.app_insights_key
   }
-
-  depends_on = [
-    module.fhir_sql_server,
-  ]
 }
 
 module "private_endpoint" {
@@ -73,10 +69,6 @@ module "private_endpoint" {
   subresource_name = "sites"
   application      = "fhir"
   dns_zone_id      = var.webapp_dns_zone_id
-
-  depends_on = [
-    azurerm_app_service.fhir_server,
-  ]
 }
 
 resource "azurerm_monitor_diagnostic_setting" "fhir_diag" {

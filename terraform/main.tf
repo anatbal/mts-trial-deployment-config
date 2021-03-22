@@ -21,10 +21,6 @@ resource "azurerm_app_service_plan" "apps_service_plan" {
     tier = "PremiumV2"
     size = "P1v2"
   }
-
-  depends_on = [
-    azurerm_resource_group.trial_rg,
-  ]
 }
 
 # Application insights
@@ -33,10 +29,6 @@ resource "azurerm_application_insights" "app_insights" {
   location            = azurerm_resource_group.trial_rg.location
   resource_group_name = azurerm_resource_group.trial_rg.name
   application_type    = "web"
-
-  depends_on = [
-    azurerm_resource_group.trial_rg,
-  ]
 }
 
 resource "azurerm_log_analytics_workspace" "monitor_workspace" {
@@ -47,53 +39,18 @@ resource "azurerm_log_analytics_workspace" "monitor_workspace" {
   retention_in_days   = 30
 }
 
-# vnet
-module "trial_vnet" {
-  source     = "./modules/vnet"
-  trial_name = var.trial_name
-  rg_name    = azurerm_resource_group.trial_rg.name
-
-  depends_on = [
-    azurerm_resource_group.trial_rg,
-  ]
-}
-
 # Fhir server (including sql server)
 module "fhir_server" {
   source               = "./modules/fhir"
   trial_name           = var.trial_name
   rg_name              = azurerm_resource_group.trial_rg.name
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
-  vnet_id              = module.trial_vnet.id
-  endpointsubnet       = module.trial_vnet.endpointsubnet
+  vnet_id              = azurerm_virtual_network.vnet.id
+  endpointsubnet       = azurerm_subnet.endpointsubnet.id
   app_insights_key     = azurerm_application_insights.app_insights.instrumentation_key
-  sql_dns_zone_id      = module.trial_vnet.sql_dns_zone_id
-  webapp_dns_zone_id   = module.trial_vnet.webapp_dns_zone_id
+  sql_dns_zone_id      = azurerm_private_dns_zone.sql-endpoint-dns-private-zone.id
+  webapp_dns_zone_id   = azurerm_private_dns_zone.web-app-endpoint-dns-private-zone.id
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
-
-  # needs an app service plan and an existing vnet
-  depends_on = [
-    azurerm_app_service_plan.apps_service_plan,
-    azurerm_application_insights.app_insights,
-    module.trial_vnet,
-  ]
-}
-
-# Key vault
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
-# TODO: HAS TO BE UNIQUE. https://ndph-arts.atlassian.net/browse/ARTS-367
-module "trial_keyvault" {
-  source      = "./modules/kv"
-  trial_name  = var.trial_name
-  environment = var.environment
-  rg_name     = azurerm_resource_group.trial_rg.name
-  tenant_id   = "99804659-431f-48fa-84c1-65c9609de05b"
-  subnet_id   = module.trial_vnet.endpointsubnet
-  dns_zone_id = module.trial_vnet.kv_dns_zone_id
-
-  depends_on = [
-    module.trial_vnet,
-  ]
 }
 
 # Prepare an array of service ids so we can iterate on those and add them to the vnet
@@ -111,10 +68,9 @@ locals {
 resource "azurerm_app_service_virtual_network_swift_connection" "vnet_app_service_conn" {
   count          = length(local.service_ids)
   app_service_id = local.service_ids[count.index]
-  subnet_id      = module.trial_vnet.integrationsubnet
+  subnet_id      = azurerm_subnet.integrationsubnet.id
 
   depends_on = [
-    module.trial_vnet,
     module.fhir_server,
     module.trial_app_service_site,
     module.trial_app_service_role,
@@ -141,13 +97,13 @@ module "roles_sql_server" {
   source      = "./modules/sql"
   trial_name  = var.trial_name
   rg_name     = azurerm_resource_group.trial_rg.name
-  subnet_id   = module.trial_vnet.endpointsubnet
+  subnet_id   = azurerm_subnet.endpointsubnet.id
   db_name     = "ROLES"
   app_name    = "roles"
   sql_user    = "rolesuser"
   sql_pass    = random_password.roles_sql_password.result
   application = "sql-roles"
-  dns_zone_id = module.trial_vnet.sql_dns_zone_id
+  dns_zone_id = azurerm_private_dns_zone.sql-endpoint-dns-private-zone.id
 }
 
 # Storage account for UI elemenet

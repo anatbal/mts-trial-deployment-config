@@ -151,4 +151,11 @@ variable "sc_config_image_tag" {
   default     = "latest"
 }
 
+variable "keyvault_enabled" {
+  type        = bool
+  description = "Whether a keyvault is required."
+  default     = false
+
+}
+
 # End 'Images and Tags'

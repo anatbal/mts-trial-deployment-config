@@ -42,10 +42,6 @@ module "private_endpoint" {
   subresource_name = "sites"
   application      = var.app_name
   dns_zone_id      = var.dns_zone_id
-
-  depends_on = [
-    azurerm_app_service.generic_service,
-  ]
 }
 
 resource "azurerm_monitor_diagnostic_setting" "app_diag" {
