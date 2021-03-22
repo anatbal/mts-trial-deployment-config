@@ -1,0 +1,61 @@
+# This workflow removes environments if their source branch doesn't exist anymore.
+name: Clean environments
+
+on:
+  # WARNING: This should include just a schedule
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron: "6 * * * *"
+
+jobs:
+  env_clean:
+    name: Clean environments
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # This is CRITICAL since we're making decisions based on branch existence
+          fetch-depth: 0
+      - name: Azure CLI login
+        env:
+          ARM_CLIENT_ID: 2620bfcd-13ee-4f8b-81fd-bd128efdb707
+          ARM_CLIENT_SECRET: ${{secrets.TF_ARM_CLIENT_SECRET}}
+          ARM_SUBSCRIPTION_ID: f3fba52d-c7db-46f8-9e7a-766ca869972e
+          ARM_TENANT_ID: 99804659-431f-48fa-84c1-65c9609de05b
+        run: |
+          az login --service-principal -u ${ARM_CLIENT_ID} -p ${ARM_CLIENT_SECRET} --tenant ${ARM_TENANT_ID}
+          az account set --subscription ${ARM_SUBSCRIPTION_ID}
+      - name: Clean
+        run: |
+          set -o errexit
+          set -o pipefail
+          set -o nounset
+          # set -o xtrace
+
+          az group list --query "[?starts_with(name, 'rg-trial-')].[name, tags.Ref]" -o tsv |
+          while read -r rg_name ref_name; do
+              ref_in_remote="${ref_name/heads/remotes\/origin}"
+              if ! $(git show-ref -q $ref_in_remote)
+              then
+                  if [[ $(az deployment group list --resource-group ${rg_name} --query "[?properties.provisioningState=='Running'] | length(@)") -ne "0" ]]
+                  then
+                    echo "A deployment is already running on resource group (${rg_name}), skipping."
+                    continue
+                  fi
+
+                  # if the rg doesn't have an app service plan, it means the whole rg is ready to be deleted.
+                  if [[ $(az resource list --resource-group ${rg_name} --resource-type Microsoft.Web/serverFarms --query "[] | length(@)") -eq "0" ]]
+                  then
+                      echo "Deleting resource group (${rg_name}) as it's almost empty..."
+                      az group delete --resource-group ${rg_name} --yes --no-wait
+                      continue
+                  fi
+
+                  echo "Emptying resource group (${rg_name}) which will be deleted on next run..."
+                  # This is a trick where we ask ARM to setup the RG with just the VNET, which will delete everytyhing else
+                  # Note that this is due to a bug in Azure that prevents deleting the RG in a single action
+                  az group export --name ${rg_name} --skip-all-params --resource-ids $(az resource list --resource-group ${rg_name} --resource-type "Microsoft.Network/virtualNetworks" --query "[].id" -o tsv) \
+                      | jq -r 'del(.resources[] | select(.type != "Microsoft.Network/virtualNetworks"))' > empty.json
+                  az deployment group create --mode complete --template-file empty.json --resource-group ${rg_name} --no-prompt --no-wait
+              fi
+          done
