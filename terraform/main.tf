@@ -39,6 +39,14 @@ resource "azurerm_application_insights" "app_insights" {
   ]
 }
 
+resource "azurerm_log_analytics_workspace" "monitor_workspace" {
+  name                = "amw-${var.trial_name}-${var.environment}"
+  location            = azurerm_resource_group.trial_rg.location
+  resource_group_name = azurerm_resource_group.trial_rg.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
 # vnet
 module "trial_vnet" {
   source     = "./modules/vnet"
@@ -52,15 +60,16 @@ module "trial_vnet" {
 
 # Fhir server (including sql server)
 module "fhir_server" {
-  source              = "./modules/fhir"
-  trial_name          = var.trial_name
-  rg_name             = azurerm_resource_group.trial_rg.name
-  app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
-  vnet_id             = module.trial_vnet.id
-  endpointsubnet      = module.trial_vnet.endpointsubnet
-  app_insights_key    = azurerm_application_insights.app_insights.instrumentation_key
-  sql_dns_zone_id     = module.trial_vnet.sql_dns_zone_id
-  webapp_dns_zone_id  = module.trial_vnet.webapp_dns_zone_id
+  source               = "./modules/fhir"
+  trial_name           = var.trial_name
+  rg_name              = azurerm_resource_group.trial_rg.name
+  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
+  vnet_id              = module.trial_vnet.id
+  endpointsubnet       = module.trial_vnet.endpointsubnet
+  app_insights_key     = azurerm_application_insights.app_insights.instrumentation_key
+  sql_dns_zone_id      = module.trial_vnet.sql_dns_zone_id
+  webapp_dns_zone_id   = module.trial_vnet.webapp_dns_zone_id
+  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
 
   # needs an app service plan and an existing vnet
   depends_on = [

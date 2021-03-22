@@ -24,16 +24,17 @@ locals {
 
 # Site service
 module "trial_app_service_site" {
-  source              = "./modules/genericservice"
-  app_name            = local.site_name
-  rg_name             = azurerm_resource_group.trial_rg.name
-  app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
-  trial_name          = var.trial_name
-  environment         = var.environment
-  docker_image        = var.site_image_name
-  docker_image_tag    = var.site_image_tag
-  subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
+  source               = "./modules/genericservice"
+  app_name             = local.site_name
+  rg_name              = azurerm_resource_group.trial_rg.name
+  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
+  trial_name           = var.trial_name
+  environment          = var.environment
+  docker_image         = var.site_image_name
+  docker_image_tag     = var.site_image_tag
+  subnet_id            = module.trial_vnet.endpointsubnet
+  dns_zone_id          = module.trial_vnet.webapp_dns_zone_id
+  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
 
   settings = merge(
     local.common_settings,
@@ -56,16 +57,17 @@ module "trial_app_service_site" {
 
 # Practitioner service
 module "trial_app_service_practitioner" {
-  source              = "./modules/genericservice"
-  app_name            = local.practitioner_name
-  rg_name             = azurerm_resource_group.trial_rg.name
-  app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
-  trial_name          = var.trial_name
-  environment         = var.environment
-  docker_image        = var.practitioner_image_name
-  docker_image_tag    = var.practitioner_image_tag
-  subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
+  source               = "./modules/genericservice"
+  app_name             = local.practitioner_name
+  rg_name              = azurerm_resource_group.trial_rg.name
+  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
+  trial_name           = var.trial_name
+  environment          = var.environment
+  docker_image         = var.practitioner_image_name
+  docker_image_tag     = var.practitioner_image_tag
+  subnet_id            = module.trial_vnet.endpointsubnet
+  dns_zone_id          = module.trial_vnet.webapp_dns_zone_id
+  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
 
   # todo use private endpoint
   settings = merge(
@@ -93,16 +95,17 @@ module "trial_app_service_practitioner" {
 
 # Role service
 module "trial_app_service_role" {
-  source              = "./modules/genericservice"
-  app_name            = local.role_name
-  rg_name             = azurerm_resource_group.trial_rg.name
-  app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
-  trial_name          = var.trial_name
-  environment         = var.environment
-  docker_image        = var.role_image_name
-  docker_image_tag    = var.role_image_tag
-  subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
+  source               = "./modules/genericservice"
+  app_name             = local.role_name
+  rg_name              = azurerm_resource_group.trial_rg.name
+  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
+  trial_name           = var.trial_name
+  environment          = var.environment
+  docker_image         = var.role_image_name
+  docker_image_tag     = var.role_image_tag
+  subnet_id            = module.trial_vnet.endpointsubnet
+  dns_zone_id          = module.trial_vnet.webapp_dns_zone_id
+  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
 
   settings = merge(
     local.common_settings,
@@ -129,16 +132,17 @@ module "trial_app_service_role" {
 # init service
 # todo: make 1-time service: ARTS-362
 module "trial_app_service_init" {
-  source              = "./modules/genericservice"
-  app_name            = local.init_name
-  rg_name             = azurerm_resource_group.trial_rg.name
-  app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
-  trial_name          = var.trial_name
-  environment         = var.environment
-  docker_image        = var.init_service_image_name
-  docker_image_tag    = var.init_service_image_tag
-  subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
+  source               = "./modules/genericservice"
+  app_name             = local.init_name
+  rg_name              = azurerm_resource_group.trial_rg.name
+  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
+  trial_name           = var.trial_name
+  environment          = var.environment
+  docker_image         = var.init_service_image_name
+  docker_image_tag     = var.init_service_image_tag
+  subnet_id            = module.trial_vnet.endpointsubnet
+  dns_zone_id          = module.trial_vnet.webapp_dns_zone_id
+  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
 
   settings = merge(
     local.common_settings,
@@ -174,6 +178,7 @@ module "trial_sc_gateway" {
   docker_image            = var.sc_gateway_image_name
   docker_image_tag        = var.sc_gateway_image_tag
   enable_private_endpoint = false
+  monitor_workspace_id    = azurerm_log_analytics_workspace.monitor_workspace.id
 
   # These variables are not used due to the fact we don't create a private endpoint
   # for the gateway, but are required by tf
@@ -197,16 +202,17 @@ module "trial_sc_gateway" {
 }
 
 module "trial_sc_discovery" {
-  source              = "./modules/genericservice"
-  app_name            = local.discovery_name
-  rg_name             = azurerm_resource_group.trial_rg.name
-  app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
-  trial_name          = var.trial_name
-  environment         = var.environment
-  docker_image        = var.sc_discovery_image_name
-  docker_image_tag    = var.sc_discovery_image_tag
-  subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
+  source               = "./modules/genericservice"
+  app_name             = local.discovery_name
+  rg_name              = azurerm_resource_group.trial_rg.name
+  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
+  trial_name           = var.trial_name
+  environment          = var.environment
+  docker_image         = var.sc_discovery_image_name
+  docker_image_tag     = var.sc_discovery_image_tag
+  subnet_id            = module.trial_vnet.endpointsubnet
+  dns_zone_id          = module.trial_vnet.webapp_dns_zone_id
+  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
 
   settings = {
     "SPRING_PROFILES_ACTIVE"                = var.spring_profile
@@ -224,16 +230,17 @@ module "trial_sc_discovery" {
 }
 
 module "trial_sc_config" {
-  source              = "./modules/genericservice"
-  app_name            = local.config_name
-  rg_name             = azurerm_resource_group.trial_rg.name
-  app_service_plan_id = azurerm_app_service_plan.apps_service_plan.id
-  trial_name          = var.trial_name
-  environment         = var.environment
-  docker_image        = var.sc_config_image_name
-  docker_image_tag    = var.sc_config_image_tag
-  subnet_id           = module.trial_vnet.endpointsubnet
-  dns_zone_id         = module.trial_vnet.webapp_dns_zone_id
+  source               = "./modules/genericservice"
+  app_name             = local.config_name
+  rg_name              = azurerm_resource_group.trial_rg.name
+  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
+  trial_name           = var.trial_name
+  environment          = var.environment
+  docker_image         = var.sc_config_image_name
+  docker_image_tag     = var.sc_config_image_tag
+  subnet_id            = module.trial_vnet.endpointsubnet
+  dns_zone_id          = module.trial_vnet.webapp_dns_zone_id
+  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
 
   # optted not to use the common settings since it includes a config label that might casue problems here.
   settings = {

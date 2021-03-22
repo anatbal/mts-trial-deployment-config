@@ -68,3 +68,8 @@ variable "enable_private_endpoint" {
   description = "if 'false' then for this web app, private endpoint will NOT be created."
   default     = true
 }
+
+variable "monitor_workspace_id" {
+  type        = string
+  description = "A LogAnalytics workspace id"
+}
