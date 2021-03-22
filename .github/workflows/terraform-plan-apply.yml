@@ -18,11 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install yq
-        run: |
-          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.6.1/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-
       # Get a list of changed .yaml files
       - name: Check changed files
         id: calc_files_diff
@@ -71,6 +66,11 @@ jobs:
         run: |
           sudo npm install -g ajv-cli
           find . -name definition.yml -exec ajv validate -s $INPUT_SCHEMA -d {} \;
+
+      - name: Install yq
+        run: |
+          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.6.1/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
         
       # Create an execution plan, which includes each found file
       - name: Set matrix for TF plan and apply
@@ -185,6 +185,10 @@ jobs:
         with:
           terraform_wrapper: false
 
+      - name: Terraform Format
+        working-directory: './terraform'
+        run: terraform fmt -check
+
       - name: Terraform Init
         run: terraform init
 
@@ -200,46 +204,26 @@ jobs:
           workspace_name="${{ matrix.trial_name }}-${ref_for_workspace}"
           terraform workspace select ${workspace_name} || terraform workspace new ${workspace_name}
 
-      - name: Terraform Format
-        run: terraform fmt -check
-
       - name: Prepare deployment variables
         env:
-          TFVARS_TEMPLATE: 'tfvars.template'
+          TFVARS_TEMPLATE: 'tfvars.template.yml'
         run: |
           set -o errexit
           set -o pipefail
           set -o nounset
           # set -o xtrace
 
-          # Return 0 if file $1 exists and ending by end of line character, else return 1
-          check_ending_eol() {
-            [[ -s "$1" && -z "$(tail -c 1 "$1")" ]]
-          }
-
-          if ! check_ending_eol ${TFVARS_TEMPLATE}
-          then
-            echo "ERROR: ${TFVARS_TEMPLATE} doesn't exist or doesn't end with new line." >&2
-            exit 1
-          fi
-
-          cat ${TFVARS_TEMPLATE} | while read line
+          # yq doesn't support functions so we convert to json and use jq
+          yq eval -j ${TFVARS_TEMPLATE} | jq -r 'to_entries[] | [.key, .value] | @tsv' |
+          while IFS=$'\t' read -r var_name property_path
           do
-              # no need to process comment lines that start with "#", or empty ones.
-              if [[ $line == \#* ]] || [[ -z "$line" ]]; then continue; fi
-
-              # split the line text with the = char as a separator
-              line_array=(${line//=/ })
-
-              var_name=${line_array[0]}
-              property_path=${line_array[1]}
-              property_value=$(yq eval ${property_path} ${{ matrix.definition_path }})
-              echo "${var_name}=\"${property_value}\"" >> ${{ matrix.trial_name }}.tfvars
+            property_value=$(yq eval ${property_path} ${{ matrix.definition_path }})
+            echo "${var_name}=\"${property_value}\"" >> ${{ matrix.trial_name }}.tfvars
           done
 
           cat ${{ matrix.trial_name }}.tfvars
 
-          # extract more values from the definition file
+          # extract more values from the definition file to inject to the ui resources
           echo "tenant_id=$(yq eval '.tenant_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
           echo "ui_client_id=$(yq eval '.ui_client_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
 
