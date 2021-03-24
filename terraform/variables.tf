@@ -72,6 +72,12 @@ variable "github_ref" {
   description = "The ref that triggered this run. usually a branch name."
 }
 
+variable "init_log_path" {
+  type        = string
+  description = "Path of the init service log in Azure file storage."
+  default     = "/mnt/init"
+}
+
 ## Images and Tags
 
 variable "site_image_name" {
@@ -109,7 +115,7 @@ variable "role_image_tag" {
 
 variable "init_service_image_name" {
   type        = string
-  description = "Init service image name"
+  description = "Init service image name."
 }
 
 variable "init_service_image_tag" {

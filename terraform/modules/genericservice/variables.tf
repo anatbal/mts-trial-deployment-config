@@ -69,6 +69,20 @@ variable "enable_private_endpoint" {
   default     = true
 }
 
+variable "storage_account" {
+  type = object({
+    name         = string
+    type         = string
+    account_name = string
+    share_name   = string
+    access_key   = string
+    mount_path   = string
+  })
+  sensitive   = true
+  description = "(Optional) a list of Storage Accounts blob or file share to mount"
+  default     = null
+}
+
 variable "monitor_workspace_id" {
   type        = string
   description = "A LogAnalytics workspace id"

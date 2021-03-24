@@ -112,8 +112,24 @@ module "trial_app_service_role" {
   ]
 }
 
+resource "azurerm_storage_account" "initstorageaccount" {
+  name                      = "sa${var.trial_name}init${var.environment}"
+  resource_group_name       = azurerm_resource_group.trial_rg.name
+  location                  = azurerm_resource_group.trial_rg.location
+  account_kind              = "StorageV2"
+  account_tier              = "Standard"
+  account_replication_type  = "LRS"
+  enable_https_traffic_only = true
+  allow_blob_public_access  = true
+}
+
+resource "azurerm_storage_share" "initstorageshare" {
+  name                 = "init"
+  storage_account_name = azurerm_storage_account.initstorageaccount.name
+  quota                = 1
+}
+
 # init service
-# todo: make 1-time service: ARTS-362
 module "trial_app_service_init" {
   source               = "./modules/genericservice"
   app_name             = local.init_name
@@ -126,6 +142,14 @@ module "trial_app_service_init" {
   subnet_id            = azurerm_subnet.endpointsubnet.id
   dns_zone_id          = azurerm_private_dns_zone.web-app-endpoint-dns-private-zone.id
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  storage_account = ({
+    "name"         = azurerm_storage_account.initstorageaccount.name
+    "type"         = "AzureFiles"
+    "account_name" = azurerm_storage_account.initstorageaccount.name
+    "share_name"   = azurerm_storage_share.initstorageshare.name
+    "access_key"   = azurerm_storage_account.initstorageaccount.primary_access_key
+    "mount_path"   = var.init_log_path
+  })
 
   settings = merge(
     local.common_settings,
@@ -134,10 +158,15 @@ module "trial_app_service_init" {
       "AZURE_USERNAME"                   = var.init_username
       "AZURE_PASSWORD"                   = var.init_password
       "AZURE_CLIENT_ID"                  = var.init_client_id
+      "PROGRESS_LOG_PATH"                = "${var.init_log_path}/log.txt"
     },
   )
 
   depends_on = [
+    azurerm_app_service_plan.apps_service_plan,
+    azurerm_application_insights.app_insights,
+    azurerm_storage_account.initstorageaccount,
+    azurerm_storage_share.initstorageshare,
     module.trial_sc_config,
     module.trial_sc_discovery,
   ]
