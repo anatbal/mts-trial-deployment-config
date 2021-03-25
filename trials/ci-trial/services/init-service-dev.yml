@@ -62,6 +62,8 @@ trial:
         - id: create-person
         - id: view-person
         - id: assign-role
+        - id: create-site
+        - id: link-user
     - id: admin
       permissions:
         - id: create-person
