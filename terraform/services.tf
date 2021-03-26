@@ -103,6 +103,8 @@ module "trial_app_service_role" {
       "JDBC_DRIVER" = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # TODO: replace with KeyVault reference
       "JDBC_URL" = "jdbc:sqlserver://${module.roles_sql_server.sqlserver_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
+      # since this service does db migrations, interuptting it will render the whole env useless (due to the db "lock").
+      "WEBSITES_CONTAINER_START_TIME_LIMIT" = 600 # default is 230
     },
   )
 
