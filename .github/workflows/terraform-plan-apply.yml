@@ -153,7 +153,6 @@ jobs:
       ARM_CLIENT_SECRET: ${{secrets.TF_ARM_CLIENT_SECRET}}
       ARM_SUBSCRIPTION_ID: f3fba52d-c7db-46f8-9e7a-766ca869972e
       ARM_TENANT_ID: 99804659-431f-48fa-84c1-65c9609de05b
-      ARM_ACCESS_KEY: ${{secrets.TF_ARM_ACCESS_KEY}}
     steps:
       - uses: actions/checkout@v2
 
