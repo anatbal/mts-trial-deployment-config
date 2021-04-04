@@ -1,0 +1,57 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "title" : "Practitioner Config",
+  "type" : "object",
+  "additionalProperties" : true,
+  "properties" : {
+    "mts" : {
+      "$ref" : "#/definitions/Mts"
+    }
+  },
+  "required" : [ "mts" ],
+  "definitions" : {
+    "Mts" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "practitioner" : {
+          "$ref" : "#/definitions/PractitionerConfiguration"
+        }
+      },
+      "required" : [ "practitioner" ]
+    },
+    "PractitionerConfiguration" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PractitionerAttributeConfiguration"
+          }
+        }
+      }
+    },
+    "PractitionerAttributeConfiguration" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "validationRegex" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

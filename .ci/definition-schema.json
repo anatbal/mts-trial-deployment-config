@@ -1,7 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "jsonSchema",
-  "title" : "Trial Config File",
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "title" : "Trial Definition File",
   "type" : "object",
   "additionalProperties" : false,
   "properties" : {
@@ -18,12 +17,6 @@
     "ui_client_id" : {
       "type" : "string"
     },
-    "spring_profile" : {
-      "type" : "string"
-    },
-    "spring_config_label" : {
-      "type" : "string"
-    },
     "site_service" : {
       "$ref" : "#/definitions/Service"
     },
@@ -38,9 +31,15 @@
     },
     "spring_cloud" : {
       "$ref" : "#/definitions/SpringCloud"
+    },
+    "spring_profile" : {
+      "type" : "string"
+    },
+    "spring_config_label" : {
+      "type" : "string"
     }
   },
-  "required" : [ "name", "version", "tenant_id", "ui_client_id", "spring_profile", "spring_config_label", "site_service", "role_service", "practitioner_service", "init_service", "spring_cloud" ],
+  "required" : [ "name", "version", "tenant_id", "ui_client_id", "site_service", "role_service", "practitioner_service", "init_service", "spring_cloud", "spring_profile", "spring_config_label" ],
   "definitions" : {
     "Service" : {
       "type" : "object",

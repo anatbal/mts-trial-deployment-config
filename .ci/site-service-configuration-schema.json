@@ -1,0 +1,90 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "title" : "Site Config",
+  "type" : "object",
+  "additionalProperties" : true,
+  "properties" : {
+    "mts" : {
+      "$ref" : "#/definitions/Mts"
+    }
+  },
+  "required" : [ "mts" ],
+  "definitions" : {
+    "Mts" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "site" : {
+          "$ref" : "#/definitions/SiteConfiguration"
+        },
+        "address" : {
+          "$ref" : "#/definitions/AddressConfiguration"
+        }
+      },
+      "required" : [ "site" ]
+    },
+    "SiteConfiguration" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SiteAttributeConfiguration"
+          }
+        },
+        "custom" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SiteAttributeConfiguration"
+          }
+        },
+        "child" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SiteConfiguration"
+          }
+        }
+      }
+    },
+    "SiteAttributeConfiguration" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "validationRegex" : {
+          "type" : "string"
+        }
+      }
+    },
+    "AddressConfiguration" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "addressType" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SiteAttributeConfiguration"
+          }
+        }
+      }
+    }
+  }
+}

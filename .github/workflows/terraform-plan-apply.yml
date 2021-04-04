@@ -15,13 +15,51 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Validate YML
+      - name: Validate Trial Definition (YML)
         id: validate_definiton_yml
         env:
-          INPUT_SCHEMA: .ci/trial-json-schema.json
+          INPUT_SCHEMA: .ci/definition-schema.json
         run: |
+          set -o errexit
+          set -o pipefail
+          set -o nounset
+
           sudo npm install -g ajv-cli
-          find . -name definition.yml -exec ajv validate -s $INPUT_SCHEMA -d {} \;
+
+          export FILES=$(find . -name 'definition.yml')
+          for FILE in $(echo "$FILES" | sed "s/,/ /g")
+          do
+               ajv validate -s $INPUT_SCHEMA -d "$FILE"
+          done
+
+      - name: Validate micro-services config files
+        id: validate_config_files_yml
+        env:
+          INIT_SCHEMA: .ci/init-service-trial-schema.json
+          PRACTITIONER_SCHEMA: .ci/practitioner-service-configuration-schema.json
+          SITE_SCHEMA: .ci/site-service-configuration-schema.json
+        run: |
+          set -o errexit
+          set -o pipefail
+          set -o nounset
+
+          export FILES=$(find . -name 'init-service-*.yml')
+          for FILE in $(echo "$FILES" | sed "s/,/ /g")
+          do
+               ajv validate -s $INIT_SCHEMA -d "$FILE"
+          done
+
+          export FILES=$(find . -name 'practitioner-service-*.yml')
+          for FILE in $(echo "$FILES" | sed "s/,/ /g")
+          do
+               ajv validate -s $PRACTITIONER_SCHEMA -d "$FILE"
+          done
+
+          export FILES=$(find . -name 'site-service-*.yml')
+          for FILE in $(echo "$FILES" | sed "s/,/ /g")
+          do
+               ajv validate -s $SITE_SCHEMA -d "$FILE"
+          done
 
       - name: Terraform Format
         working-directory: './terraform'

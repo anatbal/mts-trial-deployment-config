@@ -1,0 +1,147 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "title" : "Init Trial Config",
+  "type" : "object",
+  "additionalProperties" : true,
+  "properties" : {
+    "mts" : {
+      "$ref" : "#/definitions/Mts"
+    }
+  },
+  "required" : [ "mts" ],
+  "definitions" : {
+    "Mts" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "trial" : {
+          "$ref" : "#/definitions/Trial"
+        }
+      },
+      "required" : [ "trial" ]
+    },
+    "Trial" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "persons" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Practitioner"
+          }
+        },
+        "sites" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Site"
+          }
+        },
+        "roles" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RoleDTO"
+          }
+        },
+        "trialName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Practitioner" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "prefix" : {
+          "type" : "string"
+        },
+        "givenName" : {
+          "type" : "string"
+        },
+        "familyName" : {
+          "type" : "string"
+        },
+        "roles" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "userAccount" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Site" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "alias" : {
+          "type" : "string"
+        },
+        "siteType" : {
+          "type" : "string"
+        },
+        "address" : {
+          "$ref" : "#/definitions/SiteAddress"
+        }
+      }
+    },
+    "SiteAddress" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "address1" : {
+          "type" : "string"
+        },
+        "address2" : {
+          "type" : "string"
+        },
+        "address3" : {
+          "type" : "string"
+        },
+        "address4" : {
+          "type" : "string"
+        },
+        "address5" : {
+          "type" : "string"
+        },
+        "city" : {
+          "type" : "string"
+        },
+        "country" : {
+          "type" : "string"
+        },
+        "postcode" : {
+          "type" : "string"
+        }
+      }
+    },
+    "RoleDTO" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "permissions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PermissionDTO"
+          }
+        }
+      }
+    },
+    "PermissionDTO" : {
+      "type" : "object",
+      "additionalProperties" : false,
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}
