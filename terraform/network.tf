@@ -19,6 +19,10 @@ resource "azurerm_subnet" "integrationsubnet" {
       name = "Microsoft.Web/serverFarms"
     }
   }
+
+  lifecycle {
+    ignore_changes = [delegation, ]
+  }
 }
 
 ## endpoint subnet
@@ -34,6 +38,7 @@ resource "azurerm_subnet" "endpointsubnet" {
 # Create a Resource's Private DNS Zone
 resource "azurerm_private_dns_zone" "kv-endpoint-dns-private-zone" {
   # https://docs.microsoft.com/en-us/azure/architecture/example-scenario/private-web-app/private-web-app#dns-configured-on-app-service
+  count               = var.keyvault_enabled == true ? 1 : 0
   name                = "privatelink.vault.azure.net"
   resource_group_name = azurerm_resource_group.trial_rg.name
 }
@@ -63,9 +68,10 @@ resource "azurerm_private_dns_zone_virtual_network_link" "sql-dns-zone-to-vnet-l
 
 # Create a Private DNS to VNET link
 resource "azurerm_private_dns_zone_virtual_network_link" "kv-dns-zone-to-vnet-link" {
+  count                 = var.keyvault_enabled == true ? 1 : 0
   name                  = "kv-vnet-link"
   resource_group_name   = azurerm_resource_group.trial_rg.name
-  private_dns_zone_name = azurerm_private_dns_zone.kv-endpoint-dns-private-zone.name
+  private_dns_zone_name = element(concat(azurerm_private_dns_zone.kv-endpoint-dns-private-zone.*.name, list("")), 0)
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 

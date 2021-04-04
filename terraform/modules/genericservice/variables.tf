@@ -1,12 +1,6 @@
 variable "rg_name" {
   type        = string
   description = "The Resource group where this appservice will be deployed"
-
-  validation {
-    # https://github.com/toddkitta/azure-content/blob/master/articles/guidance/guidance-naming-conventions.md
-    condition     = length(var.rg_name) > 3 && length(var.rg_name) < 64 && can(regex("[a-z,0-9,-,_]", var.rg_name))
-    error_message = "The rg_name must consist of lowercase letters, numbers underscores, and hyphens only."
-  }
 }
 
 variable "app_service_plan_id" {
@@ -41,12 +35,6 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "location" {
-  type        = string
-  description = "Azure region where to create resources."
-  default     = "uksouth"
-}
-
 variable "settings" {
   type      = map(any)
   default   = {}
@@ -66,7 +54,6 @@ variable "dns_zone_id" {
 variable "enable_private_endpoint" {
   type        = bool
   description = "if 'false' then for this web app, private endpoint will NOT be created."
-  default     = true
 }
 
 variable "storage_account" {
@@ -86,4 +73,22 @@ variable "storage_account" {
 variable "monitor_workspace_id" {
   type        = string
   description = "A LogAnalytics workspace id"
+}
+
+variable "integration_subnet_id" {
+  type = string
+}
+
+variable "identity_type" {
+  type    = string
+  default = ""
+}
+
+variable "location" {
+  type = string
+}
+
+variable "always_on" {
+  type    = bool
+  default = true
 }

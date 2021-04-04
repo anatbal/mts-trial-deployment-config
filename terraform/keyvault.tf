@@ -21,14 +21,16 @@ resource "azurerm_key_vault" "trial_keyvault" {
 
 # Connect KV to a new private endpoint
 module "private_endpoint" {
-  count      = var.keyvault_enabled == true ? 1 : 0
+  count      = var.keyvault_enabled && var.enable_private_endpoint == true ? 1 : 0
   source     = "./modules/privateendpoint"
   trial_name = var.trial_name
   rg_name    = azurerm_resource_group.trial_rg.name
+  location   = var.location
   # the following expression is a workaround since the keyvault might not exist and TF doesn't know to handle that.
   resource_id      = element(concat(azurerm_key_vault.trial_keyvault.*.id, list("")), 0)
   subnet_id        = azurerm_subnet.endpointsubnet.id
   subresource_name = "vault"
   application      = "kv"
-  dns_zone_id      = azurerm_private_dns_zone.kv-endpoint-dns-private-zone.id
+  dns_zone_id      = element(concat(azurerm_private_dns_zone.kv-endpoint-dns-private-zone.*.id, list("")), 0)
+  environment      = var.environment
 }

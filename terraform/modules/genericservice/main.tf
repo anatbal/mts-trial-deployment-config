@@ -14,11 +14,14 @@ resource "azurerm_app_service" "generic_service" {
 
   site_config {
     linux_fx_version = "DOCKER|${var.docker_image}:${var.docker_image_tag}"
-    always_on        = true
+    always_on        = var.always_on
   }
 
-  identity {
-    type = "SystemAssigned"
+  dynamic "identity" {
+    for_each = var.identity_type != "" ? [1] : []
+    content {
+      type = var.identity_type
+    }
   }
 
   logs {
@@ -49,17 +52,24 @@ resource "azurerm_app_service" "generic_service" {
   }
 }
 
-# count = 0, if this is the gateway and no private endpoint is needed
 module "private_endpoint" {
   count            = var.enable_private_endpoint == true ? 1 : 0
   source           = "../privateendpoint"
   trial_name       = var.trial_name
   rg_name          = var.rg_name
+  location         = var.location
   resource_id      = azurerm_app_service.generic_service.id
   subnet_id        = var.subnet_id
   subresource_name = "sites"
   application      = var.app_name
   dns_zone_id      = var.dns_zone_id
+  environment      = var.environment
+}
+
+resource "azurerm_app_service_virtual_network_swift_connection" "vnet_app_service_conn" {
+  count          = var.enable_private_endpoint == true ? 1 : 0
+  app_service_id = azurerm_app_service.generic_service.id
+  subnet_id      = var.integration_subnet_id
 }
 
 resource "azurerm_monitor_diagnostic_setting" "app_diag" {
@@ -98,5 +108,9 @@ resource "azurerm_monitor_diagnostic_setting" "app_diag" {
 
   metric {
     category = "AllMetrics"
+  }
+
+  lifecycle {
+    ignore_changes = [log, metric]
   }
 }

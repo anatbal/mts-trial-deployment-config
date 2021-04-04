@@ -17,6 +17,7 @@ resource "azurerm_private_endpoint" "private_endpoint" {
   }
 }
 
+# WHY do we need this?
 # Resource's Private Endpoint Connecton
 data "azurerm_private_endpoint_connection" "endpoint-connection" {
   depends_on          = [azurerm_private_endpoint.private_endpoint]

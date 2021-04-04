@@ -1,16 +1,15 @@
-output "sqlserver_name" {
-  value       = azurerm_mssql_server.sql_server.name
-  description = "The generated sql server name."
+output "server_fqdn" {
+  value       = azurerm_mssql_server.sql_server.fully_qualified_domain_name
+  description = "The fully qualified domain name of the server."
 }
 
 output "db_user" {
   value       = azurerm_mssql_server.sql_server.administrator_login
-  description = "The password for logging in to the database."
-  sensitive   = true
+  description = "The admin username for the server."
 }
 
 output "db_password" {
   value       = azurerm_mssql_server.sql_server.administrator_login_password
-  description = "The password for logging in to the database."
+  description = "The admin password for the server."
   sensitive   = true
 }
