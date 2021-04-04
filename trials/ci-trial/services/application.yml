@@ -1,8 +1,5 @@
+# GLOBAL config file - all settings will be inherited by services working with the config-server
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
   health:
     probes:
       enabled: true
@@ -12,6 +9,8 @@ azure:
   activedirectory:
     client-id: fa5cde1d-d6f8-4d13-9fa4-4d7a374cb290
     session-stateless: true
+
+# TODO: remove the routes once https://ndph-arts.atlassian.net/browse/ARTS-636 is done
 practitioner:
   service:
     endpoint:
@@ -30,6 +29,3 @@ site:
       sites: /sites
     name: site-service
     uri: http://site-service
-spring:
-  main:
-    allow-bean-definition-overriding: true

@@ -1,6 +1,10 @@
 server:
   error:
     include-message: always
+spring:
+  main:
+    # Required for the security package
+    allow-bean-definition-overriding: true
 fhir:
   resultCount: 50
 

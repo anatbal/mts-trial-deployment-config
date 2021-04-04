@@ -8,6 +8,9 @@ spring:
       ddl-auto: none
   hateoas:
     use-hal-as-default-json-media-type: false
+  main:
+    # Required for the security package
+    allow-bean-definition-overriding: true
 server:
   error:
     include-message: always
