@@ -4,6 +4,15 @@ locals {
   discovery_name = "as-${var.trial_name}-sc-discovery-${var.environment}"
   config_name    = "as-${var.trial_name}-sc-config-${var.environment}"
   gateway_name   = "as-${var.trial_name}-sc-gateway-${var.environment}"
+  common_springcloud_settings = {
+    "SERVER_PORT"                           = 80
+    "WEBSITES_PORT"                         = 80
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.app_insights.connection_string
+    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"  = "${module.trial_sc_discovery.hostname}/eureka/"
+    "SPRING_PROFILES_ACTIVE"                = var.spring_profile
+    "WEBSITE_DNS_SERVER"                    = "168.63.129.16"
+    "WEBSITE_VNET_ROUTE_ALL"                = 1
+  }
 }
 
 module "trial_sc_discovery" {
@@ -27,6 +36,8 @@ module "trial_sc_discovery" {
     "SPRING_PROFILES_ACTIVE"                = var.spring_profile
     "SERVER_PORT"                           = 80
     "WEBSITES_PORT"                         = 80
+    "WEBSITE_DNS_SERVER"                    = "168.63.129.16"
+    "WEBSITE_VNET_ROUTE_ALL"                = 1
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.app_insights.connection_string
     "EUREKA_ENVIRONMENT"                    = var.environment # for a label in the eureka status screen
   }
@@ -49,19 +60,14 @@ module "trial_sc_config" {
   dns_zone_id             = azurerm_private_dns_zone.web-app-endpoint-dns-private-zone.id
   integration_subnet_id   = azurerm_subnet.integrationsubnet.id
 
-  # optted not to use the common settings since it includes a config label that might cause problems here.
-  settings = {
-    "EUREKA_INSTANCE_HOSTNAME"                   = "${local.config_name}.azurewebsites.net"
-    "SPRING_PROFILES_ACTIVE"                     = var.spring_profile
-    "SPRING_CLOUD_CONFIG_SERVER_GIT_URI"         = var.sc_config_git_uri
-    "SPRING_CLOUD_CONFIG_SERVER_GIT_SEARCHPATHS" = var.sc_config_search_paths
-    "SERVER_PORT"                                = 80
-    "WEBSITES_PORT"                              = 80
-    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"       = "${module.trial_sc_discovery.hostname}/eureka/"
-    "APPLICATIONINSIGHTS_CONNECTION_STRING"      = azurerm_application_insights.app_insights.connection_string
-    "WEBSITE_DNS_SERVER"                         = "168.63.129.16"
-    "WEBSITE_VNET_ROUTE_ALL"                     = 1
-  }
+  settings = merge(
+    local.common_springcloud_settings,
+    {
+      "EUREKA_INSTANCE_HOSTNAME"                   = "${local.config_name}.azurewebsites.net"
+      "SPRING_CLOUD_CONFIG_SERVER_GIT_URI"         = var.sc_config_git_uri
+      "SPRING_CLOUD_CONFIG_SERVER_GIT_SEARCHPATHS" = var.sc_config_search_paths
+    },
+  )
 
   depends_on = [
     module.trial_sc_discovery,
@@ -87,15 +93,13 @@ module "trial_sc_gateway" {
   dns_zone_id           = azurerm_private_dns_zone.web-app-endpoint-dns-private-zone.id
   integration_subnet_id = azurerm_subnet.integrationsubnet.id
 
-  settings = {
-    "SERVER_PORT"                           = 80
-    "WEBSITES_PORT"                         = 80
-    "SPRING_PROFILES_ACTIVE"                = var.spring_profile
-    "SPRING_CLOUD_CONFIG_LABEL"             = var.spring_config_label
-    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.app_insights.connection_string
-    "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"  = "${module.trial_sc_discovery.hostname}/eureka/"
-    "EUREKA_INSTANCE_HOSTNAME"              = "${local.gateway_name}.azurewebsites.net"
-  }
+  settings = merge(
+    local.common_springcloud_settings,
+    {
+      "EUREKA_INSTANCE_HOSTNAME"  = "${local.gateway_name}.azurewebsites.net"
+      "SPRING_CLOUD_CONFIG_LABEL" = var.spring_config_label
+    },
+  )
 
   depends_on = [
     module.trial_sc_config,

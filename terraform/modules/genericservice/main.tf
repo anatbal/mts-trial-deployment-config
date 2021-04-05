@@ -66,8 +66,8 @@ module "private_endpoint" {
   environment      = var.environment
 }
 
+# this allows the app service to reach other azure resources over the private network (egress)
 resource "azurerm_app_service_virtual_network_swift_connection" "vnet_app_service_conn" {
-  count          = var.enable_private_endpoint == true ? 1 : 0
   app_service_id = azurerm_app_service.generic_service.id
   subnet_id      = var.integration_subnet_id
 }
