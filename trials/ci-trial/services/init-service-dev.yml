@@ -16,7 +16,7 @@ logging:
             function:
               client:
                 ExchangeFunctions: TRACE
-delay-start: 120
+delay-start: 10
 
 http:
   readTimeOutMs: 30000
