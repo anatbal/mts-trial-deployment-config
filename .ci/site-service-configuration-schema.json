@@ -28,16 +28,23 @@
       "additionalProperties" : false,
       "properties" : {
         "name" : {
-          "type" : "string"
+          "type" : "string",
+          "pattern" : "^.*\\S+.*$",
+          "minLength" : 1
         },
         "displayName" : {
-          "type" : "string"
+          "type" : "string",
+          "pattern" : "^.*\\S+.*$",
+          "minLength" : 1
         },
         "type" : {
-          "type" : "string"
+          "type" : "string",
+          "pattern" : "^.*\\S+.*$",
+          "minLength" : 1
         },
         "attributes" : {
           "type" : "array",
+          "minItems" : 1,
           "items" : {
             "$ref" : "#/definitions/SiteAttributeConfiguration"
           }
@@ -54,25 +61,31 @@
             "$ref" : "#/definitions/SiteConfiguration"
           }
         }
-      }
+      },
+      "required" : [ "name", "displayName", "type", "attributes" ]
     },
     "SiteAttributeConfiguration" : {
       "type" : "object",
       "additionalProperties" : false,
       "properties" : {
         "name" : {
-          "type" : "string"
+          "type" : "string",
+          "pattern" : "^.*\\S+.*$",
+          "minLength" : 1
         },
         "type" : {
           "type" : "string"
         },
         "displayName" : {
-          "type" : "string"
+          "type" : "string",
+          "pattern" : "^.*\\S+.*$",
+          "minLength" : 1
         },
         "validationRegex" : {
           "type" : "string"
         }
-      }
+      },
+      "required" : [ "name", "displayName" ]
     },
     "AddressConfiguration" : {
       "type" : "object",
