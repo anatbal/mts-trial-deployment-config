@@ -310,6 +310,7 @@ jobs:
 
           ## DO NOT DELETE ##
           # mask this value so this sensitive data won't be logged.
+          echo "::add-mask::$init_storage_conn_string"
           echo "::add-mask::$ui_storage_conn_string"
 
       # Get release zip file
