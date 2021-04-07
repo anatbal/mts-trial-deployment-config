@@ -10,7 +10,7 @@ management:
 #security config
 azure:
   activedirectory:
-    client-id: f352ce15-0142-4dfa-8e18-801ee6391557
+    client-id: fa5cde1d-d6f8-4d13-9fa4-4d7a374cb290
     session-stateless: true
 practitioner:
   service:

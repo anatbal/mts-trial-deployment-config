@@ -12,7 +12,6 @@ locals {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.app_insights.connection_string
     "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"  = "${module.trial_sc_discovery.hostname}/eureka/"
     # TODO: try to move back to a managed identity
-    "INIT_SERVICE_IDENTITY"  = "e6fd67af-ef25-4a4b-af7c-0ed8a7bd40cf" # module.trial_app_service_init.identity
     "WEBSITE_DNS_SERVER"     = "168.63.129.16"
     "WEBSITE_VNET_ROUTE_ALL" = 1
   }
@@ -200,9 +199,6 @@ module "trial_app_service_init" {
     local.common_settings,
     {
       "SPRING_MAIN_WEB_APPLICATION_TYPE" = "" # brings up the spring web app despite being a console app
-      "AZURE_USERNAME"                   = var.init_username
-      "AZURE_PASSWORD"                   = var.init_password
-      "AZURE_CLIENT_ID"                  = var.init_client_id
       "PROGRESS_LOG_PATH"                = "${var.init_log_path}/log.txt"
     },
   )
