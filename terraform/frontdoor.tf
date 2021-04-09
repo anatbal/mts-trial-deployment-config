@@ -2,12 +2,12 @@ locals {
   api_backend_pool_name     = "fd-${var.trial_name}-apipool-${var.environment}"
   api_backend_balancer_name = "fd-${var.trial_name}-apibalancer-${var.environment}"
   api_frontend_endpoint     = "fd-${var.trial_name}-apiendpoint-${var.environment}"
-  api_backend_health_probe = "fd-${var.trial_name}-apihealth-${var.environment}"
-  ui_backend_pool_name     = "fd-${var.trial_name}-uipool-${var.environment}"
-  ui_backend_balancer_name = "fd-${var.trial_name}-uibalancer-${var.environment}"
-  frontend_endpoint     = "fd-${var.trial_name}-endpoint-${var.environment}"
-  ui_backend_health_probe = "fd-${var.trial_name}-uihealth-${var.environment}"
-  storage_account_name = "sa${var.trial_name}ui${var.environment}"
+  api_backend_health_probe  = "fd-${var.trial_name}-apihealth-${var.environment}"
+  ui_backend_pool_name      = "fd-${var.trial_name}-uipool-${var.environment}"
+  ui_backend_balancer_name  = "fd-${var.trial_name}-uibalancer-${var.environment}"
+  frontend_endpoint         = "fd-${var.trial_name}-endpoint-${var.environment}"
+  ui_backend_health_probe   = "fd-${var.trial_name}-uihealth-${var.environment}"
+  storage_account_name      = "sa${var.trial_name}ui${var.environment}"
 }
 
 resource "azurerm_frontdoor" "frontdoor" {
@@ -24,8 +24,8 @@ resource "azurerm_frontdoor" "frontdoor" {
       forwarding_protocol = "MatchRequest"
       backend_pool_name   = local.ui_backend_pool_name
     }
-  }  
-  
+  }
+
   routing_rule {
     name               = "fd-${var.trial_name}-apirouting-${var.environment}"
     accepted_protocols = ["Https"]
@@ -36,14 +36,16 @@ resource "azurerm_frontdoor" "frontdoor" {
       backend_pool_name   = local.api_backend_pool_name
     }
   }
-  
-  # UI routing
+
+  ## UI routing
   backend_pool_load_balancing {
     name = local.ui_backend_balancer_name
   }
+
   backend_pool_health_probe {
     name = local.ui_backend_health_probe
   }
+
   backend_pool {
     name = "fd-${var.trial_name}-uipool-${var.environment}"
     backend {
@@ -52,19 +54,19 @@ resource "azurerm_frontdoor" "frontdoor" {
       http_port   = 80
       https_port  = 443
     }
-
     load_balancing_name = local.ui_backend_balancer_name
     health_probe_name   = local.ui_backend_health_probe
   }
 
-
-  # API routing
+  ## API routing
   backend_pool_load_balancing {
     name = local.api_backend_balancer_name
   }
+
   backend_pool_health_probe {
     name = local.api_backend_health_probe
   }
+
   backend_pool {
     name = "fd-${var.trial_name}-apipool-${var.environment}"
     backend {
