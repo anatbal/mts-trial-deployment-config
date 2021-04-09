@@ -70,8 +70,8 @@ resource "azurerm_frontdoor" "frontdoor" {
   backend_pool {
     name = "fd-${var.trial_name}-apipool-${var.environment}"
     backend {
-      host_header = module.trial_sc_gateway.hostname
-      address     = module.trial_sc_gateway.hostname
+      host_header = "as-${var.trial_name}-sc-gateway-${var.environment}"
+      address     = "as-${var.trial_name}-sc-gateway-${var.environment}"
       http_port   = 80
       https_port  = 443
     }
