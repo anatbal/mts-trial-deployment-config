@@ -22,3 +22,6 @@ output "init_storage_share_name" {
   sensitive   = true
 }
 
+output "init_service_identity" {
+  value = module.trial_app_service_init.identity
+}

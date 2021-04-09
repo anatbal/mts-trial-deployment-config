@@ -11,3 +11,7 @@ output "hostname" {
 output "identity" {
   value = var.identity_type == "" ? "" : azurerm_app_service.generic_service.identity[0].principal_id
 }
+
+output "name" {
+  value = azurerm_app_service.generic_service.name
+}
