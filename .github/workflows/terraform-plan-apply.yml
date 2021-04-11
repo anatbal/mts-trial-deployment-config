@@ -90,7 +90,7 @@ jobs:
             git fetch origin main:localmain
 
             # Gets changed yaml files excluding the json schema
-            export FILES=$(git diff --name-only localmain | grep definition.yml)
+            export FILES=$(git diff --diff-filter ACMR --name-only localmain | grep definition.yml)
 
             # if this branch was not marked as a deploy branch, we do not allow
             # changing any of the 'protected' envs
@@ -99,7 +99,7 @@ jobs:
               echo "Allowed to deploy to protected branches"
             else
               echo $FILES >> filesLst
-              if grep -q qa1 filesLst || grep -q sample2 filesLst
+              if grep -q qa2 filesLst
               then
                 echo "Either you changed a trial by mistake or the branch name is incorrect. use deploy/xxx"
                 exit 1
