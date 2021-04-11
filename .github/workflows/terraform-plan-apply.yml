@@ -90,7 +90,7 @@ jobs:
             git fetch origin main:localmain
 
             # Gets changed yaml files excluding the json schema
-            export FILES=$(git diff --name-only localmain | grep definition.yml)
+            export FILES=$(git diff --diff-filter ACMR --name-only localmain | grep definition.yml)
 
             # if this branch was not marked as a deploy branch, we do not allow
             # changing any of the 'protected' envs
