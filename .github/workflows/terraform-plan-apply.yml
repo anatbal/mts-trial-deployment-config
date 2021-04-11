@@ -99,7 +99,7 @@ jobs:
               echo "Allowed to deploy to protected branches"
             else
               echo $FILES >> filesLst
-              if grep -q qa2 filesLst || grep -q sample filesLst
+              if grep -q qa2 filesLst
               then
                 echo "Either you changed a trial by mistake or the branch name is incorrect. use deploy/xxx"
                 exit 1
