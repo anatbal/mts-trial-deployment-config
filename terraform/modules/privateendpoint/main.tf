@@ -16,11 +16,3 @@ resource "azurerm_private_endpoint" "private_endpoint" {
     subresource_names              = [var.subresource_name]
   }
 }
-
-# WHY do we need this?
-# Resource's Private Endpoint Connecton
-data "azurerm_private_endpoint_connection" "endpoint-connection" {
-  depends_on          = [azurerm_private_endpoint.private_endpoint]
-  name                = azurerm_private_endpoint.private_endpoint.name
-  resource_group_name = var.rg_name
-}
