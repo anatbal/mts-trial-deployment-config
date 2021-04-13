@@ -387,7 +387,7 @@ jobs:
         # if: github.ref == 'refs/heads/main'
         run: |
           set -o nounset
-          set -o xtrace
+          #set -o xtrace
           # can't use errexit and pipefail flags here becasue tail will fail if the file doesn't exists
 
           echo "Trying to download init service log in loop, timeout set to 60 min."
