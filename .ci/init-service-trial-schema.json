@@ -28,14 +28,14 @@
           "type" : "array",
           "minItems" : 1,
           "items" : {
-            "$ref" : "#/definitions/Practitioner"
+            "$ref" : "#/definitions/PractitionerDTO"
           }
         },
         "sites" : {
           "type" : "array",
           "minItems" : 1,
           "items" : {
-            "$ref" : "#/definitions/Site"
+            "$ref" : "#/definitions/SiteDTO"
           }
         },
         "roles" : {
@@ -53,7 +53,7 @@
       },
       "required" : [ "persons", "sites", "roles", "trialName" ]
     },
-    "Practitioner" : {
+    "PractitionerDTO" : {
       "type" : "object",
       "additionalProperties" : false,
       "properties" : {
@@ -82,7 +82,7 @@
       },
       "required" : [ "givenName", "familyName" ]
     },
-    "Site" : {
+    "SiteDTO" : {
       "type" : "object",
       "additionalProperties" : false,
       "properties" : {
@@ -100,12 +100,18 @@
           "minLength" : 1
         },
         "address" : {
-          "$ref" : "#/definitions/SiteAddress"
+          "$ref" : "#/definitions/SiteAddressDTO"
+        },
+        "siteId" : {
+          "type" : "string"
+        },
+        "parentSiteId" : {
+          "type" : "string"
         }
       },
       "required" : [ "name", "siteType" ]
     },
-    "SiteAddress" : {
+    "SiteAddressDTO" : {
       "type" : "object",
       "additionalProperties" : false,
       "properties" : {
