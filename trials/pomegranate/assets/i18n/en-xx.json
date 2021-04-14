@@ -1,0 +1,17 @@
+{
+    "WELCOME": "Bienvenue",
+    "USER_LOGGED_IN": "xVous êtes connecté",
+    "USER_NOT_LOGGED_IN": "Vous n'êtes pas connecté",
+    "HELLO": "Bonjour",
+    "LANDING": "Page d'accueil",
+    "HOME_LINK_TEXT": "Accueil",
+    "ASSIGNED_SITES_LINK": "Sites Attribués",
+    "LOGOUT": "Déconexion",
+    "LOGIN": "Identifiez-vous",
+    "ASSIGNED_SITES_TITLE": "Sites Attribués",
+    "ADMIN_SITES_TITLE": "Sites administrateur",
+    "SITE_NAME": "Nom du site",
+    "SITE_TYPE": "Type du site",
+    "PARENT_SITE": "Site parent",
+    "LAST_UPDATED": "Dernière mise à jour"
+}
