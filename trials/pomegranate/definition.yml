@@ -27,4 +27,4 @@ spring_cloud:
     image_name: ghcr.io/ndph-arts/config-server
     image_tag: main-latest
     git_uri: https://github.com/NDPH-ARTS/mts-trial-deployment-config.git
-    search_paths: trials/mdp0/services, trials/mdp0/services/*
+    search_paths: trials/pomegranate/services, trials/pomegranate/services/*
