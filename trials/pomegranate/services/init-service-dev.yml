@@ -28,7 +28,7 @@ auth:
 
 mts:
   trial:
-    trialName: "Pomegranate"
+    trialName: "pomegranate"
     persons:
       - givenName: Harold
         familyName: Superuser
