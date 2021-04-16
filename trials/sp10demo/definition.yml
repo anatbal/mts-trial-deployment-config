@@ -1,4 +1,4 @@
-name: sprint10demo
+name: sp10demo
 version: 1
 tenant_id: 5d23383f-2acb-448e-8353-4b4573b82276
 ui_client_id: 59a2b30f-844b-4a69-b034-19e3d2d4d805
@@ -27,4 +27,4 @@ spring_cloud:
     image_name: ghcr.io/ndph-arts/config-server
     image_tag: main-nightly
     git_uri: https://github.com/NDPH-ARTS/mts-trial-deployment-config.git
-    search_paths: trials/sprint10demo/services, trials/sprint10demo/services/*
+    search_paths: trials/sp10demo/services, trials/sp10demo/services/*
