@@ -1,6 +1,6 @@
 {
     "WELCOME": "Bienvenue",
-    "USER_LOGGED_IN": "xVous êtes connecté",
+    "USER_LOGGED_IN": "Vous êtes connecté",
     "USER_NOT_LOGGED_IN": "Vous n'êtes pas connecté",
     "HELLO": "Bonjour",
     "LANDING": "Page d'accueil",
@@ -13,5 +13,9 @@
     "SITE_NAME": "Nom du site",
     "SITE_TYPE": "Type du site",
     "PARENT_SITE": "Site parent",
-    "LAST_UPDATED": "Dernière mise à jour"
+    "LAST_UPDATED": "Dernière mise à jour",
+    "STATUS": "Statut",
+    "DESCRIPTION": "Description",
+    "ADMIN_SITES_LINK": "Sites administrateur",
+    "ABOUT_LINK": "À propos de"
 }
