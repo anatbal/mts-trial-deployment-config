@@ -82,6 +82,17 @@ variable "practitioner_image_tag" {
   default     = "latest"
 }
 
+variable "handoff_image_name" {
+  type        = string
+  description = "handoff image name (fqdn)."
+}
+
+variable "handoff_image_tag" {
+  type        = string
+  description = "handoff image tag."
+  default     = "latest"
+}
+
 variable "role_image_name" {
   type        = string
   description = "role image name (fqdn)."
