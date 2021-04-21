@@ -61,6 +61,7 @@ mts:
           - id: create-site
           - id: view-site
           - id: link-user
+          - id: view-superleague
       - id: admin
         permissions:
           - id: create-person
