@@ -1,0 +1,39 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+#security config
+
+azure:
+  activedirectory:
+    client-id: fa5cde1d-d6f8-4d13-9fa4-4d7a374cb290
+    session-stateless: true
+practitioner:
+  service:
+    endpoint:
+      roles: /practitioner/roles
+    name: practitioner-service
+    uri: http://practitioner-service
+role:
+  service:
+    endpoint:
+      roles: /roles
+    name: role-service
+    uri: http://role-service
+site:
+  service:
+    endpoint:
+      sites: /sites
+    name: site-service
+    uri: http://site-service
+superleague:
+  service:
+    endpoint:
+      superleague: /superleague
+    name: superleague-service
+    uri: http://superleague-service
+spring:
+  main:
+    allow-bean-definition-overriding: true
