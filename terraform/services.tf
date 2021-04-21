@@ -93,8 +93,8 @@ module "trial_app_service_handoff" {
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment
-  docker_image         = var.practitioner_image_name
-  docker_image_tag     = var.practitioner_image_tag
+  docker_image         = var.handoff_image_name
+  docker_image_tag     = var.handoff_image_tag
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
 
   enable_private_endpoint = var.enable_private_endpoint
