@@ -66,6 +66,7 @@ mts:
         permissions:
           - id: create-person
           - id: view-person
+          - id: view-hello
           - id: assign-role
           - id: create-site
           - id: view-site
@@ -74,6 +75,7 @@ mts:
         permissions:
           - id: create-person
           - id: view-person
+          - id: view-hello
           - id: view-site
       - id: country-admin
         permissions:
