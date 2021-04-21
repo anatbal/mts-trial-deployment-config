@@ -106,12 +106,14 @@ module "trial_app_service_superleague" {
   local.common_settings,
   {
     "EUREKA_INSTANCE_HOSTNAME" = "${local.superleague_name}.azurewebsites.net"
+    "FHIR_URI"                 = module.fhir_server.hostname
   },
   )
 
   depends_on = [
     module.trial_sc_discovery,
     module.trial_sc_config,
+    module.fhir_server,
   ]
 }
 
