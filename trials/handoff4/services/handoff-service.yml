@@ -1,3 +1,3 @@
 mts:
-  application:
+  handoff:
     message: '"My app settings value here"'

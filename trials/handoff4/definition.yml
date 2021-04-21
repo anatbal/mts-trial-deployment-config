@@ -1,4 +1,4 @@
-name: handoff4
+name: handoff5
 version: 1
 tenant_id: 5d23383f-2acb-448e-8353-4b4573b82276
 ui_client_id: 59a2b30f-844b-4a69-b034-19e3d2d4d805
@@ -30,4 +30,4 @@ spring_cloud:
     image_name: ghcr.io/ndph-arts/config-server
     image_tag: a28d852be25d38f55ae6ef742d39b2d5eb52eda5
     git_uri: https://github.com/NDPH-ARTS/mts-trial-deployment-config.git
-    search_paths: trials/handoff4/services, trials/handoff4/services/*
+    search_paths: trials/handoff5/services, trials/handoff5/services/*
