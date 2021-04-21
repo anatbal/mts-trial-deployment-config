@@ -4,7 +4,7 @@ locals {
   practitioner_name = "as-${var.trial_name}-practitioner-${var.environment}"
   role_name         = "as-${var.trial_name}-role-${var.environment}"
   init_name         = "as-${var.trial_name}-init-${var.environment}"
-  saj_name          = "as-${var.trial_name}-handoff-${var.environment}"
+  saj_name          = "as-${var.trial_name}-saj-${var.environment}"
   common_settings = {
     "SERVER_PORT"                           = 80
     "WEBSITES_PORT"                         = 80
