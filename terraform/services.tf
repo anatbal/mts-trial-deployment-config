@@ -111,7 +111,7 @@ module "trial_app_service_superleague" {
 
   depends_on = [
     module.trial_sc_discovery,
-    module.trial_sc_config
+    module.trial_sc_config,
   ]
 }
 
