@@ -42,7 +42,7 @@
       "type" : "string"
     }
   },
-  "required" : [ "name", "version", "tenant_id", "ui_client_id", "site_service", "role_service", "practitioner_service", "init_service", "spring_cloud", "spring_profile", "spring_config_label" ],
+  "required" : [ "name", "version", "tenant_id", "ui_client_id", "site_service", "role_service", "practitioner_service", "init_service", "handoff_service", "spring_cloud", "spring_profile", "spring_config_label" ],
   "definitions" : {
     "Service" : {
       "type" : "object",
