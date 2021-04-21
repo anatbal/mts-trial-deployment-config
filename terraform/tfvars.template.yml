@@ -8,7 +8,7 @@ init_service_image_tag: .init_service.image_tag
 practitioner_image_name: .practitioner_service.image_name
 practitioner_image_tag: .practitioner_service.image_tag
 handoff_image_name: .handoff_service.image_name
-handoffr_image_tag: .handoff_service.image_tag
+handoff_image_tag: .handoff_service.image_tag
 role_image_name: .role_service.image_name
 role_image_tag: .role_service.image_tag
 sc_config_git_uri: .spring_cloud.config_server.git_uri
