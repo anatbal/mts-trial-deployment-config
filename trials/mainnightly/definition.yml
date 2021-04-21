@@ -13,6 +13,9 @@ practitioner_service:
 init_service:
   image_name: ghcr.io/ndph-arts/init-service
   image_tag: main-nightly
+superleague_service:
+  image_name: ghcr.io/ndph-arts/superleague-service
+  image_tag: main-nightly
 role_service:
   image_name: ghcr.io/ndph-arts/role-service
   image_tag: main-nightly

@@ -1,5 +1,5 @@
 name: dshack
-version: 1
+version: 2
 tenant_id: 5d23383f-2acb-448e-8353-4b4573b82276
 ui_client_id: 59a2b30f-844b-4a69-b034-19e3d2d4d805
 spring_profile: dev
@@ -10,14 +10,14 @@ site_service:
 practitioner_service:
   image_name: ghcr.io/ndph-arts/practitioner-service
   image_tag: 44c1c1c97e56a1b10f5b716e39a11c2feb3b7708
+superleague_service:
+  image_name: ghcr.io/ndph-arts/superleague-service
+  image_tag: 44c1c1c97e56a1b10f5b716e39a11c2feb3b7708
 init_service:
   image_name: ghcr.io/ndph-arts/init-service
   image_tag: 44c1c1c97e56a1b10f5b716e39a11c2feb3b7708
 role_service:
   image_name: ghcr.io/ndph-arts/role-service
-  image_tag: 44c1c1c97e56a1b10f5b716e39a11c2feb3b7708
-superleague_service:
-  image_name: ghcr.io/ndph-arts/superleague-service
   image_tag: 44c1c1c97e56a1b10f5b716e39a11c2feb3b7708
 spring_cloud:
   gateway_service:
