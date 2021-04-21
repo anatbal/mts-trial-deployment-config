@@ -2,7 +2,7 @@
 locals {
   site_name         = "as-${var.trial_name}-site-${var.environment}"
   practitioner_name = "as-${var.trial_name}-practitioner-${var.environment}"
-  superleague_name = "as-${var.trial_name}-superleague-${var.environment}"
+  superleague_name  = "as-${var.trial_name}-superleague-${var.environment}"
   role_name         = "as-${var.trial_name}-role-${var.environment}"
   init_name         = "as-${var.trial_name}-init-${var.environment}"
   common_settings = {
@@ -103,11 +103,11 @@ module "trial_app_service_superleague" {
   integration_subnet_id   = azurerm_subnet.integrationsubnet.id
 
   settings = merge(
-  local.common_settings,
-  {
-    "EUREKA_INSTANCE_HOSTNAME" = "${local.superleague_name}.azurewebsites.net"
-    "FHIR_URI"                 = module.fhir_server.hostname
-  },
+    local.common_settings,
+    {
+      "EUREKA_INSTANCE_HOSTNAME" = "${local.superleague_name}.azurewebsites.net"
+      "FHIR_URI"                 = module.fhir_server.hostname
+    },
   )
 
   depends_on = [
