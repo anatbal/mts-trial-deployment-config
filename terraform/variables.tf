@@ -82,6 +82,17 @@ variable "practitioner_image_tag" {
   default     = "latest"
 }
 
+variable "superleague_image_name" {
+  type        = string
+  description = "superleague image name (fqdn)."
+}
+
+variable "superleague_image_tag" {
+  type        = string
+  description = "superleague image tag."
+  default     = "latest"
+}
+
 variable "role_image_name" {
   type        = string
   description = "role image name (fqdn)."

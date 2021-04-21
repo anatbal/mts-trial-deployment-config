@@ -2,6 +2,7 @@
 locals {
   site_name         = "as-${var.trial_name}-site-${var.environment}"
   practitioner_name = "as-${var.trial_name}-practitioner-${var.environment}"
+  superleague_name = "as-${var.trial_name}-superleague-${var.environment}"
   role_name         = "as-${var.trial_name}-role-${var.environment}"
   init_name         = "as-${var.trial_name}-init-${var.environment}"
   common_settings = {
@@ -80,6 +81,37 @@ module "trial_app_service_practitioner" {
     module.trial_sc_discovery,
     module.trial_sc_config,
     module.fhir_server,
+  ]
+}
+
+# Superleague service
+module "trial_app_service_superleague" {
+  source               = "./modules/genericservice"
+  app_name             = local.superleague_name
+  rg_name              = azurerm_resource_group.trial_rg.name
+  location             = azurerm_resource_group.trial_rg.location
+  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
+  trial_name           = var.trial_name
+  environment          = var.environment
+  docker_image         = var.superleague_image_name
+  docker_image_tag     = var.superleague_image_tag
+  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+
+  enable_private_endpoint = var.enable_private_endpoint
+  subnet_id               = azurerm_subnet.endpointsubnet.id
+  dns_zone_id             = azurerm_private_dns_zone.web-app-endpoint-dns-private-zone.id
+  integration_subnet_id   = azurerm_subnet.integrationsubnet.id
+
+  settings = merge(
+  local.common_settings,
+  {
+    "EUREKA_INSTANCE_HOSTNAME" = "${local.superleague_name}.azurewebsites.net"
+  },
+  )
+
+  depends_on = [
+    module.trial_sc_discovery,
+    module.trial_sc_config
   ]
 }
 

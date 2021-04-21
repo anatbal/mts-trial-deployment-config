@@ -1,5 +1,5 @@
-name: dshack1
-version: 4
+name: dshack2
+version: 1
 tenant_id: 5d23383f-2acb-448e-8353-4b4573b82276
 ui_client_id: 59a2b30f-844b-4a69-b034-19e3d2d4d805
 spring_profile: dev
@@ -30,4 +30,4 @@ spring_cloud:
     image_name: ghcr.io/ndph-arts/config-server
     image_tag: 44c1c1c97e56a1b10f5b716e39a11c2feb3b7708
     git_uri: https://github.com/NDPH-ARTS/mts-trial-deployment-config.git
-    search_paths: trials/dshack1/services, trials/dshack1/services/*
+    search_paths: trials/dshack2/services, trials/dshack2/services/*
