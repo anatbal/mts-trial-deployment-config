@@ -9,6 +9,8 @@ practitioner_image_name: .practitioner_service.image_name
 practitioner_image_tag: .practitioner_service.image_tag
 role_image_name: .role_service.image_name
 role_image_tag: .role_service.image_tag
+saj_image_name: .saj_service.image_name
+saj_image_tag: .saj_service.image_tag
 sc_config_git_uri: .spring_cloud.config_server.git_uri
 sc_config_image_name: .spring_cloud.config_server.image_name
 sc_config_image_tag: .spring_cloud.config_server.image_tag

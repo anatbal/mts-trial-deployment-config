@@ -4,6 +4,7 @@ locals {
   practitioner_name = "as-${var.trial_name}-practitioner-${var.environment}"
   role_name         = "as-${var.trial_name}-role-${var.environment}"
   init_name         = "as-${var.trial_name}-init-${var.environment}"
+  saj_name          = "as-${var.trial_name}-handoff-${var.environment}"
   common_settings = {
     "SERVER_PORT"                           = 80
     "WEBSITES_PORT"                         = 80
@@ -113,6 +114,32 @@ module "trial_app_service_role" {
       "WEBSITES_CONTAINER_START_TIME_LIMIT" = 600 # default is 230
     },
   )
+
+# saj service
+module "trial_app_service_saj" {
+  source               = "./modules/genericservice"
+  app_name             = local.saj_name
+  rg_name              = azurerm_resource_group.trial_rg.name
+  location             = azurerm_resource_group.trial_rg.location
+  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
+  trial_name           = var.trial_name
+  environment          = var.environment
+  docker_image         = var.saj_image_name
+  docker_image_tag     = var.saj_image_tag
+  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+
+  enable_private_endpoint = var.enable_private_endpoint
+  subnet_id               = azurerm_subnet.endpointsubnet.id
+  dns_zone_id             = azurerm_private_dns_zone.web-app-endpoint-dns-private-zone.id
+  integration_subnet_id   = azurerm_subnet.integrationsubnet.id
+
+  settings = merge(
+    local.common_settings,
+    {
+      "EUREKA_INSTANCE_HOSTNAME" = "${local.saj_name}.azurewebsites.net"
+    },
+  )
+}
 
   depends_on = [
     module.trial_sc_discovery,

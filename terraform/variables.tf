@@ -93,6 +93,18 @@ variable "role_image_tag" {
   default     = "latest"
 }
 
+variable "saj_image_name" {
+  type        = string
+  description = "saj image name (fqdn)."
+}
+
+variable "saj_image_tag" {
+  type        = string
+  description = "saj image tag."
+  default     = "latest"
+}
+
+
 variable "init_service_image_name" {
   type        = string
   description = "Init service image name."

@@ -29,6 +29,9 @@
     "init_service" : {
       "$ref" : "#/definitions/Service"
     },
+    "saj_service" : {
+      "$ref" : "#/definitions/Service"
+    },
     "spring_cloud" : {
       "$ref" : "#/definitions/SpringCloud"
     },
