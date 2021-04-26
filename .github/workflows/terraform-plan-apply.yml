@@ -191,7 +191,7 @@ jobs:
       ARM_CLIENT_SECRET: ${{secrets.TF_ARM_CLIENT_SECRET}}
       ARM_SUBSCRIPTION_ID: f3fba52d-c7db-46f8-9e7a-766ca869972e
       ARM_TENANT_ID: 99804659-431f-48fa-84c1-65c9609de05b
-      UI_BUNDLE : https://github.com/NDPH-ARTS/mts-trial-ui/archive/refs/tags/refs/heads/arts915test.zip
+      UI_BUNDLE : https://github.com/NDPH-ARTS/mts-trial-ui/releases/download/refs%2Fheads%2Farts915test/mts-trial-ui.zip
     steps:
       - uses: actions/checkout@v2
 
@@ -364,9 +364,9 @@ jobs:
           set -o nounset
           # set -o xtrace
 
-          unzip arts915test.zip
+          unzip mts-trial-ui.zip
 
-          index_file="arts915test/index.html"
+          index_file="mts-trial-ui/index.html"
           # sed doesn't like the github {{ }} vars, so dropping the value to a regular var
           trial_name=${{ matrix.trial_name }}
 
@@ -386,7 +386,7 @@ jobs:
 
           echo "using trial path ${{ matrix.trial_dir }}"
           # copy everything in the assets folder
-          cp -fr ${{ matrix.trial_dir }}/assets/* arts915test/assets/
+          cp -fr ${{ matrix.trial_dir }}/assets/* mts-trial-ui/assets/
 
 
       # Upload to storage account (to $web container)
@@ -400,7 +400,7 @@ jobs:
 
           # first clean up the container, then upload the new assets
           az storage blob delete-batch --connection-string ${ui_storage_conn_string} --source "\$web" --pattern "*"
-          az storage blob upload-batch --connection-string ${ui_storage_conn_string} --source arts915test --destination '$web'
+          az storage blob upload-batch --connection-string ${ui_storage_conn_string} --source mts-trial-ui --destination '$web'
 
       # Download init service progress log file from azure file share and validate success
       - name: Validate Init service progress
