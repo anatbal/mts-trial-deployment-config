@@ -62,6 +62,11 @@ mts:
               - name: siteType
                 displayName: Site Type
                 validationRegex: ''
+            ext:
+              - name: countryCode
+                type: string
+                displayName: Country Code
+                validationRegex: ''
             child:
               - name: Organization
                 displayName: site
@@ -83,6 +88,15 @@ mts:
                   - name: address
                     type: address
                     displayName: The Address
+                    validationRegex: ''
+                ext:
+                  - name: hasParticipants
+                    type: string
+                    displayName: Has Participants
+                    validationRegex: ''
+                  - name: recruitmentMethod
+                    type: string
+                    displayName: Recruitment Method
                     validationRegex: ''
   address:
     addressType:
