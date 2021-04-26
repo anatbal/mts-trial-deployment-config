@@ -364,7 +364,7 @@ jobs:
           set -o nounset
           # set -o xtrace
 
-          unzip mts-trial-ui.zip
+          unzip arts915test.zip
 
           index_file="mts-trial-ui/index.html"
           # sed doesn't like the github {{ }} vars, so dropping the value to a regular var
