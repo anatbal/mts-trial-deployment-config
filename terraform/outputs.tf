@@ -5,7 +5,7 @@ output "ui_conn_string" {
 }
 
 output "gateway_host" {
-  value       = module.trial_sc_gateway.hostname
+  value       = azurerm_frontdoor.frontdoor.primary_web_host
   description = "The hostname of the API gateway."
   sensitive   = false
 }
