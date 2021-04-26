@@ -5,7 +5,7 @@ output "ui_conn_string" {
 }
 
 output "gateway_host" {
-  value       = frontend_endpoint.frontdoorEndpoint.host_name
+  value       = azurerm_frontdoor.frontdoor.frontend_endpoint.host_name
   description = "The hostname of the API gateway."
   sensitive   = false
 }
