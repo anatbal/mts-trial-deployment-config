@@ -334,9 +334,6 @@ jobs:
           az account set --subscription ${ARM_SUBSCRIPTION_ID}
       - name: Init apply permission
         run: |
-          set -o errexit
-          set -o pipefail
-          set -o nounset
           # set -o xtrace
           # '-raw' is important so no other characters will be added
           init_service_identity=$(terraform output -raw init_service_identity)
