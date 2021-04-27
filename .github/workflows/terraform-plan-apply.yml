@@ -347,7 +347,6 @@ jobs:
           echo "Applying appRoleId=$app_role_id to $init_service_identity"
 
           if az rest -m post -u "https://graph.windows.net/99804659-431f-48fa-84c1-65c9609de05b/servicePrincipals/$init_service_identity/appRoleAssignments?api-version=1.6" -b $json > rest.log 2>&1;  then
-          then
             echo "Permission applied successfully"
             exit 0
           else
