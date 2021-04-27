@@ -345,7 +345,22 @@ jobs:
           app_role_id=$(az ad sp list --display-name 'mts-backend' --query "[0] .appRoles [?value=='internal.service'].id | [0]")
           json="{\"id\":$app_role_id,\"principalId\":\"$init_service_identity\",\"resourceId\":$backend_object_id}"
           echo "Applying appRoleId=$app_role_id to $init_service_identity"
-          az rest -m post -u "https://graph.windows.net/99804659-431f-48fa-84c1-65c9609de05b/servicePrincipals/$init_service_identity/appRoleAssignments?api-version=1.6" -b $json || true
+          
+          az rest -m post -u "https://graph.windows.net/99804659-431f-48fa-84c1-65c9609de05b/servicePrincipals/$init_service_identity/appRoleAssignments?api-version=1.6" -b $json > rest.log 2>&1
+
+          if [ $? -eq 0 ]
+          then
+            echo "Permission applied successfully"
+          else
+            if grep 'Permission being assigned already exists on the object' rest.log;  then
+              echo "Permission already applied, skipping"
+              exit 0
+            else
+              echo "Error occurred applying init identity roles"
+              cat rest.log
+              exit 1
+            fi
+          fi
 
       # Get release zip file
       - name: UI component - Get assets zip
