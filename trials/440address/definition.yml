@@ -1,9 +1,9 @@
-name: test440b
+name: 440address
 version: 1
 tenant_id: 5d23383f-2acb-448e-8353-4b4573b82276
 ui_client_id: 59a2b30f-844b-4a69-b034-19e3d2d4d805
 spring_profile: dev
-spring_config_label: test440b
+spring_config_label: 440address
 site_service:
   image_name: ghcr.io/ndph-arts/site-service
   image_tag: main-nightly
@@ -27,4 +27,4 @@ spring_cloud:
     image_name: ghcr.io/ndph-arts/config-server
     image_tag: main-nightly
     git_uri: https://github.com/NDPH-ARTS/mts-trial-deployment-config.git
-    search_paths: trials/test440b/services, trials/test440b/services/*
+    search_paths: trials/440address/services, trials/440address/services/*
