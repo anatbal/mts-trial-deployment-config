@@ -6,25 +6,25 @@ spring_profile: dev
 spring_config_label: arts915
 site_service:
   image_name: ghcr.io/ndph-arts/site-service
-  image_tag: 1b4bece1de109daadf0b542b3ab91fc3021b568f
+  image_tag: da780cf3ea3ed0b87e5d4972c7b811722f335eb3
 practitioner_service:
   image_name: ghcr.io/ndph-arts/practitioner-service
-  image_tag: 1b4bece1de109daadf0b542b3ab91fc3021b568f
+  image_tag: da780cf3ea3ed0b87e5d4972c7b811722f335eb3
 init_service:
   image_name: ghcr.io/ndph-arts/init-service
-  image_tag: 1b4bece1de109daadf0b542b3ab91fc3021b568f
+  image_tag: da780cf3ea3ed0b87e5d4972c7b811722f335eb3
 role_service:
   image_name: ghcr.io/ndph-arts/role-service
-  image_tag: 1b4bece1de109daadf0b542b3ab91fc3021b568f
+  image_tag: da780cf3ea3ed0b87e5d4972c7b811722f335eb3
 spring_cloud:
   gateway_service:
     image_name: ghcr.io/ndph-arts/gateway-server
-    image_tag: 1b4bece1de109daadf0b542b3ab91fc3021b568f
+    image_tag: da780cf3ea3ed0b87e5d4972c7b811722f335eb3
   discovery_service:
     image_name: ghcr.io/ndph-arts/discovery-server
-    image_tag: 1b4bece1de109daadf0b542b3ab91fc3021b568f
+    image_tag: da780cf3ea3ed0b87e5d4972c7b811722f335eb3
   config_server:
     image_name: ghcr.io/ndph-arts/config-server
-    image_tag: 1b4bece1de109daadf0b542b3ab91fc3021b568f
+    image_tag: da780cf3ea3ed0b87e5d4972c7b811722f335eb3
     git_uri: https://github.com/NDPH-ARTS/mts-trial-deployment-config.git
     search_paths: trials/arts915f/services, trials/arts915f/services/*
