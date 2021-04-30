@@ -1,0 +1,134 @@
+server:
+  error:
+    include-message: always
+fhir:
+  resultCount: 50
+
+# this is the default 'development' trial site config - CCO/REGION/COUNTRY/LCC
+mts:
+  site:
+    name: Organization
+    displayName: site
+    type: CCO
+    attributes:
+      - name: name
+        displayName: Name
+        validationRegex: '^[a-zA-Z\s]{1,35}$'
+      - name: alias
+        displayName: Alias
+        validationRegex: '^[a-zA-Z\s]{1,35}$'
+      - name: parentSiteId
+        displayName: Parent Site Id
+        validationRegex: ''
+      - name: siteType
+        displayName: Site Type
+        validationRegex: ''
+    custom:
+      - name: address
+        type: address
+        displayName: The Address
+        validationRegex: ''
+    child:
+      - name: Organization
+        displayName: site
+        type: REGION
+        attributes:
+          - name: name
+            displayName: Name
+            validationRegex: '^[a-zA-Z\s]{1,35}$'
+          - name: alias
+            displayName: Alias
+            validationRegex: '^[a-zA-Z\s]{1,35}$'
+          - name: parentSiteId
+            displayName: Parent Site Id
+            validationRegex: ''
+          - name: siteType
+            displayName: Site Type
+            validationRegex: ''
+        child:
+          - name: Organization
+            displayName: site
+            type: COUNTRY
+            attributes:
+              - name: name
+                displayName: Name
+                validationRegex: '^[a-zA-Z\s]{1,35}$'
+              - name: alias
+                displayName: Alias
+                validationRegex: '^[a-zA-Z\s]{1,35}$'
+              - name: parentSiteId
+                displayName: Parent Site Id
+                validationRegex: ''
+              - name: siteType
+                displayName: Site Type
+                validationRegex: ''
+            ext:
+              - name: countryCode
+                type: string
+                displayName: Country Code
+                validationRegex: ''
+            child:
+              - name: Organization
+                displayName: site
+                type: LCC
+                attributes:
+                  - name: name
+                    displayName: Name
+                    validationRegex: '^[a-zA-Z\s]{1,35}$'
+                  - name: alias
+                    displayName: Alias
+                    validationRegex: '^[a-zA-Z\s]{1,35}$'
+                  - name: parentSiteId
+                    displayName: Parent Site Id
+                    validationRegex: ''
+                  - name: siteType
+                    displayName: Site Type
+                    validationRegex: ''
+                custom:
+                  - name: address
+                    type: address
+                    displayName: The Address
+                    validationRegex: ''
+                ext:
+                  - name: hasParticipants
+                    type: string
+                    displayName: Has Participants
+                    validationRegex: ''
+                  - name: recruitmentMethod
+                    type: string
+                    displayName: Recruitment Method
+                    validationRegex: ''
+  address:
+    addressType:
+      - name : addressLine1
+        type: string
+        displayName : AddressLine1
+        validationRegex: '^[a-zA-Z\s]{1,35}$'
+      - name : addressLine2
+        type: string
+        displayName : AddressLine2
+        validationRegex: '^[a-zA-Z\s]{1,35}$'
+      - name : addressLine3
+        type: string
+        displayName : AddressLine3
+        validationRegex: '^[a-zA-Z\s]{1,35}$'
+      - name : addressLine4
+        type: string
+        displayName : AddressLine4
+        validationRegex: '^[a-zA-Z\s]{1,35}$'
+      - name: addressLine5
+        type: string
+        displayName: AddressLine5
+        validationRegex: '^[a-zA-Z\s]{1,35}$'
+      - name: city
+        type: string
+        displayName: City
+        validationRegex: '^[a-zA-Z\s]{1,80}$'
+      - name: country
+        type: string
+        displayName: Country
+        validationRegex: '^[a-zA-Z\s]{1,40}$'
+      - name: postcode
+        type: string
+        displayName: Postcode
+        validationRegex: '^[a-zA-Z\s]{1,8}$'
