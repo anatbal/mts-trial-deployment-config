@@ -23,6 +23,11 @@ mts:
       - name: siteType
         displayName: Site Type
         validationRegex: ''
+    custom:
+      - name: address
+        type: address
+        displayName: The Address
+        validationRegex: ''
     child:
       - name: Organization
         displayName: site
