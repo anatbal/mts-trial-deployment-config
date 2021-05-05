@@ -68,4 +68,4 @@ mts:
           - id: view-person
       - id: country-admin
         permissions:
-          - id: create-person
+          - id: view-person
