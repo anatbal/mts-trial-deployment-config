@@ -100,25 +100,25 @@ mts:
                     validationRegex: ''
   address:
     addressType:
-      - name : addressLine1
+      - name : address1
         type: string
-        displayName : AddressLine1
+        displayName : Address1
         validationRegex: '^[a-zA-Z\s]{1,35}$'
-      - name : addressLine2
+      - name : address2
         type: string
-        displayName : AddressLine2
+        displayName : Address2
         validationRegex: '^[a-zA-Z\s]{1,35}$'
-      - name : addressLine3
+      - name : address3
         type: string
-        displayName : AddressLine3
+        displayName : Address3
         validationRegex: '^[a-zA-Z\s]{1,35}$'
-      - name : addressLine4
+      - name : address4
         type: string
-        displayName : AddressLine4
+        displayName : Address4
         validationRegex: '^[a-zA-Z\s]{1,35}$'
-      - name: addressLine5
+      - name: address5
         type: string
-        displayName: AddressLine5
+        displayName: Address5
         validationRegex: '^[a-zA-Z\s]{1,35}$'
       - name: city
         type: string
