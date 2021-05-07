@@ -72,8 +72,6 @@ resource "azurerm_app_service_virtual_network_swift_connection" "vnet_app_servic
   subnet_id      = var.integration_subnet_id
 }
 
-az group delete --resource-group ${rg_name} --yes --no-wait
-
 resource "azurerm_monitor_diagnostic_setting" "app_diag" {
   name                       = "${var.app_name}-diagnostic"
   target_resource_id         = azurerm_app_service.generic_service.id
