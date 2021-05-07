@@ -82,8 +82,8 @@ resource "azurerm_frontdoor" "frontdoor" {
 
 
   frontend_endpoint {
-    name                              = local.frontend_endpoint
-    host_name                         = "fd-${var.trial_name}-${var.environment}.azurefd.net"
+    name = local.frontend_endpoint
+    host_name = "fd-${var.trial_name}-${var.environment}.azurefd.net"
     custom_https_provisioning_enabled = false
   }
 }
