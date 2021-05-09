@@ -1,0 +1,30 @@
+name: trial35ade
+version: 1
+tenant_id: 5d23383f-2acb-448e-8353-4b4573b82276
+ui_client_id: 59a2b30f-844b-4a69-b034-19e3d2d4d805
+spring_profile: dev
+spring_config_label: trial35ade
+site_service:
+  image_name: ghcr.io/ndph-arts/site-service
+  image_tag: 0c9b7ecfd3719bd4c7850cccc3e3833036955178
+practitioner_service:
+  image_name: ghcr.io/ndph-arts/practitioner-service
+  image_tag: 0c9b7ecfd3719bd4c7850cccc3e3833036955178
+init_service:
+  image_name: ghcr.io/ndph-arts/init-service
+  image_tag: 0c9b7ecfd3719bd4c7850cccc3e3833036955178
+role_service:
+  image_name: ghcr.io/ndph-arts/role-service
+  image_tag: 0c9b7ecfd3719bd4c7850cccc3e3833036955178
+spring_cloud:
+  gateway_service:
+    image_name: ghcr.io/ndph-arts/gateway-server
+    image_tag: 0c9b7ecfd3719bd4c7850cccc3e3833036955178
+  discovery_service:
+    image_name: ghcr.io/ndph-arts/discovery-server
+    image_tag: 0c9b7ecfd3719bd4c7850cccc3e3833036955178
+  config_server:
+    image_name: ghcr.io/ndph-arts/config-server
+    image_tag: 0c9b7ecfd3719bd4c7850cccc3e3833036955178
+    git_uri: https://github.com/NDPH-ARTS/mts-trial-deployment-config.git
+    search_paths: trials/trial35ade/services, trials/trial35ade/services/*
