@@ -341,8 +341,8 @@ jobs:
           # '-raw' is important so no other characters will be added
           init_service_identity=$(terraform output -raw init_service_identity)
 
-          backend_object_id=$(az ad sp list --display-name 'mts-backend' --query "[0] .objectId")
-          app_role_id=$(az ad sp list --display-name 'mts-backend' --query "[0] .appRoles [?value=='internal.service'].id | [0]")
+          backend_object_id=$(az ad sp list --display-name 'mts-backend-dr' --query "[0] .objectId")
+          app_role_id=$(az ad sp list --display-name 'mts-backend-dr' --query "[0] .appRoles [?value=='internal.service'].id | [0]")
           json="{\"id\":$app_role_id,\"principalId\":\"$init_service_identity\",\"resourceId\":$backend_object_id}"
           echo "Applying appRoleId=$app_role_id to $init_service_identity"
           az rest -m post -u "https://graph.windows.net/99804659-431f-48fa-84c1-65c9609de05b/servicePrincipals/$init_service_identity/appRoleAssignments?api-version=1.6" -b $json
