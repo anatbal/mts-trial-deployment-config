@@ -11,9 +11,8 @@ locals {
     "SPRING_CLOUD_CONFIG_LABEL"             = var.spring_config_label
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.app_insights.connection_string
     "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE"  = "${module.trial_sc_discovery.hostname}/eureka/"
-    # TODO: try to move back to a managed identity
-    "WEBSITE_DNS_SERVER"     = "168.63.129.16"
-    "WEBSITE_VNET_ROUTE_ALL" = 1
+    "WEBSITE_DNS_SERVER"                    = "168.63.129.16"
+    "WEBSITE_VNET_ROUTE_ALL"                = 1
   }
 }
 
