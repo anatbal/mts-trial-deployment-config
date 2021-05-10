@@ -55,6 +55,12 @@
             "$ref" : "#/definitions/SiteAttributeConfiguration"
           }
         },
+        "ext" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SiteAttributeConfiguration"
+          }
+        },
         "child" : {
           "type" : "array",
           "items" : {

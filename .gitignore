@@ -69,3 +69,5 @@ hs_err_pid*
 # Dependency directories
 node_modules/
 jspm_packages/
+
+*.hcl
