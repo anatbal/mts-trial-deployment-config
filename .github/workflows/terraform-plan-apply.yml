@@ -332,20 +332,20 @@ jobs:
         run: |
           az login --service-principal -u ${ARM_CLIENT_ID} -p ${ARM_CLIENT_SECRET} --tenant ${ARM_TENANT_ID}
           az account set --subscription ${ARM_SUBSCRIPTION_ID}
-      - name: Init apply permission
-        run: |
-          set -o errexit
-          set -o pipefail
-          set -o nounset
-          # set -o xtrace
-          # '-raw' is important so no other characters will be added
-          init_service_identity=$(terraform output -raw init_service_identity)
+      # - name: Init apply permission
+      #   run: |
+      #     set -o errexit
+      #     set -o pipefail
+      #     set -o nounset
+      #     # set -o xtrace
+      #     # '-raw' is important so no other characters will be added
+      #     init_service_identity=$(terraform output -raw init_service_identity)
 
-          backend_object_id=$(az ad sp list --display-name 'mts-backend-dr' --query "[0] .objectId")
-          app_role_id=$(az ad sp list --display-name 'mts-backend-dr' --query "[0] .appRoles [?value=='internal.service'].id | [0]")
-          json="{\"id\":$app_role_id,\"principalId\":\"$init_service_identity\",\"resourceId\":$backend_object_id}"
-          echo "Applying appRoleId=$app_role_id to $init_service_identity"
-          az rest -m post -u "https://graph.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/servicePrincipals/$init_service_identity/appRoleAssignments?api-version=1.6" -b $json
+      #     backend_object_id=$(az ad sp list --display-name 'mts-backend-dr' --query "[0] .objectId")
+      #     app_role_id=$(az ad sp list --display-name 'mts-backend-dr' --query "[0] .appRoles [?value=='internal.service'].id | [0]")
+      #     json="{\"id\":$app_role_id,\"principalId\":\"$init_service_identity\",\"resourceId\":$backend_object_id}"
+      #     echo "Applying appRoleId=$app_role_id to $init_service_identity"
+      #     az rest -m post -u "https://graph.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/servicePrincipals/$init_service_identity/appRoleAssignments?api-version=1.6" -b $json
 
       # Get release zip file
       - name: UI component - Get assets zip
@@ -402,49 +402,49 @@ jobs:
           az storage blob delete-batch --connection-string ${ui_storage_conn_string} --source "\$web" --pattern "*"
           az storage blob upload-batch --connection-string ${ui_storage_conn_string} --source mts-trial-ui --destination '$web'
 
-      # Download init service progress log file from azure file share and validate success
-      - name: Validate Init service progress
-        timeout-minutes: 60
-        # if: github.ref == 'refs/heads/main'
-        run: |
-          set -o nounset
-          #set -o xtrace
-          # can't use errexit and pipefail flags here becasue tail will fail if the file doesn't exists
+      # # Download init service progress log file from azure file share and validate success
+      # - name: Validate Init service progress
+      #   timeout-minutes: 60
+      #   # if: github.ref == 'refs/heads/main'
+      #   run: |
+      #     set -o nounset
+      #     #set -o xtrace
+      #     # can't use errexit and pipefail flags here becasue tail will fail if the file doesn't exists
 
-          echo "Trying to download init service log in loop, timeout set to 60 min."
-          lines_in_previous_file=0
-          start_time="$(date -u +%s)"
-          while :
-          do
-            until az storage file download --no-progress --output none --path log.txt --share-name ${init_storage_share_name} --connection-string ${init_storage_conn_string} > /dev/null 2>&1
-            do
-              time_stamp="$(date -u +%s)"
-              echo "Log file isn't there yet. Sleeping... $(($time_stamp-$start_time))s"
-              sleep 10
-            done
+      #     echo "Trying to download init service log in loop, timeout set to 60 min."
+      #     lines_in_previous_file=0
+      #     start_time="$(date -u +%s)"
+      #     while :
+      #     do
+      #       until az storage file download --no-progress --output none --path log.txt --share-name ${init_storage_share_name} --connection-string ${init_storage_conn_string} > /dev/null 2>&1
+      #       do
+      #         time_stamp="$(date -u +%s)"
+      #         echo "Log file isn't there yet. Sleeping... $(($time_stamp-$start_time))s"
+      #         sleep 10
+      #       done
 
-            # check how many lines in the new file and print only the new lines from previous iteration
-            lines_in_new_file=$(cat log.txt | wc -l)
-            delta=$(("$lines_in_new_file" - "$lines_in_previous_file"))
-            if [[ $delta -gt 0 ]]; then
-              tail log.txt -n $delta
-              lines_in_previous_file=$lines_in_new_file
-              if (tail log.txt --lines 1 | grep -q "SUCCESS")
-              then
-                  echo "Init service - Completed Successfully"
-                  exit 0
-              fi
-            fi
+      #       # check how many lines in the new file and print only the new lines from previous iteration
+      #       lines_in_new_file=$(cat log.txt | wc -l)
+      #       delta=$(("$lines_in_new_file" - "$lines_in_previous_file"))
+      #       if [[ $delta -gt 0 ]]; then
+      #         tail log.txt -n $delta
+      #         lines_in_previous_file=$lines_in_new_file
+      #         if (tail log.txt --lines 1 | grep -q "SUCCESS")
+      #         then
+      #             echo "Init service - Completed Successfully"
+      #             exit 0
+      #         fi
+      #       fi
 
-            time_stamp="$(date -u +%s)"
-            echo "Didn't find SUCCESS message, Sleeping... $(($time_stamp-$start_time))s"
-            sleep 10
-          done
-  deployall:
-    runs-on: ubuntu-latest
-    name: Terraform plan/apply (matrix)
-    needs: deploy
-    steps:
-      - name: Check TF (plan) matrix status
-        if: ${{ needs.deploy.result != 'success' }}
-        run: exit 1
+      #       time_stamp="$(date -u +%s)"
+      #       echo "Didn't find SUCCESS message, Sleeping... $(($time_stamp-$start_time))s"
+      #       sleep 10
+      #     done
+  # deployall:
+  #   runs-on: ubuntu-latest
+  #   name: Terraform plan/apply (matrix)
+  #   needs: deploy
+  #   steps:
+  #     - name: Check TF (plan) matrix status
+  #       if: ${{ needs.deploy.result != 'success' }}
+  #       run: exit 1
