@@ -161,7 +161,7 @@ jobs:
             fi
 
             # Prepare the matrix item
-            MatrixItem="{\"trial_name\": \"$trial_name\",\"secondary_trial_name\": \"secondary-$trial_name\" \"trial_dir\": \"$trial_dir\", \"definition_path\": \"$definition_path\",},"
+            MatrixItem="{\"trial_name\": \"$trial_name\",\"secondary_trial_name\": \"secondary-$trial_name\", \"trial_dir\": \"$trial_dir\", \"definition_path\": \"$definition_path\",},"
 
             JSON="$JSON$MatrixItem"
           done <<< "$FILES"
