@@ -21,7 +21,3 @@ output "init_storage_share_name" {
   description = "The init service storage account share name."
   sensitive   = true
 }
-
-output "init_service_identity" {
-  value = module.trial_app_service_init.identity
-}

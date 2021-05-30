@@ -166,50 +166,5 @@ resource "azurerm_storage_share" "initstorageshare" {
   quota                = 1
 }
 
-# init service
-module "trial_app_service_init" {
-  source               = "./modules/genericservice"
-  app_name             = local.init_name
-  rg_name              = azurerm_resource_group.trial_rg.name
-  location             = azurerm_resource_group.trial_rg.location
-  app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
-  trial_name           = var.trial_name
-  environment          = var.environment
-  docker_image         = var.init_service_image_name
-  docker_image_tag     = var.init_service_image_tag
-  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
-  identity_type        = "SystemAssigned"
-  storage_account = ({
-    "name"         = azurerm_storage_account.initstorageaccount.name
-    "type"         = "AzureFiles"
-    "account_name" = azurerm_storage_account.initstorageaccount.name
-    "share_name"   = azurerm_storage_share.initstorageshare.name
-    "access_key"   = azurerm_storage_account.initstorageaccount.primary_access_key
-    "mount_path"   = var.init_log_path
-  })
-
-  enable_private_endpoint = var.enable_private_endpoint
-  subnet_id               = azurerm_subnet.endpointsubnet.id
-  dns_zone_id             = azurerm_private_dns_zone.web-app-endpoint-dns-private-zone.id
-  integration_subnet_id   = azurerm_subnet.integrationsubnet.id
-
-
-  settings = merge(
-    local.common_settings,
-    {
-      "SPRING_MAIN_WEB_APPLICATION_TYPE" = "" # brings up the spring web app despite being a console app
-      "PROGRESS_LOG_PATH"                = "${var.init_log_path}/log.txt"
-    },
-  )
-
-  depends_on = [
-    module.trial_sc_discovery,
-    module.trial_sc_config,
-    module.trial_app_service_role,
-    module.trial_app_service_site,
-    module.trial_app_service_practitioner,
-    azurerm_storage_share.initstorageshare,
-  ]
-}
 
 ## End - Service application

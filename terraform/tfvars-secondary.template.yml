@@ -22,4 +22,4 @@ site_image_tag: .site_service.image_tag
 spring_config_label: .spring_config_label
 spring_profile: .spring_profile
 trial_name: .name
-location: "uksouth"
+location: "ukwest"
