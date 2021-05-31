@@ -1,7 +1,8 @@
 # Trial Resource Group
 resource "azurerm_resource_group" "trial_rg" {
-  name     = "rg-trial-${var.trial_name}-${var.environment}"
-  location = var.location
+  for_each = var.locations
+  name     = "rg-trial-${var.trial_name}-${each.value}"
+  location = each.value
   tags = {
     Owner       = var.owner
     Environment = var.environment
