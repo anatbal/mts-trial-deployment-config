@@ -17,8 +17,15 @@ variable "environment" {
 variable "location" {
   type        = string
   description = "Azure region where to create resources."
-  default     = "eastus2"
+  default     = "uksouth"
 }
+
+variable "locations" {
+  type        = list(string)
+  description = "Azure region where to create resources."
+  default     = ["ukwest", "uksouth"]
+}
+
 
 
 variable "sc_config_git_uri" {
