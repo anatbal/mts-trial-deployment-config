@@ -407,3 +407,43 @@ jobs:
               echo "::add-mask::$init_storage_conn_string"
               echo "::add-mask::$ui_storage_conn_string"
 
+      # Plan TF
+      - name: Terraform Secondary plan
+        run: |
+          set -o errexit
+          set -o pipefail
+          set -o nounset
+          # set -o xtrace
+
+          terraform plan -out=tfplan -var-file=${{ matrix.secondary_trial_name }}.tfvars \
+            -var="owner=${{ github.actor }}" \
+            -var="github_ref=${{ github.ref }}"
+
+      # Apply, only on merge to main
+      - name: Terraform Secondary apply
+        # if: github.ref == 'refs/heads/main'
+        run: |
+          set -o errexit
+          set -o pipefail
+          set -o nounset
+          # set -o xtrace
+
+          echo "Merged to main. applying trial's RG"
+          terraform apply -auto-approve tfplan
+
+          # '-raw' is important so no other characters will be added
+          ui_storage_conn_string=$(terraform output -raw ui_conn_string)
+          init_storage_conn_string=$(terraform output -raw init_storage_conn_string)
+          echo "init_storage_conn_string=$init_storage_conn_string" >> $GITHUB_ENV
+          init_storage_share_name=$(terraform output -raw init_storage_share_name)
+          echo "init_storage_share_name=$init_storage_share_name" >> $GITHUB_ENV
+
+          gateway_host_string=$(terraform output -raw gateway_host)
+          # create an env var from the connection string, so will be available for the later steps
+          echo "ui_storage_conn_string=$ui_storage_conn_string" >> $GITHUB_ENV
+          echo "gateway_host_string=$gateway_host_string" >> $GITHUB_ENV
+
+          ## DO NOT DELETE ##
+          # mask this value so this sensitive data won't be logged.
+          echo "::add-mask::$init_storage_conn_string"
+          echo "::add-mask::$ui_storage_conn_string"
