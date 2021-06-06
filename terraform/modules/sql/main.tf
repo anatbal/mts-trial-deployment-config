@@ -7,7 +7,7 @@ resource "random_string" "random" {
 }
 
 resource "azurerm_mssql_server" "sql_server_primary" {
-  name                         = "sql-server-${var.trial_name}-${var.app_name}-${var.environment}-${random_string.random.result}"
+  name                         = "sql-server-${var.trial_name}-${var.app_name}-${var.environment}-primary"
   location                     = var.location
   resource_group_name          = var.rg_name
   version                      = "12.0"
@@ -19,7 +19,7 @@ resource "azurerm_mssql_server" "sql_server_primary" {
 }
 
 resource "azurerm_mssql_server" "sql_server_secondary" {
-  name                         = "sql-server-${var.trial_name}-${var.app_name}-${var.environment}-${random_string.random.result}"
+  name                         = "sql-server-${var.trial_name}-${var.app_name}-${var.environment}-secondary"
   location                     = var.failover_location
   resource_group_name          = var.rg_name
   version                      = "12.0"
@@ -63,7 +63,7 @@ module "private_endpoint" {
 }
 
 resource "azurerm_sql_failover_group" "dr" {
-  name                = "failover-group"
+  name                = "failover-group-${var.app_name}"
   resource_group_name = var.rg_name
   server_name         = azurerm_mssql_server.sql_server_primary.name
   databases           = [azurerm_mssql_database.sqldb.id]
