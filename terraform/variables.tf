@@ -20,10 +20,10 @@ variable "location" {
   default     = "uksouth"
 }
 
-variable "locations" {
+variable "replica_locations" {
   type        = list(string)
   description = "Azure region where to create resources."
-  default     = ["ukwest", "uksouth"]
+  default     = ["ukwest"]
 }
 
 
