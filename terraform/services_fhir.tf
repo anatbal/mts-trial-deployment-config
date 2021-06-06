@@ -18,7 +18,7 @@ module "fhir_server" {
   settings = {
     FHIRServer__Security__Enabled = "false"
     # TODO: replace with KeyVault reference
-    SqlServer__ConnectionString                       = "Server=tcp:${module.fhir_sql.server_fqdn},1433;Initial Catalog=FHIR;Persist Security Info=False;User ID=${module.fhir_sql.db_user};Password=${module.fhir_sql.db_password};MultipleActiveResultSets=False;Connection Timeout=30;"
+    SqlServer__ConnectionString                       = "Server=tcp:${module.fhir_sql.failover_name}.database.windows.net,1433;Initial Catalog=FHIR;Persist Security Info=False;User ID=${module.fhir_sql.db_user};Password=${module.fhir_sql.db_password};MultipleActiveResultSets=False;Connection Timeout=30;"
     SqlServer__AllowDatabaseCreation                  = "true"
     SqlServer__Initialize                             = "true"
     SqlServer__SchemaOptions__AutomaticUpdatesEnabled = "true"
@@ -50,6 +50,7 @@ module "fhir_sql" {
   rg_name              = azurerm_resource_group.trial_rg.name
   location             = azurerm_resource_group.trial_rg.location
   failover_location    = var.failover_location
+  failover_name        = "failover-fhir"
   db_name              = "FHIR"
   app_name             = "fhir"
   sql_user             = "fhiruser"

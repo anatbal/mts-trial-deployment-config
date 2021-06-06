@@ -31,10 +31,19 @@ resource "azurerm_mssql_server" "sql_server_secondary" {
 }
 
 # If private endpoints are enabled, no need to open access for "azure services"
-resource "azurerm_mssql_firewall_rule" "example" {
+resource "azurerm_mssql_firewall_rule" "sql_primary_firewall_rule" {
   count            = var.enable_private_endpoint ? 0 : 1
   name             = "AzureServicesRule"
   server_id        = azurerm_mssql_server.sql_server_primary.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
+}
+
+# If private endpoints are enabled, no need to open access for "azure services"
+resource "azurerm_mssql_firewall_rule" "sql_secondary_firewall_rule" {
+  count            = var.enable_private_endpoint ? 0 : 1
+  name             = "AzureServicesRule"
+  server_id        = azurerm_mssql_server.sql_server_secondary.id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
 }
@@ -63,7 +72,7 @@ module "private_endpoint" {
 }
 
 resource "azurerm_sql_failover_group" "dr" {
-  name                = "failover-group-${var.app_name}"
+  name                = var.failover_name
   resource_group_name = var.rg_name
   server_name         = azurerm_mssql_server.sql_server_primary.name
   databases           = [azurerm_mssql_database.sqldb.id]

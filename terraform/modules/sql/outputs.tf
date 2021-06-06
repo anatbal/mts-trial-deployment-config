@@ -13,3 +13,9 @@ output "db_password" {
   description = "The admin password for the server."
   sensitive   = true
 }
+
+output "failover_name" {
+  value       = azurerm_sql_failover_group.dr.name
+  description = "The admin password for the server."
+  sensitive   = true
+}

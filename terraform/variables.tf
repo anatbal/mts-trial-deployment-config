@@ -26,8 +26,6 @@ variable "failover_location" {
   default     = "eastus2"
 }
 
-
-
 variable "sc_config_git_uri" {
   type        = string
   description = "Git configuration uri, from which to pull all the applications configuration"

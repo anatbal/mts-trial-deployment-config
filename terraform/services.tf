@@ -107,7 +107,7 @@ module "trial_app_service_role" {
       # TODO: this setting should be fetched from the config server
       "JDBC_DRIVER" = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # TODO: replace with KeyVault reference
-      "JDBC_URL" = "jdbc:sqlserver://${module.roles_sql_server.server_fqdn}:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
+      "JDBC_URL" = "jdbc:sqlserver://${module.roles_sql_server.failover_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
       # since this service does db migrations, interuptting it will render the whole env useless (due to the db "lock").
       "WEBSITES_CONTAINER_START_TIME_LIMIT" = 600 # default is 230
     },
@@ -136,6 +136,7 @@ module "roles_sql_server" {
   location             = azurerm_resource_group.trial_rg.location
   rg_name              = azurerm_resource_group.trial_rg.name
   failover_location    = var.failover_location
+  failover_name        = "failover-roles"
   db_name              = "ROLES"
   app_name             = "roles"
   sql_user             = "rolesuser"

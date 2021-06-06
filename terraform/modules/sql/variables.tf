@@ -13,6 +13,11 @@ variable "failover_location" {
   description = "Failover location"
 }
 
+variable "failover_name" {
+  type        = string
+  description = "Failover name"
+}
+
 variable "environment" {
   type        = string
   description = "Environment name, e.g. 'dev' or 'stage'"
