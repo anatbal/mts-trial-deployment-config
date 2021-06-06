@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "trial_rg" {
 }
 
 resource "azurerm_resource_group" "replica_trial_rg" {
-  for_each = var.replica_locations
+  for_each = toset(var.replica_locations)
   name     = "rg-trial-${var.trial_name}-${each.value}"
   location = each.value
   tags = {
