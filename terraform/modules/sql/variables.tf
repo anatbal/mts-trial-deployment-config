@@ -10,6 +10,7 @@ variable "trial_name" {
 
 variable "failover_location" {
   type        = string
+  description = "Failover location"
 }
 
 variable "environment" {
