@@ -49,6 +49,7 @@ module "fhir_sql" {
   trial_name           = var.trial_name
   rg_name              = azurerm_resource_group.trial_rg.name
   location             = azurerm_resource_group.trial_rg.location
+  failover_location    = var.failover_location
   db_name              = "FHIR"
   app_name             = "fhir"
   sql_user             = "fhiruser"
