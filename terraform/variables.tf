@@ -17,13 +17,13 @@ variable "environment" {
 variable "location" {
   type        = string
   description = "Azure region where to create resources."
-  default     = "uksouth"
+  default     = "eastus"
 }
 
 variable "failover_location" {
   type        = string
   description = "Azure region where to create resources."
-  default     = "ukwest"
+  default     = "eastus2"
 }
 
 
@@ -154,5 +154,5 @@ variable "keyvault_enabled" {
 variable "enable_private_endpoint" {
   type        = bool
   description = "if 'false' then for this web app, private endpoint will NOT be created."
-  default     = true
+  default     = false
 }
