@@ -9,17 +9,6 @@ resource "azurerm_resource_group" "trial_rg" {
   }
 }
 
-resource "azurerm_resource_group" "replica_trial_rg" {
-  for_each = toset(var.replica_locations)
-  name     = "rg-trial-${var.trial_name}-${each.value}"
-  location = each.value
-  tags = {
-    Owner       = var.owner
-    Environment = var.environment
-    Ref         = var.github_ref
-  }
-}
-
 ## Service plan
 resource "azurerm_app_service_plan" "apps_service_plan" {
   name                = "asp-${var.trial_name}-${var.environment}"

@@ -45,11 +45,10 @@ resource "random_password" "fhir_sql_password" {
 }
 
 module "fhir_sql" {
-  for_each             = toset(var.replica_locations)
   source               = "./modules/sql"
   trial_name           = var.trial_name
-  rg_name              = azurerm_resource_group.replica_trial_rg[each.key].name
-  location             = azurerm_resource_group.replica_trial_rg[each.key].location
+  rg_name              = azurerm_resource_group.trial_rg.name
+  location             = azurerm_resource_group.trial_rg.location
   db_name              = "FHIR"
   app_name             = "fhir"
   sql_user             = "fhiruser"

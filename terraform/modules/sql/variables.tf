@@ -8,6 +8,10 @@ variable "trial_name" {
   description = "Trial name. Use only lowercase letters and numbers"
 }
 
+variable "failover_location" {
+  type        = string
+}
+
 variable "environment" {
   type        = string
   description = "Environment name, e.g. 'dev' or 'stage'"
