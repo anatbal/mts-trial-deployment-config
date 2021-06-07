@@ -131,19 +131,20 @@ resource "random_password" "roles_sql_password" {
 }
 
 module "roles_sql_server" {
-  source               = "./modules/sql"
-  trial_name           = var.trial_name
-  location             = azurerm_resource_group.trial_rg.location
-  rg_name              = azurerm_resource_group.trial_rg.name
-  failover_location    = var.failover_location
-  failover_name        = "failover-roles"
-  db_name              = "ROLES"
-  app_name             = "roles"
-  sql_user             = "rolesuser"
-  sql_pass             = random_password.roles_sql_password.result
-  application          = "sql-roles"
-  environment          = var.environment
-  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  source                 = "./modules/sql"
+  trial_name             = var.trial_name
+  location               = azurerm_resource_group.trial_rg.location
+  rg_name                = azurerm_resource_group.trial_rg.name
+  failover_location      = var.failover_location
+  failover_name          = "failover-roles"
+  db_name                = "ROLES"
+  app_name               = "roles"
+  sql_user               = "rolesuser"
+  sql_pass               = random_password.roles_sql_password.result
+  application            = "sql-roles"
+  environment            = var.environment
+  is_failover_deployment = var.is_failover_deployment ? false : true
+  monitor_workspace_id   = azurerm_log_analytics_workspace.monitor_workspace.id
 
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id
@@ -154,7 +155,7 @@ module "roles_sql_server" {
 resource "azurerm_storage_account" "initstorageaccount" {
   name                      = "sa${var.trial_name}init${var.environment}"
   resource_group_name       = azurerm_resource_group.trial_rg.name
-  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
+  location                  = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
   account_kind              = "StorageV2"
   account_tier              = "Standard"
   account_replication_type  = "LRS"

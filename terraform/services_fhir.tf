@@ -45,19 +45,19 @@ resource "random_password" "fhir_sql_password" {
 }
 
 module "fhir_sql" {
-  source               = "./modules/sql"
-  trial_name           = var.trial_name
-  rg_name              = azurerm_resource_group.trial_rg.name
-  location             = azurerm_resource_group.trial_rg.location
-  failover_location    = var.failover_location
-  failover_name        = "failover-fhir"
-  db_name              = "FHIR"
-  app_name             = "fhir"
-  sql_user             = "fhiruser"
-  sql_pass             = random_password.fhir_sql_password.result
-  application          = "sql-fhir"
-  environment          = var.environment
-  monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  source                  = "./modules/sql"
+  trial_name              = var.trial_name
+  rg_name                 = azurerm_resource_group.trial_rg.name
+  location                = azurerm_resource_group.trial_rg.location
+  failover_location       = var.failover_location
+  failover_name           = "failover-fhir"
+  db_name                 = "FHIR"
+  app_name                = "fhir"
+  sql_user                = "fhiruser"
+  sql_pass                = random_password.fhir_sql_password.result
+  application             = "sql-fhir"
+  environment             = var.environment
+  monitor_workspace_id    = azurerm_log_analytics_workspace.monitor_workspace.id
   is_failover_deployment  = var.is_failover_deployment ? false : true
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id

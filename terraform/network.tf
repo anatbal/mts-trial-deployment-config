@@ -1,7 +1,7 @@
 # Creating a virtual network and several subnets
 resource "azurerm_virtual_network" "vnet" {
   name                = "vnet-${var.trial_name}-${var.environment}"
-  location            = azurerm_resource_group.trial_rg.location
+  location            = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
   resource_group_name = azurerm_resource_group.trial_rg.name
   address_space       = ["10.0.0.0/16"]
 }

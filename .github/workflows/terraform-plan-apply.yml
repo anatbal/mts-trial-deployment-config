@@ -10,7 +10,7 @@ on:
       isFailover:
         description: Is failover deployment (true/false)
         required: false
-        default: false
+        default: "false"
 
 jobs:
   check-files-correctness:
