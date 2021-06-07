@@ -2,7 +2,7 @@ module "fhir_server" {
   source               = "./modules/genericservice"
   app_name             = "as-${var.trial_name}-fhir-${var.environment}"
   rg_name              = azurerm_resource_group.trial_rg.name
-  location             = azurerm_resource_group.trial_rg.location
+  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment
@@ -58,7 +58,7 @@ module "fhir_sql" {
   application          = "sql-fhir"
   environment          = var.environment
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
-
+  is_failover_deployment  = var.is_failover_deployment ? false : true
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id
   dns_zone_id             = azurerm_private_dns_zone.sql-endpoint-dns-private-zone.id

@@ -21,7 +21,7 @@ module "trial_app_service_site" {
   source               = "./modules/genericservice"
   app_name             = local.site_name
   rg_name              = azurerm_resource_group.trial_rg.name
-  location             = azurerm_resource_group.trial_rg.location
+  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment
@@ -54,7 +54,7 @@ module "trial_app_service_practitioner" {
   source               = "./modules/genericservice"
   app_name             = local.practitioner_name
   rg_name              = azurerm_resource_group.trial_rg.name
-  location             = azurerm_resource_group.trial_rg.location
+  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment
@@ -87,7 +87,7 @@ module "trial_app_service_role" {
   source               = "./modules/genericservice"
   app_name             = local.role_name
   rg_name              = azurerm_resource_group.trial_rg.name
-  location             = azurerm_resource_group.trial_rg.location
+  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment
@@ -154,7 +154,7 @@ module "roles_sql_server" {
 resource "azurerm_storage_account" "initstorageaccount" {
   name                      = "sa${var.trial_name}init${var.environment}"
   resource_group_name       = azurerm_resource_group.trial_rg.name
-  location                  = azurerm_resource_group.trial_rg.location
+  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
   account_kind              = "StorageV2"
   account_tier              = "Standard"
   account_replication_type  = "LRS"
@@ -173,7 +173,7 @@ module "trial_app_service_init" {
   source               = "./modules/genericservice"
   app_name             = local.init_name
   rg_name              = azurerm_resource_group.trial_rg.name
-  location             = azurerm_resource_group.trial_rg.location
+  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment

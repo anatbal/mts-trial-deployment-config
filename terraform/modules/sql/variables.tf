@@ -18,6 +18,11 @@ variable "failover_name" {
   description = "Failover name"
 }
 
+variable "is_failover_deployment" {
+  type        = bool
+  description = "Is failover deployment"
+}
+
 variable "environment" {
   type        = string
   description = "Environment name, e.g. 'dev' or 'stage'"
