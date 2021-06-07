@@ -1,6 +1,6 @@
 # Trial Resource Group
 resource "azurerm_resource_group" "trial_rg" {
-  name     = "rg-dr-${var.trial_name}"
+  name     = "rg-trial-${var.trial_name}"
   location = var.location
   tags = {
     Owner       = var.owner
