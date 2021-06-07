@@ -7,7 +7,6 @@ resource "random_string" "random" {
 }
 
 resource "azurerm_mssql_server" "sql_server_primary" {
-  count                        = var.is
   name                         = "sql-server-${var.trial_name}-${var.app_name}-${var.environment}-primary"
   location                     = var.location
   resource_group_name          = var.rg_name
