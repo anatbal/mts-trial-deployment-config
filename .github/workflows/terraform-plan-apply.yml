@@ -7,6 +7,9 @@ on:
       trialDefinitionPath:
         description: Path to definition file of trial environment to deploy
         required: false
+      isFailover:
+        description: Is failover deployment (true/false)
+        required: false
 
 jobs:
   check-files-correctness:
@@ -266,6 +269,7 @@ jobs:
             echo "${var_name}=\"${property_value}\"" >> ${{ matrix.trial_name }}.tfvars
           done
 
+          echo "is_failover_deployment=\"${{github.event.inputs.isFailover}}\"" >> ${{ matrix.trial_name }}.tfvars
           cat ${{ matrix.trial_name }}.tfvars
 
           # extract more values from the definition file to inject to the ui resources
