@@ -10,7 +10,7 @@ on:
       isFailover:
         description: Is failover deployment (true/false)
         required: false
-        default: "false"
+        default: 'false'
 
 jobs:
   check-files-correctness:
@@ -271,6 +271,7 @@ jobs:
           done
 
           echo "is_failover_deployment=\"${{github.event.inputs.isFailover}}\"" >> ${{ matrix.trial_name }}.tfvars
+          echo ${{ github.event.inputs.isFailover }}
           cat ${{ matrix.trial_name }}.tfvars
 
           # extract more values from the definition file to inject to the ui resources
