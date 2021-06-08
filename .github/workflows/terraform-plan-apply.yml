@@ -211,7 +211,7 @@ jobs:
           # set -o xtrace
 
           # Validate that the config server properties are set correctly
-          echo "${{ matrix.trials.definition_path }}"
+          echo "hello ${{ matrix.trials.definition_path }}"
           config_label=$(yq eval ".spring_config_label" ${{ matrix.trials.definition_path }})
           config_search_path=$(yq eval '.spring_cloud.config_server.search_paths | split(",") | .[0]' ${{ matrix.trials.definition_path }})
 
