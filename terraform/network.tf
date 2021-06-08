@@ -12,6 +12,7 @@ data "azurerm_virtual_network" "primary_vnet" {
 }
 
 resource "azurerm_virtual_network_peering" "primary_to_secondary" {
+  count                     = var.is_failover_deployment ? 1 : 0
   name                      = "primary_to_secondary"
   resource_group_name       = data.azurerm_virtual_network.primary_vnet.resource_group_name
   virtual_network_name      = data.azurerm_virtual_network.primary_vnet.name
@@ -19,6 +20,7 @@ resource "azurerm_virtual_network_peering" "primary_to_secondary" {
 }
 
 resource "azurerm_virtual_network_peering" "secondary_to_primary" {
+  count                     = var.is_failover_deployment ? 1 : 0
   name                      = "secondary_to_primary"
   resource_group_name       = azurerm_virtual_network.vnet.resource_group_name
   virtual_network_name      = azurerm_virtual_network.vnet.name
