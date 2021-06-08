@@ -4,7 +4,7 @@ locals {
 
 # Trial Resource Group
 resource "azurerm_resource_group" "trial_rg" {
-  name     = "rg-trial-${var.trial_name}-${local.location}"
+  name     = "rg-drtrial-${var.trial_name}-${local.location}"
   location = local.location
   tags = {
     Owner       = var.owner
