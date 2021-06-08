@@ -183,8 +183,9 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        trials: ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
-        is_failover: [false, true]
+        includes:
+          - trials: ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
+            is_failover: [false, true]
     runs-on: ubuntu-latest
     defaults:
       run:
