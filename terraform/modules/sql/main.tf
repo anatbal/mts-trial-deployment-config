@@ -66,7 +66,7 @@ data "azurerm_mssql_database" "sqldb" {
 resource "azurerm_sql_failover_group" "sql_failover_group" {
   count               = var.is_failover_deployment ? 1 : 0
   name                = var.failover_name
-  resource_group_name = data.azurerm_mssql_server.primary.resource_group_name
+  resource_group_name = data.azurerm_mssql_server.primary[0].resource_group_name
   server_name         = data.azurerm_mssql_server.primary[0].name
   databases           = [data.azurerm_mssql_database.sqldb[0].id]
   partner_servers {
