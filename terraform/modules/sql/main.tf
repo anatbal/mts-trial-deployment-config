@@ -40,7 +40,7 @@ resource "azurerm_mssql_server" "sql_server_secondary" {
 resource "azurerm_mssql_firewall_rule" "sql_primary_firewall_rule" {
   count            = var.enable_private_endpoint && !var.is_failover_deployment ? 0 : 1
   name             = "AzureServicesRule"
-  server_id        = azurerm_mssql_server.sql_server_primary.id
+  server_id        = azurerm_mssql_server.sql_server_primary[0].id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
 }
@@ -49,7 +49,7 @@ resource "azurerm_mssql_firewall_rule" "sql_primary_firewall_rule" {
 resource "azurerm_mssql_firewall_rule" "sql_secondary_firewall_rule" {
   count            = var.enable_private_endpoint && !var.is_failover_deployment ? 0 : 1
   name             = "AzureServicesRule"
-  server_id        = azurerm_mssql_server.sql_server_secondary.id
+  server_id        = azurerm_mssql_server.sql_server_secondary[0].id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
 }
@@ -58,7 +58,7 @@ resource "azurerm_mssql_firewall_rule" "sql_secondary_firewall_rule" {
 resource "azurerm_mssql_database" "sqldb" {
   count       = local.resource_count
   name        = var.db_name
-  server_id   = azurerm_mssql_server.sql_server_primary.id
+  server_id   = azurerm_mssql_server.sql_server_primary[0].id
   sku_name    = "S0" # a small sku, probably not right for production
   max_size_gb = 2
 }
@@ -70,7 +70,7 @@ module "private_endpoint" {
   trial_name       = var.trial_name
   rg_name          = var.rg_name
   location         = var.location
-  resource_id      = azurerm_mssql_server.sql_server_primary.id
+  resource_id      = azurerm_mssql_server.sql_server_primary[0].id
   subnet_id        = var.subnet_id
   subresource_name = "sqlServer"
   application      = var.application
@@ -82,7 +82,7 @@ resource "azurerm_sql_failover_group" "dr" {
   count               = local.resource_count
   name                = var.failover_name
   resource_group_name = var.rg_name
-  server_name         = azurerm_mssql_server.sql_server_primary.name
+  server_name         = azurerm_mssql_server.sql_server_primary[0].name
   databases           = [azurerm_mssql_database.sqldb.id]
   partner_servers {
     id = azurerm_mssql_server.sql_server_secondary.id
