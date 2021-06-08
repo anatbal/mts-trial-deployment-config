@@ -8,9 +8,9 @@ variable "trial_name" {
   description = "Trial name. Use only lowercase letters and numbers"
 }
 
-variable "failover_location" {
+variable "primary_location" {
   type        = string
-  description = "Failover location"
+  description = "Primary location"
 }
 
 variable "failover_name" {

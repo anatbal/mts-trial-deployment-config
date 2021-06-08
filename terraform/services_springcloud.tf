@@ -19,7 +19,7 @@ module "trial_sc_discovery" {
   source               = "./modules/genericservice"
   app_name             = local.discovery_name
   rg_name              = azurerm_resource_group.trial_rg.name
-  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
+  location             = azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment
@@ -47,7 +47,7 @@ module "trial_sc_config" {
   source               = "./modules/genericservice"
   app_name             = local.config_name
   rg_name              = azurerm_resource_group.trial_rg.name
-  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
+  location             = azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment
@@ -78,7 +78,7 @@ module "trial_sc_gateway" {
   source               = "./modules/genericservice"
   app_name             = local.gateway_name
   rg_name              = azurerm_resource_group.trial_rg.name
-  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
+  location             = azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment

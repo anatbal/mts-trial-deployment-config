@@ -2,7 +2,7 @@ module "fhir_server" {
   source               = "./modules/genericservice"
   app_name             = "as-${var.trial_name}-fhir-${var.environment}"
   rg_name              = azurerm_resource_group.trial_rg.name
-  location             = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
+  location             = azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id
   trial_name           = var.trial_name
   environment          = var.environment
@@ -49,7 +49,7 @@ module "fhir_sql" {
   trial_name              = var.trial_name
   rg_name                 = azurerm_resource_group.trial_rg.name
   location                = azurerm_resource_group.trial_rg.location
-  failover_location       = var.failover_location
+  primary_location        = var.location
   failover_name           = "failover-fhir"
   db_name                 = "FHIR"
   app_name                = "fhir"

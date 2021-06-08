@@ -5,7 +5,7 @@ data "azurerm_client_config" "current" {}
 resource "azurerm_key_vault" "trial_keyvault" {
   count                       = var.keyvault_enabled == true ? 1 : 0
   name                        = "kv-${var.trial_name}-${var.environment}"
-  location                    = var.is_failover_deployment ? var.failover_location : azurerm_resource_group.trial_rg.location
+  location                    = azurerm_resource_group.trial_rg.location
   resource_group_name         = azurerm_resource_group.trial_rg.name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
@@ -25,7 +25,7 @@ module "private_endpoint" {
   source     = "./modules/privateendpoint"
   trial_name = var.trial_name
   rg_name    = azurerm_resource_group.trial_rg.name
-  location   = var.is_failover_deployment ? var.failover_location : var.location
+  location   = azurerm_resource_group.trial_rg.location
   # the following expression is a workaround since the keyvault might not exist and TF doesn't know to handle that.
   resource_id      = element(concat(azurerm_key_vault.trial_keyvault.*.id, list("")), 0)
   subnet_id        = azurerm_subnet.endpointsubnet.id

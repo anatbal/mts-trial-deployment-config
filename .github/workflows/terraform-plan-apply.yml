@@ -7,10 +7,6 @@ on:
       trialDefinitionPath:
         description: Path to definition file of trial environment to deploy
         required: false
-      isFailover:
-        description: Is failover deployment (true/false)
-        required: false
-        default: 'false'
 
 jobs:
   check-files-correctness:
@@ -185,7 +181,9 @@ jobs:
     needs: [prepare-run-matrix, check-files-correctness]
     if: ${{ needs.prepare-run-matrix.outputs.is_empty_matrix == 'false' }}
     strategy:
-      matrix: ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
+      matrix:
+        trials: ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
+        is_failover: [true, false]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -212,8 +210,8 @@ jobs:
           # set -o xtrace
 
           # Validate that the config server properties are set correctly
-          config_label=$(yq eval ".spring_config_label" ${{ matrix.definition_path }})
-          config_search_path=$(yq eval '.spring_cloud.config_server.search_paths | split(",") | .[0]' ${{ matrix.definition_path }})
+          config_label=$(yq eval ".spring_config_label" ${{ matrix.trials.definition_path }})
+          config_search_path=$(yq eval '.spring_cloud.config_server.search_paths | split(",") | .[0]' ${{ matrix.trials.definition_path }})
 
           echo "fetching the config branch..."
           git fetch origin ${config_label}
@@ -250,7 +248,7 @@ jobs:
 
           # github ref comes with "/" which is not valid for workspace names
           ref_for_workspace="${GITHUB_REF//\//_}"
-          workspace_name="${{ matrix.trial_name }}-${ref_for_workspace}"
+          workspace_name="${{ matrix.trials.trial_name }}-${ref_for_workspace}"
           terraform workspace select ${workspace_name} || terraform workspace new ${workspace_name}
 
       - name: Prepare deployment variables
@@ -266,17 +264,16 @@ jobs:
           yq eval -j ${TFVARS_TEMPLATE} | jq -r 'to_entries[] | [.key, .value] | @tsv' |
           while IFS=$'\t' read -r var_name property_path
           do
-            property_value=$(yq eval ${property_path} ${{ matrix.definition_path }})
-            echo "${var_name}=\"${property_value}\"" >> ${{ matrix.trial_name }}.tfvars
+            property_value=$(yq eval ${property_path} ${{ matrix.trials.definition_path }})
+            echo "${var_name}=\"${property_value}\"" >> ${{ matrix.trials.trial_name }}.tfvars
           done
 
-          echo "is_failover_deployment=\"${{github.event.inputs.isFailover}}\"" >> ${{ matrix.trial_name }}.tfvars
-          echo ${{ github.event.inputs.isFailover }}
-          cat ${{ matrix.trial_name }}.tfvars
+          echo "is_failover_deployment=\"${{matrix.is_failover}}\"" >> ${{ matrix.trials.trial_name }}.tfvars
+          cat ${{ matrix.trials.trial_name }}.tfvars
 
           # extract more values from the definition file to inject to the ui resources
-          echo "tenant_id=$(yq eval '.tenant_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
-          echo "ui_client_id=$(yq eval '.ui_client_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
+          echo "tenant_id=$(yq eval '.tenant_id' ${{ matrix.trials.definition_path }})" >> $GITHUB_ENV
+          echo "ui_client_id=$(yq eval '.ui_client_id' ${{ matrix.trials.definition_path }})" >> $GITHUB_ENV
 
       # Prepare versions json, write it to assets directory
       - name: Prepare versions json
@@ -285,12 +282,12 @@ jobs:
           set -o pipefail
           set -o nounset
 
-          echo "Preparing versions json for injection into UI - read ${{ matrix.definition_path }} write ${{ matrix.trial_name }}_versions.json "
+          echo "Preparing versions json for injection into UI - read ${{ matrix.trials.definition_path }} write ${{ matrix.trials.trial_name }}_versions.json "
 
           # Use YQ to convert definition.yml to json, use JQ to recurse through the json finding image_tag nodes and their keys, write to a file
-          yq eval -j ${{ matrix.definition_path }} | jq '[ ..  | objects | to_entries  | .[] | select(.value | has("image_tag"))? | {service:.key, version:.value.image_tag, timestamp:now} ] | .+ [{service:"UI", version:env.UI_BUNDLE, timestamp:now} ] ' >> ${{ matrix.trial_dir }}/assets/versions.json
+          yq eval -j ${{ matrix.trials.definition_path }} | jq '[ ..  | objects | to_entries  | .[] | select(.value | has("image_tag"))? | {service:.key, version:.value.image_tag, timestamp:now} ] | .+ [{service:"UI", version:env.UI_BUNDLE, timestamp:now} ] ' >> ${{ matrix.trials.trial_dir }}/assets/versions.json
 
-          cat ${{ matrix.trial_dir }}/assets/versions.json
+          cat ${{ matrix.trials.trial_dir }}/assets/versions.json
 
 
       # Plan TF
@@ -301,7 +298,7 @@ jobs:
           set -o nounset
           # set -o xtrace
 
-          terraform plan -out=tfplan -var-file=${{ matrix.trial_name }}.tfvars \
+          terraform plan -out=tfplan -var-file=${{ matrix.trials.trial_name }}.tfvars \
             -var="owner=${{ github.actor }}" \
             -var="github_ref=${{ github.ref }}"
 
@@ -334,25 +331,6 @@ jobs:
           echo "::add-mask::$init_storage_conn_string"
           echo "::add-mask::$ui_storage_conn_string"
 
-      - name: Azure login
-        run: |
-          az login --service-principal -u ${ARM_CLIENT_ID} -p ${ARM_CLIENT_SECRET} --tenant ${ARM_TENANT_ID}
-          az account set --subscription ${ARM_SUBSCRIPTION_ID}
-      # - name: Init apply permission
-      #   run: |
-      #     set -o errexit
-      #     set -o pipefail
-      #     set -o nounset
-      #     # set -o xtrace
-      #     # '-raw' is important so no other characters will be added
-      #     init_service_identity=$(terraform output -raw init_service_identity)
-
-      #     backend_object_id=$(az ad sp list --display-name 'mts-backend-dr' --query "[0] .objectId")
-      #     app_role_id=$(az ad sp list --display-name 'mts-backend-dr' --query "[0] .appRoles [?value=='internal.service'].id | [0]")
-      #     json="{\"id\":$app_role_id,\"principalId\":\"$init_service_identity\",\"resourceId\":$backend_object_id}"
-      #     echo "Applying appRoleId=$app_role_id to $init_service_identity"
-      #     az rest -m post -u "https://graph.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/servicePrincipals/$init_service_identity/appRoleAssignments?api-version=1.6" -b $json
-
       # Get release zip file
       - name: UI component - Get assets zip
         run: |
@@ -374,7 +352,7 @@ jobs:
 
           index_file="mts-trial-ui/index.html"
           # sed doesn't like the github {{ }} vars, so dropping the value to a regular var
-          trial_name=${{ matrix.trial_name }}
+          trial_name=${{ matrix.trials.trial_name }}
 
           sed -i "s/{{clientId}}/${ui_client_id}/" ${index_file}
           sed -i "s/{{issuerUrl}}/https:\/\/login.microsoftonline.com\/${tenant_id}\/v2.0/" ${index_file}
@@ -390,9 +368,9 @@ jobs:
           set -o nounset
           # set -o xtrace
 
-          echo "using trial path ${{ matrix.trial_dir }}"
+          echo "using trial path ${{ matrix.trials.trial_dir }}"
           # copy everything in the assets folder
-          cp -fr ${{ matrix.trial_dir }}/assets/* mts-trial-ui/assets/
+          cp -fr ${{ matrix.trials.trial_dir }}/assets/* mts-trial-ui/assets/
 
 
       # Upload to storage account (to $web container)
@@ -407,50 +385,3 @@ jobs:
           # first clean up the container, then upload the new assets
           az storage blob delete-batch --connection-string ${ui_storage_conn_string} --source "\$web" --pattern "*"
           az storage blob upload-batch --connection-string ${ui_storage_conn_string} --source mts-trial-ui --destination '$web'
-
-      # # Download init service progress log file from azure file share and validate success
-      # - name: Validate Init service progress
-      #   timeout-minutes: 60
-      #   # if: github.ref == 'refs/heads/main'
-      #   run: |
-      #     set -o nounset
-      #     #set -o xtrace
-      #     # can't use errexit and pipefail flags here becasue tail will fail if the file doesn't exists
-
-      #     echo "Trying to download init service log in loop, timeout set to 60 min."
-      #     lines_in_previous_file=0
-      #     start_time="$(date -u +%s)"
-      #     while :
-      #     do
-      #       until az storage file download --no-progress --output none --path log.txt --share-name ${init_storage_share_name} --connection-string ${init_storage_conn_string} > /dev/null 2>&1
-      #       do
-      #         time_stamp="$(date -u +%s)"
-      #         echo "Log file isn't there yet. Sleeping... $(($time_stamp-$start_time))s"
-      #         sleep 10
-      #       done
-
-      #       # check how many lines in the new file and print only the new lines from previous iteration
-      #       lines_in_new_file=$(cat log.txt | wc -l)
-      #       delta=$(("$lines_in_new_file" - "$lines_in_previous_file"))
-      #       if [[ $delta -gt 0 ]]; then
-      #         tail log.txt -n $delta
-      #         lines_in_previous_file=$lines_in_new_file
-      #         if (tail log.txt --lines 1 | grep -q "SUCCESS")
-      #         then
-      #             echo "Init service - Completed Successfully"
-      #             exit 0
-      #         fi
-      #       fi
-
-      #       time_stamp="$(date -u +%s)"
-      #       echo "Didn't find SUCCESS message, Sleeping... $(($time_stamp-$start_time))s"
-      #       sleep 10
-      #     done
-  # deployall:
-  #   runs-on: ubuntu-latest
-  #   name: Terraform plan/apply (matrix)
-  #   needs: deploy
-  #   steps:
-  #     - name: Check TF (plan) matrix status
-  #       if: ${{ needs.deploy.result != 'success' }}
-  #       run: exit 1
