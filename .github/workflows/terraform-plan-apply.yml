@@ -161,9 +161,11 @@ jobs:
             fi
 
             # Prepare the matrix item
-            MatrixItem="{\"trial_name\": \"$trial_name\", \"trial_dir\": \"$trial_dir\", \"definition_path\": \"$definition_path\",},"
+            MatrixItem="{\"trial_name\": \"$trial_name\", \"trial_dir\": \"$trial_dir\", \"definition_path\": \"$definition_path\", \"is_failover\": false,},"
+            MatrixItem2="{\"trial_name\": \"$trial_name\", \"trial_dir\": \"$trial_dir\", \"definition_path\": \"$definition_path\", \"is_failover\": true,},"
 
             JSON="$JSON$MatrixItem"
+            JSON="$JSON$MatrixItem2"
           done <<< "$FILES"
 
           # Remove last "," and add closing brackets
@@ -210,9 +212,9 @@ jobs:
           # set -o xtrace
 
           # Validate that the config server properties are set correctly
-          echo "hello ${{ matrix.trials.definition_path }}"
-          config_label=$(yq eval ".spring_config_label" ${{ matrix.trials.definition_path }})
-          config_search_path=$(yq eval '.spring_cloud.config_server.search_paths | split(",") | .[0]' ${{ matrix.trials.definition_path }})
+          echo "hello ${{ matrix.definition_path }}"
+          config_label=$(yq eval ".spring_config_label" ${{ matrix.definition_path }})
+          config_search_path=$(yq eval '.spring_cloud.config_server.search_paths | split(",") | .[0]' ${{ matrix.definition_path }})
 
           echo "fetching the config branch..."
           git fetch origin ${config_label}
@@ -249,7 +251,7 @@ jobs:
 
           # github ref comes with "/" which is not valid for workspace names
           ref_for_workspace="${GITHUB_REF//\//_}"
-          workspace_name="${{ matrix.trials.trial_name }}-${ref_for_workspace}"
+          workspace_name="${{ matrix.trial_name }}-${ref_for_workspace}"
           terraform workspace select ${workspace_name} || terraform workspace new ${workspace_name}
 
       - name: Prepare deployment variables
@@ -265,16 +267,16 @@ jobs:
           yq eval -j ${TFVARS_TEMPLATE} | jq -r 'to_entries[] | [.key, .value] | @tsv' |
           while IFS=$'\t' read -r var_name property_path
           do
-            property_value=$(yq eval ${property_path} ${{ matrix.trials.definition_path }})
-            echo "${var_name}=\"${property_value}\"" >> ${{ matrix.trials.trial_name }}.tfvars
+            property_value=$(yq eval ${property_path} ${{ matrix.definition_path }})
+            echo "${var_name}=\"${property_value}\"" >> ${{ matrix.trial_name }}.tfvars
           done
 
-          echo "is_failover_deployment=\"${{matrix.is_failover}}\"" >> ${{ matrix.trials.trial_name }}.tfvars
-          cat ${{ matrix.trials.trial_name }}.tfvars
+          echo "is_failover_deployment=\"${{matrix.is_failover}}\"" >> ${{ matrix.trial_name }}.tfvars
+          cat ${{ matrix.trial_name }}.tfvars
 
           # extract more values from the definition file to inject to the ui resources
-          echo "tenant_id=$(yq eval '.tenant_id' ${{ matrix.trials.definition_path }})" >> $GITHUB_ENV
-          echo "ui_client_id=$(yq eval '.ui_client_id' ${{ matrix.trials.definition_path }})" >> $GITHUB_ENV
+          echo "tenant_id=$(yq eval '.tenant_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
+          echo "ui_client_id=$(yq eval '.ui_client_id' ${{ matrix.definition_path }})" >> $GITHUB_ENV
 
       # Prepare versions json, write it to assets directory
       - name: Prepare versions json
@@ -283,12 +285,12 @@ jobs:
           set -o pipefail
           set -o nounset
 
-          echo "Preparing versions json for injection into UI - read ${{ matrix.trials.definition_path }} write ${{ matrix.trials.trial_name }}_versions.json "
+          echo "Preparing versions json for injection into UI - read ${{ matrix.definition_path }} write ${{ matrix.trial_name }}_versions.json "
 
           # Use YQ to convert definition.yml to json, use JQ to recurse through the json finding image_tag nodes and their keys, write to a file
-          yq eval -j ${{ matrix.trials.definition_path }} | jq '[ ..  | objects | to_entries  | .[] | select(.value | has("image_tag"))? | {service:.key, version:.value.image_tag, timestamp:now} ] | .+ [{service:"UI", version:env.UI_BUNDLE, timestamp:now} ] ' >> ${{ matrix.trials.trial_dir }}/assets/versions.json
+          yq eval -j ${{ matrix.definition_path }} | jq '[ ..  | objects | to_entries  | .[] | select(.value | has("image_tag"))? | {service:.key, version:.value.image_tag, timestamp:now} ] | .+ [{service:"UI", version:env.UI_BUNDLE, timestamp:now} ] ' >> ${{ matrix.trial_dir }}/assets/versions.json
 
-          cat ${{ matrix.trials.trial_dir }}/assets/versions.json
+          cat ${{ matrix.trial_dir }}/assets/versions.json
 
 
       # Plan TF
@@ -299,7 +301,7 @@ jobs:
           set -o nounset
           # set -o xtrace
 
-          terraform plan -out=tfplan -var-file=${{ matrix.trials.trial_name }}.tfvars \
+          terraform plan -out=tfplan -var-file=${{ matrix.trial_name }}.tfvars \
             -var="owner=${{ github.actor }}" \
             -var="github_ref=${{ github.ref }}"
 
@@ -353,7 +355,7 @@ jobs:
 
           index_file="mts-trial-ui/index.html"
           # sed doesn't like the github {{ }} vars, so dropping the value to a regular var
-          trial_name=${{ matrix.trials.trial_name }}
+          trial_name=${{ matrix.trial_name }}
 
           sed -i "s/{{clientId}}/${ui_client_id}/" ${index_file}
           sed -i "s/{{issuerUrl}}/https:\/\/login.microsoftonline.com\/${tenant_id}\/v2.0/" ${index_file}
@@ -369,9 +371,9 @@ jobs:
           set -o nounset
           # set -o xtrace
 
-          echo "using trial path ${{ matrix.trials.trial_dir }}"
+          echo "using trial path ${{ matrix.trial_dir }}"
           # copy everything in the assets folder
-          cp -fr ${{ matrix.trials.trial_dir }}/assets/* mts-trial-ui/assets/
+          cp -fr ${{ matrix.trial_dir }}/assets/* mts-trial-ui/assets/
 
 
       # Upload to storage account (to $web container)
