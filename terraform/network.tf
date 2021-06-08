@@ -7,8 +7,8 @@ resource "azurerm_virtual_network" "vnet" {
 }
 
 data "azurerm_virtual_network" "primary_vnet" {
-  name                 = "vnet-${var.trial_name}-${var.environment}"
-  resource_group_name  = "rg-trial-${var.trial_name}-${var.location}"
+  name                = "vnet-${var.trial_name}-${var.environment}"
+  resource_group_name = "rg-trial-${var.trial_name}-${var.location}"
 }
 
 resource "azurerm_virtual_network_peering" "primary_to_secondary" {
