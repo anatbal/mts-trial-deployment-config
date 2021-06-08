@@ -182,8 +182,9 @@ jobs:
     if: ${{ needs.prepare-run-matrix.outputs.is_empty_matrix == 'false' }}
     strategy:
       matrix:
-        trials: ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
-        is_failover: [true, false]
+        trials:
+          - ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
+        is_failover: [false, true]
     runs-on: ubuntu-latest
     defaults:
       run:
