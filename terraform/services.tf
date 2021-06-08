@@ -143,7 +143,7 @@ module "roles_sql_server" {
   sql_pass               = random_password.roles_sql_password.result
   application            = "sql-roles"
   environment            = var.environment
-  is_failover_deployment = var.is_failover_deployment ? false : true
+  is_failover_deployment = var.is_failover_deployment
   monitor_workspace_id   = azurerm_log_analytics_workspace.monitor_workspace.id
 
   enable_private_endpoint = var.enable_private_endpoint

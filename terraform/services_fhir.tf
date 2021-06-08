@@ -58,7 +58,7 @@ module "fhir_sql" {
   application             = "sql-fhir"
   environment             = var.environment
   monitor_workspace_id    = azurerm_log_analytics_workspace.monitor_workspace.id
-  is_failover_deployment  = var.is_failover_deployment ? false : true
+  is_failover_deployment  = var.is_failover_deployment
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id
   dns_zone_id             = azurerm_private_dns_zone.sql-endpoint-dns-private-zone.id

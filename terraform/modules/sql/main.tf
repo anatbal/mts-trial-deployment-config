@@ -1,3 +1,7 @@
+locals {
+  resource_count = var.is_failover_deployment ? 0 : 1
+}
+
 resource "random_string" "random" {
   length  = 4
   lower   = true
@@ -7,6 +11,7 @@ resource "random_string" "random" {
 }
 
 resource "azurerm_mssql_server" "sql_server_primary" {
+  count                        = local.resource_count
   name                         = "sql-server-${var.trial_name}-${var.app_name}-${var.environment}-primary"
   location                     = var.location
   resource_group_name          = var.rg_name
@@ -19,6 +24,7 @@ resource "azurerm_mssql_server" "sql_server_primary" {
 }
 
 resource "azurerm_mssql_server" "sql_server_secondary" {
+  count                        = local.resource_count
   name                         = "sql-server-${var.trial_name}-${var.app_name}-${var.environment}-secondary"
   location                     = var.failover_location
   resource_group_name          = var.rg_name
@@ -32,7 +38,7 @@ resource "azurerm_mssql_server" "sql_server_secondary" {
 
 # If private endpoints are enabled, no need to open access for "azure services"
 resource "azurerm_mssql_firewall_rule" "sql_primary_firewall_rule" {
-  count            = var.enable_private_endpoint ? 0 : 1
+  count            = var.enable_private_endpoint && !var.is_failover_deployment  ? 0 : 1
   name             = "AzureServicesRule"
   server_id        = azurerm_mssql_server.sql_server_primary.id
   start_ip_address = "0.0.0.0"
@@ -41,7 +47,7 @@ resource "azurerm_mssql_firewall_rule" "sql_primary_firewall_rule" {
 
 # If private endpoints are enabled, no need to open access for "azure services"
 resource "azurerm_mssql_firewall_rule" "sql_secondary_firewall_rule" {
-  count            = var.enable_private_endpoint ? 0 : 1
+  count            = var.enable_private_endpoint && !var.is_failover_deployment ? 0 : 1
   name             = "AzureServicesRule"
   server_id        = azurerm_mssql_server.sql_server_secondary.id
   start_ip_address = "0.0.0.0"
@@ -50,6 +56,7 @@ resource "azurerm_mssql_firewall_rule" "sql_secondary_firewall_rule" {
 
 # DB
 resource "azurerm_mssql_database" "sqldb" {
+  count       = local.resource_count
   name        = var.db_name
   server_id   = azurerm_mssql_server.sql_server_primary.id
   sku_name    = "S0" # a small sku, probably not right for production
@@ -58,7 +65,7 @@ resource "azurerm_mssql_database" "sqldb" {
 
 # After the SQL server is deployed, connect it to a new private endpoint
 module "private_endpoint" {
-  count            = var.enable_private_endpoint ? 1 : 0
+  count            = var.enable_private_endpoint && !var.is_failover_deployment ? 1 : 0
   source           = "../privateendpoint"
   trial_name       = var.trial_name
   rg_name          = var.rg_name
@@ -72,6 +79,7 @@ module "private_endpoint" {
 }
 
 resource "azurerm_sql_failover_group" "dr" {
+  count               = local.resource_count
   name                = var.failover_name
   resource_group_name = var.rg_name
   server_name         = azurerm_mssql_server.sql_server_primary.name
