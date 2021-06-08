@@ -6,6 +6,25 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.0.0.0/16"]
 }
 
+data "azurerm_virtual_network" "primary_vnet" {
+  name                 = "vnet-${var.trial_name}-${var.environment}"
+  resource_group_name  = "rg-trial-${var.trial_name}-${var.location}"
+}
+
+resource "azurerm_virtual_network_peering" "primary_to_secondary" {
+  name                      = "primary_to_secondary"
+  resource_group_name       = data.azurerm_virtual_network.primary_vnet.resource_group_name
+  virtual_network_name      = data.azurerm_virtual_network.primary_vnet.name
+  remote_virtual_network_id = azurerm_virtual_network.vnet.id
+}
+
+resource "azurerm_virtual_network_peering" "secondary_to_primary" {
+  name                      = "secondary_to_primary"
+  resource_group_name       = azurerm_virtual_network.vnet.resource_group_name
+  virtual_network_name      = azurerm_virtual_network.vnet.name
+  remote_virtual_network_id = data.azurerm_virtual_network.primary_vnet.id
+}
+
 ## integration subnet
 resource "azurerm_subnet" "integrationsubnet" {
   name                 = "integrationsubnet"
