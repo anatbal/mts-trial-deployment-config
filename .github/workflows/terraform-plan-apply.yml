@@ -181,9 +181,9 @@ jobs:
     needs: [prepare-run-matrix, check-files-correctness]
     if: ${{ needs.prepare-run-matrix.outputs.is_empty_matrix == 'false' }}
     strategy:
+      max-parallel: 1
       matrix:
-        trials:
-          - ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
+        trials: ${{fromJson(needs.prepare-run-matrix.outputs.matrix)}}
         is_failover: [false, true]
     runs-on: ubuntu-latest
     defaults:
