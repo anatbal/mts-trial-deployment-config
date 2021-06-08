@@ -3,7 +3,7 @@ version: 1
 tenant_id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 ui_client_id: 59a2b30f-844b-4a69-b034-19e3d2d4d805
 spring_profile: dev
-spring_config_label: anat-test
+spring_config_label: anat-test-aa
 site_service:
   image_name: ghcr.io/ndph-arts/site-service
   image_tag: main-latest
