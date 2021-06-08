@@ -7,6 +7,7 @@ resource "azurerm_virtual_network" "vnet" {
 }
 
 data "azurerm_virtual_network" "primary_vnet" {
+  count               = var.is_failover_deployment ? 1 : 0
   name                = "vnet-${var.trial_name}-${var.environment}"
   resource_group_name = "rg-trial-${var.trial_name}-${var.location}"
 }
@@ -14,8 +15,8 @@ data "azurerm_virtual_network" "primary_vnet" {
 resource "azurerm_virtual_network_peering" "primary_to_secondary" {
   count                     = var.is_failover_deployment ? 1 : 0
   name                      = "primary_to_secondary"
-  resource_group_name       = data.azurerm_virtual_network.primary_vnet.resource_group_name
-  virtual_network_name      = data.azurerm_virtual_network.primary_vnet.name
+  resource_group_name       = data.azurerm_virtual_network.primary_vnet[0].resource_group_name
+  virtual_network_name      = data.azurerm_virtual_network.primary_vnet[0].name
   remote_virtual_network_id = azurerm_virtual_network.vnet.id
 }
 
@@ -24,7 +25,7 @@ resource "azurerm_virtual_network_peering" "secondary_to_primary" {
   name                      = "secondary_to_primary"
   resource_group_name       = azurerm_virtual_network.vnet.resource_group_name
   virtual_network_name      = azurerm_virtual_network.vnet.name
-  remote_virtual_network_id = data.azurerm_virtual_network.primary_vnet.id
+  remote_virtual_network_id = data.azurerm_virtual_network.primary_vnet[0].id
 }
 
 ## integration subnet
