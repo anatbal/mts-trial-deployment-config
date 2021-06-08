@@ -38,7 +38,7 @@ resource "azurerm_mssql_server" "sql_server_secondary" {
 
 # If private endpoints are enabled, no need to open access for "azure services"
 resource "azurerm_mssql_firewall_rule" "sql_primary_firewall_rule" {
-  count            = var.enable_private_endpoint && !var.is_failover_deployment  ? 0 : 1
+  count            = var.enable_private_endpoint && !var.is_failover_deployment ? 0 : 1
   name             = "AzureServicesRule"
   server_id        = azurerm_mssql_server.sql_server_primary.id
   start_ip_address = "0.0.0.0"
