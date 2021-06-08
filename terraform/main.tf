@@ -11,6 +11,10 @@ resource "azurerm_resource_group" "trial_rg" {
     Environment = var.environment
     Ref         = var.github_ref
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 ## Service plan
