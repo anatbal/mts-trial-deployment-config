@@ -251,7 +251,7 @@ jobs:
 
           # github ref comes with "/" which is not valid for workspace names
           ref_for_workspace="${GITHUB_REF//\//_}"
-          workspace_name="${{ matrix.trial_name }}-${ref_for_workspace}"
+          workspace_name="${{ matrix.trial_name }}-${ref_for_workspace}-${{ matrix.is_failover }}"
           terraform workspace select ${workspace_name} || terraform workspace new ${workspace_name}
 
       - name: Prepare deployment variables
