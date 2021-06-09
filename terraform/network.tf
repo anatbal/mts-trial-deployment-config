@@ -14,7 +14,7 @@ resource "azurerm_virtual_network" "vnet" {
 
 data "azurerm_virtual_network" "primary_vnet" {
   count               = var.is_failover_deployment ? 1 : 0
-  name                = "vnet-${var.trial_name}-${local.failover_env}"
+  name                = "vnet-${var.trial_name}-primary"
   resource_group_name = "rg-trial-${var.trial_name}-${var.location}"
 }
 
