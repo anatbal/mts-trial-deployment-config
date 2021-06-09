@@ -11,6 +11,7 @@ locals {
 }
 
 resource "azurerm_frontdoor" "frontdoor" {
+  count                                        = var.is_failover_deployment ? 0 : 1
   name                                         = "fd-${var.trial_name}-${var.environment}"
   resource_group_name                          = azurerm_resource_group.trial_rg.name
   enforce_backend_pools_certificate_name_check = true
