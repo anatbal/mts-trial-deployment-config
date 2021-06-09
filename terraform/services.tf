@@ -1,6 +1,5 @@
 ## Service applications
 locals {
-  failover_env      = var.is_failover_deployment ? "secondary" : "primary"
   site_name         = "as-${var.trial_name}-site-${local.failover_env}"
   practitioner_name = "as-${var.trial_name}-practitioner-${local.failover_env}"
   role_name         = "as-${var.trial_name}-role-${local.failover_env}"
