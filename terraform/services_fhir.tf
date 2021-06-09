@@ -1,6 +1,10 @@
+locals {
+  failover_env = var.is_failover_deployment ? "secondary" : "primary"
+}
+
 module "fhir_server" {
   source               = "./modules/genericservice"
-  app_name             = "as-${var.trial_name}-fhir-${var.environment}"
+  app_name             = "as-${var.trial_name}-fhir-${local.failover_env}"
   rg_name              = azurerm_resource_group.trial_rg.name
   location             = azurerm_resource_group.trial_rg.location
   app_service_plan_id  = azurerm_app_service_plan.apps_service_plan.id

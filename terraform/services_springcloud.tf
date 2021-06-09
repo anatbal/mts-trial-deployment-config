@@ -1,9 +1,10 @@
 ## Spring cloud application
 
 locals {
-  discovery_name = "as-${var.trial_name}-sc-discovery-${var.environment}"
-  config_name    = "as-${var.trial_name}-sc-config-${var.environment}"
-  gateway_name   = "as-${var.trial_name}-sc-gateway-${var.environment}"
+  failover_env      = var.is_failover_deployment ? "secondary" : "primary"
+  discovery_name = "as-${var.trial_name}-sc-discovery-${local.failover_env}"
+  config_name    = "as-${var.trial_name}-sc-config-${local.failover_env}"
+  gateway_name   = "as-${var.trial_name}-sc-gateway-${local.failover_env}"
   common_springcloud_settings = {
     "SERVER_PORT"                           = 80
     "WEBSITES_PORT"                         = 80

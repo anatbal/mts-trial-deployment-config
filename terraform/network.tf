@@ -1,14 +1,21 @@
+locals {
+  vnet_address_space = var.is_failover_deployment ? "10.0.3.0/16" : "10.0.0.0/16"
+  subnet_address_prefixes = var.is_failover_deployment ? "10.0.4.0/24" : "10.0.1.0/24"
+  endpoint_subnet_address_prefixes = var.is_failover_deployment ? "10.0.5.0/24" : "10.0.2.0/24"
+  failover_env = var.is_failover_deployment ? "secondary" : "primary"
+}
+
 # Creating a virtual network and several subnets
 resource "azurerm_virtual_network" "vnet" {
-  name                = "vnet-${var.trial_name}-${var.environment}"
+  name                = "vnet-${var.trial_name}-${local.failover_env}"
   location            = azurerm_resource_group.trial_rg.location
   resource_group_name = azurerm_resource_group.trial_rg.name
-  address_space       = ["10.0.0.0/16"]
+  address_space       = [local.vnet_address_space]
 }
 
 data "azurerm_virtual_network" "primary_vnet" {
   count               = var.is_failover_deployment ? 1 : 0
-  name                = "vnet-${var.trial_name}-${var.environment}"
+  name                = "vnet-${var.trial_name}-${local.failover_env}"
   resource_group_name = "rg-trial-${var.trial_name}-${var.location}"
 }
 
@@ -33,7 +40,7 @@ resource "azurerm_subnet" "integrationsubnet" {
   name                 = "integrationsubnet"
   resource_group_name  = azurerm_resource_group.trial_rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = [local.subnet_address_prefixes]
 
   delegation {
     name = "delegation"
@@ -52,7 +59,7 @@ resource "azurerm_subnet" "endpointsubnet" {
   name                 = "endpointsubnet"
   resource_group_name  = azurerm_resource_group.trial_rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.2.0/24"]
+  address_prefixes     = [local.endpoint_subnet_address_prefixes]
   # https://docs.microsoft.com/en-us/azure/private-link/disable-private-link-service-network-policy
   enforce_private_link_endpoint_network_policies = true
 }

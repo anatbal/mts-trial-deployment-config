@@ -1,5 +1,6 @@
 locals {
   location = var.is_failover_deployment ? var.failover_location : var.location
+  failover_env = var.is_failover_deployment ? "secondary" : "primary"
 }
 
 # Trial Resource Group
@@ -19,7 +20,7 @@ resource "azurerm_resource_group" "trial_rg" {
 
 ## Service plan
 resource "azurerm_app_service_plan" "apps_service_plan" {
-  name                = "asp-${var.trial_name}-${var.environment}"
+  name                = "asp-${var.trial_name}-${local.failover_env}"
   location            = azurerm_resource_group.trial_rg.location
   resource_group_name = azurerm_resource_group.trial_rg.name
   kind                = "Linux"
@@ -33,14 +34,14 @@ resource "azurerm_app_service_plan" "apps_service_plan" {
 
 # Application insights
 resource "azurerm_application_insights" "app_insights" {
-  name                = "ai-${var.trial_name}-${var.environment}"
+  name                = "ai-${var.trial_name}-${local.failover_env}"
   location            = azurerm_resource_group.trial_rg.location
   resource_group_name = azurerm_resource_group.trial_rg.name
   application_type    = "web"
 }
 
 resource "azurerm_log_analytics_workspace" "monitor_workspace" {
-  name                = "amw-${var.trial_name}-${var.environment}"
+  name                = "amw-${var.trial_name}-${local.failover_env}"
   location            = azurerm_resource_group.trial_rg.location
   resource_group_name = azurerm_resource_group.trial_rg.name
   sku                 = "PerGB2018"
@@ -50,7 +51,7 @@ resource "azurerm_log_analytics_workspace" "monitor_workspace" {
 # Storage account for UI elemenet
 # TODO: HAS TO BE UNIQUE. https://ndph-arts.atlassian.net/browse/ARTS-367
 resource "azurerm_storage_account" "uistorageaccount" {
-  name                      = "sa${var.trial_name}ui${var.environment}"
+  name                      = "sa${var.trial_name}ui${local.failover_env}"
   resource_group_name       = azurerm_resource_group.trial_rg.name
   location                  = azurerm_resource_group.trial_rg.location
   account_kind              = "StorageV2"

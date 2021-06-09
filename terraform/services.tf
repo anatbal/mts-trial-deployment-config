@@ -1,9 +1,10 @@
 ## Service applications
 locals {
-  site_name         = "as-${var.trial_name}-site-${var.environment}"
-  practitioner_name = "as-${var.trial_name}-practitioner-${var.environment}"
-  role_name         = "as-${var.trial_name}-role-${var.environment}"
-  init_name         = "as-${var.trial_name}-init-${var.environment}"
+  failover_env      = var.is_failover_deployment ? "secondary" : "primary"
+  site_name         = "as-${var.trial_name}-site-${local.failover_env}"
+  practitioner_name = "as-${var.trial_name}-practitioner-${local.failover_env}"
+  role_name         = "as-${var.trial_name}-role-${local.failover_env}"
+  init_name         = "as-${var.trial_name}-init-${local.failover_env}"
   common_settings = {
     "SERVER_PORT"                           = 80
     "WEBSITES_PORT"                         = 80
@@ -153,7 +154,7 @@ module "roles_sql_server" {
 
 
 resource "azurerm_storage_account" "initstorageaccount" {
-  name                      = "sa${var.trial_name}init${var.environment}"
+  name                      = "sa${var.trial_name}init${local.failover_env}"
   resource_group_name       = azurerm_resource_group.trial_rg.name
   location                  = azurerm_resource_group.trial_rg.location
   account_kind              = "StorageV2"
