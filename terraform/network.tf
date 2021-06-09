@@ -1,8 +1,8 @@
 locals {
-  vnet_address_space = var.is_failover_deployment ? "10.0.3.0/16" : "10.0.0.0/16"
-  subnet_address_prefixes = var.is_failover_deployment ? "10.0.4.0/24" : "10.0.1.0/24"
+  vnet_address_space               = var.is_failover_deployment ? "10.0.3.0/16" : "10.0.0.0/16"
+  subnet_address_prefixes          = var.is_failover_deployment ? "10.0.4.0/24" : "10.0.1.0/24"
   endpoint_subnet_address_prefixes = var.is_failover_deployment ? "10.0.5.0/24" : "10.0.2.0/24"
-  failover_env = var.is_failover_deployment ? "secondary" : "primary"
+  failover_env                     = var.is_failover_deployment ? "secondary" : "primary"
 }
 
 # Creating a virtual network and several subnets

@@ -1,5 +1,5 @@
 locals {
-  location = var.is_failover_deployment ? var.failover_location : var.location
+  location     = var.is_failover_deployment ? var.failover_location : var.location
   failover_env = var.is_failover_deployment ? "secondary" : "primary"
 }
 

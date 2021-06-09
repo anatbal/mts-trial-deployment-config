@@ -1,7 +1,7 @@
 ## Spring cloud application
 
 locals {
-  failover_env      = var.is_failover_deployment ? "secondary" : "primary"
+  failover_env   = var.is_failover_deployment ? "secondary" : "primary"
   discovery_name = "as-${var.trial_name}-sc-discovery-${local.failover_env}"
   config_name    = "as-${var.trial_name}-sc-config-${local.failover_env}"
   gateway_name   = "as-${var.trial_name}-sc-gateway-${local.failover_env}"
