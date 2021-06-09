@@ -1,7 +1,3 @@
-locals {
-  failover_env = var.is_failover_deployment ? "secondary" : "primary"
-}
-
 module "fhir_server" {
   source               = "./modules/genericservice"
   app_name             = "as-${var.trial_name}-fhir-${local.failover_env}"
