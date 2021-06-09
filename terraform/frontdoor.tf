@@ -7,7 +7,7 @@ locals {
   ui_backend_balancer_name  = "fd-${var.trial_name}-uibalancer-${var.environment}"
   frontend_endpoint         = "fd-${var.trial_name}-endpoint-${var.environment}"
   ui_backend_health_probe   = "fd-${var.trial_name}-uihealth-${var.environment}"
-  storage_account_name      = "sa${var.trial_name}ui${var.environment}"
+  storage_account_name      = "sa${var.trial_name}ui${local.failover_env}"
 }
 
 resource "azurerm_frontdoor" "frontdoor" {
