@@ -136,7 +136,7 @@ module "roles_sql_server" {
   location               = azurerm_resource_group.trial_rg.location
   rg_name                = azurerm_resource_group.trial_rg.name
   primary_location       = var.location
-  failover_name          = "failover-roles-dr2"
+  failover_name          = "failover-roles-dr3"
   db_name                = "ROLES"
   app_name               = "roles"
   sql_user               = "rolesuser"

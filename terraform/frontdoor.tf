@@ -71,8 +71,15 @@ resource "azurerm_frontdoor" "frontdoor" {
   backend_pool {
     name = "fd-${var.trial_name}-apipool-${var.environment}"
     backend {
-      host_header = "as-${var.trial_name}-sc-gateway-${var.environment}.azurewebsites.net"
-      address     = "as-${var.trial_name}-sc-gateway-${var.environment}.azurewebsites.net"
+      host_header = "as-${var.trial_name}-sc-gateway-primary.azurewebsites.net"
+      address     = "as-${var.trial_name}-sc-gateway-primary.azurewebsites.net"
+      http_port   = 80
+      https_port  = 443
+    }
+
+    backend {
+      host_header = "as-${var.trial_name}-sc-gateway-secondary.azurewebsites.net"
+      address     = "as-${var.trial_name}-sc-gateway-secondary.azurewebsites.net"
       http_port   = 80
       https_port  = 443
     }
