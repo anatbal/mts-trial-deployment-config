@@ -26,5 +26,5 @@ spring_cloud:
   config_server:
     image_name: ghcr.io/ndph-arts/config-server
     image_tag: main-latest
-    git_uri: https://github.com/NDPH-ARTS/mts-trial-deployment-config.git
+    git_uri: https://github.com/anatbal/mts-trial-deployment-config.git
     search_paths: trials/dra4/services, trials/dra4/services/*
