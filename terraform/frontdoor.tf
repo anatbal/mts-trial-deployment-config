@@ -75,6 +75,7 @@ resource "azurerm_frontdoor" "frontdoor" {
       address     = "as-${var.trial_name}-sc-gateway-primary.azurewebsites.net"
       http_port   = 80
       https_port  = 443
+      priority    = 1
     }
 
     backend {
@@ -82,6 +83,7 @@ resource "azurerm_frontdoor" "frontdoor" {
       address     = "as-${var.trial_name}-sc-gateway-secondary.azurewebsites.net"
       http_port   = 80
       https_port  = 443
+      priority    = 2
     }
 
     load_balancing_name = local.api_backend_balancer_name
