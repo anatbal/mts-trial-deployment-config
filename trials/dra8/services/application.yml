@@ -8,7 +8,7 @@ management:
 
 azure:
   activedirectory:
-    client-id: api://d4b621ab-5e57-4645-bbde-ce483f952267
+    client-id: d4b621ab-5e57-4645-bbde-ce483f952267
     session-stateless: true
 practitioner:
   service:
