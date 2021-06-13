@@ -76,6 +76,7 @@ resource "azurerm_frontdoor" "frontdoor" {
       http_port   = 80
       https_port  = 443
       priority    = 1
+      weight      = 100
     }
 
     backend {
@@ -84,6 +85,7 @@ resource "azurerm_frontdoor" "frontdoor" {
       http_port   = 80
       https_port  = 443
       priority    = 2
+      weight      = 50
     }
 
     load_balancing_name = local.api_backend_balancer_name
