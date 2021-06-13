@@ -66,6 +66,8 @@ resource "azurerm_frontdoor" "frontdoor" {
 
   backend_pool_health_probe {
     name = local.api_backend_health_probe
+    path = "/actuator/health"
+
   }
 
   backend_pool {
