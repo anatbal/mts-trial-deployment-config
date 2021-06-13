@@ -8,7 +8,7 @@ management:
 
 azure:
   activedirectory:
-    client-id: fa5cde1d-d6f8-4d13-9fa4-4d7a374cb290
+    client-id: d4b621ab-5e57-4645-bbde-ce483f952267
     session-stateless: true
 practitioner:
   service:
