@@ -50,7 +50,7 @@ module "fhir_sql" {
   rg_name                 = azurerm_resource_group.trial_rg.name
   location                = azurerm_resource_group.trial_rg.location
   primary_location        = var.location
-  failover_name           = "failover-fhir"
+  failover_name           = "failover-fhir-dr"
   db_name                 = "FHIR"
   app_name                = "fhir"
   sql_user                = "fhiruser"
