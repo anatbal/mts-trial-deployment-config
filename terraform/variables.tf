@@ -64,6 +64,12 @@ variable "github_ref" {
   description = "The ref that triggered this run. usually a branch name."
 }
 
+variable "sql_pass" {
+  type        = string
+  description = "The sql password."
+}
+
+
 variable "init_log_path" {
   type        = string
   description = "Path of the init service log in Azure file storage."

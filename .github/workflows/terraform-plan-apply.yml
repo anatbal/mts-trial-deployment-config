@@ -194,6 +194,7 @@ jobs:
       ARM_CLIENT_SECRET: ${{secrets.TF_ARM_CLIENT_SECRET}}
       ARM_SUBSCRIPTION_ID: ${{secrets.TF_ARM_SUBSCRIPTION_ID}}
       ARM_TENANT_ID: ${{secrets.TF_ARM_TENANT_ID}}
+      SQL_PASS: ${{secrets.SQL_PASS}}
       UI_BUNDLE : https://github.com/NDPH-ARTS/mts-trial-ui/releases/latest/download/mts-trial-ui.zip
     steps:
       - uses: actions/checkout@v2
@@ -304,6 +305,7 @@ jobs:
           terraform plan -out=tfplan -var-file=${{ matrix.trial_name }}.tfvars \
             -var="owner=${{ github.actor }}" \
             -var="github_ref=${{ github.ref }}"
+            -var="sql_pass"=${{ secrets.SQL_PASS }}"\
 
       # Apply, only on merge to main
       - name: Terraform apply

@@ -18,7 +18,7 @@ module "fhir_server" {
   settings = {
     FHIRServer__Security__Enabled = "false"
     # TODO: replace with KeyVault reference
-    SqlServer__ConnectionString                       = "Server=tcp:${module.fhir_sql.failover_name}.database.windows.net,1433;Initial Catalog=FHIR;Persist Security Info=False;User ID=${module.fhir_sql.db_user};Password=${module.fhir_sql.db_password};MultipleActiveResultSets=False;Connection Timeout=30;"
+    SqlServer__ConnectionString                       = "Server=tcp:${module.fhir_sql.failover_name}.database.windows.net,1433;Initial Catalog=FHIR;Persist Security Info=False;User ID=${module.fhir_sql.db_user};Password=${var.sql_pass};MultipleActiveResultSets=False;Connection Timeout=30;"
     SqlServer__AllowDatabaseCreation                  = "true"
     SqlServer__Initialize                             = "true"
     SqlServer__SchemaOptions__AutomaticUpdatesEnabled = "true"
@@ -35,15 +35,6 @@ module "fhir_server" {
   ]
 }
 
-resource "random_password" "fhir_sql_password" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
-  min_upper        = 1
-  min_lower        = 1
-  min_numeric      = 1
-}
-
 module "fhir_sql" {
   source                  = "./modules/sql"
   trial_name              = var.trial_name
@@ -54,7 +45,7 @@ module "fhir_sql" {
   db_name                 = "FHIR"
   app_name                = "fhir"
   sql_user                = "fhiruser"
-  sql_pass                = random_password.fhir_sql_password.result
+  sql_pass                = var.sql_pass
   application             = "sql-fhir"
   environment             = var.environment
   monitor_workspace_id    = azurerm_log_analytics_workspace.monitor_workspace.id

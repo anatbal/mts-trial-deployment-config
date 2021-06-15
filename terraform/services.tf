@@ -107,7 +107,7 @@ module "trial_app_service_role" {
       # TODO: this setting should be fetched from the config server
       "JDBC_DRIVER" = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # TODO: replace with KeyVault reference
-      "JDBC_URL" = "jdbc:sqlserver://${module.roles_sql_server.failover_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${module.roles_sql_server.db_password}"
+      "JDBC_URL" = "jdbc:sqlserver://${module.roles_sql_server.failover_name}.database.windows.net:1433;databaseName=ROLES;user=${module.roles_sql_server.db_user};password=${var.sql_pass}"
       # since this service does db migrations, interuptting it will render the whole env useless (due to the db "lock").
       "WEBSITES_CONTAINER_START_TIME_LIMIT" = 600 # default is 230
     },
@@ -120,16 +120,6 @@ module "trial_app_service_role" {
   ]
 }
 
-# Roles SQL
-resource "random_password" "roles_sql_password" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
-  min_upper        = 1
-  min_lower        = 1
-  min_numeric      = 1
-}
-
 module "roles_sql_server" {
   source                 = "./modules/sql"
   trial_name             = var.trial_name
@@ -140,7 +130,7 @@ module "roles_sql_server" {
   db_name                = "ROLES"
   app_name               = "roles"
   sql_user               = "rolesuser"
-  sql_pass               = random_password.roles_sql_password.result
+  sql_pass               = var.sql_pass
   application            = "sql-roles"
   environment            = var.environment
   is_failover_deployment = var.is_failover_deployment
