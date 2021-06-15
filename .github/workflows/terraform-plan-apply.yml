@@ -304,8 +304,8 @@ jobs:
 
           terraform plan -out=tfplan -var-file=${{ matrix.trial_name }}.tfvars \
             -var="owner=${{ github.actor }}" \
-            -var="github_ref=${{ github.ref }}"
-            -var="sql_pass"=${{ secrets.SQL_PASS }}"\
+            -var="github_ref=${{ github.ref }}" \
+            -var="sql_pass=${{ secrets.SQL_PASS }}"
 
       # Apply, only on merge to main
       - name: Terraform apply
