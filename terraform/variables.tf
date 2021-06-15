@@ -165,5 +165,5 @@ variable "keyvault_enabled" {
 variable "enable_private_endpoint" {
   type        = bool
   description = "if 'false' then for this web app, private endpoint will NOT be created."
-  default     = true
+  default     = false
 }
