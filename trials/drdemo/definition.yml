@@ -1,4 +1,4 @@
-name: dra13
+name: drdemo
 version: 1
 tenant_id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 ui_client_id: 59a2b30f-844b-4a69-b034-19e3d2d4d805
@@ -27,4 +27,4 @@ spring_cloud:
     image_name: ghcr.io/ndph-arts/config-server
     image_tag: main-latest
     git_uri: https://github.com/anatbal/mts-trial-deployment-config.git
-    search_paths: trials/dra13/services, trials/dra13/services/*
+    search_paths: trials/drdemo/services, trials/drdemo/services/*
