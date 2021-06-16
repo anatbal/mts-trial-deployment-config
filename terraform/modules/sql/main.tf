@@ -69,7 +69,7 @@ data "azurerm_private_endpoint_connection" "example" {
   resource_group_name = data.azurerm_mssql_server.primary[0].resource_group_name
 }
 
-resource "azurerm_private_dns_a_record" "sql_server_dns_record" {
+resource "azurerm_private_dns_a_record" "sql_server_dns_record2" {
   count               = var.is_failover_deployment ? 1 : 0
   name                = data.azurerm_mssql_server.primary[0].name
   zone_name           = "privatelink.database.windows.net"
