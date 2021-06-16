@@ -63,10 +63,6 @@ data "azurerm_mssql_database" "sqldb" {
   server_id = data.azurerm_mssql_server.primary[0].id
 }
 
-data "azurerm_private_endpoint_connection" "private-endpoint"{
-  name = "pe-${var.trial_name}-${var.application}-${var.environment}"
-  resource_group_name = var.rg_name
-}
 
 resource "azurerm_private_dns_a_record" "sql_server_dns_record" {
   count               = var.is_failover_deployment ? 1 : 0
@@ -74,7 +70,7 @@ resource "azurerm_private_dns_a_record" "sql_server_dns_record" {
   zone_name           = "privatelink.database.windows.net"
   resource_group_name = data.azurerm_mssql_server.primary[0].resource_group_name
   ttl                 = 300
-  records             = [data.azurerm_private_endpoint_connection.private-endpoint.private_service_connection]
+  records             = [module.private_endpoint[0].private_endpoint_ip]
 }
 
 resource "azurerm_sql_failover_group" "sql_failover_group" {
