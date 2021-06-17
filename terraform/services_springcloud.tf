@@ -26,6 +26,7 @@ module "trial_sc_discovery" {
   docker_image         = var.sc_discovery_image_name
   docker_image_tag     = var.sc_discovery_image_tag
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  health_check_path    = "/actuator/health"
 
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id
@@ -54,6 +55,7 @@ module "trial_sc_config" {
   docker_image         = var.sc_config_image_name
   docker_image_tag     = var.sc_config_image_tag
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  health_check_path    = "/actuator/health"
 
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id
@@ -85,6 +87,7 @@ module "trial_sc_gateway" {
   docker_image         = var.sc_gateway_image_name
   docker_image_tag     = var.sc_gateway_image_tag
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  health_check_path    = "/actuator/health"
 
   enable_private_endpoint = false
   # These variables are not used due to the fact we don't create a private endpoint
