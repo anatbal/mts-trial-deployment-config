@@ -13,8 +13,8 @@ resource "azurerm_app_service" "generic_service" {
   app_service_plan_id = var.app_service_plan_id
 
   site_config {
-    linux_fx_version = "DOCKER|${var.docker_image}:${var.docker_image_tag}"
-    always_on        = var.always_on
+    linux_fx_version  = "DOCKER|${var.docker_image}:${var.docker_image_tag}"
+    always_on         = var.always_on
     health_check_path = var.health_check_path
   }
 
