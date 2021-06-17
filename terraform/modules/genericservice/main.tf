@@ -15,6 +15,7 @@ resource "azurerm_app_service" "generic_service" {
   site_config {
     linux_fx_version = "DOCKER|${var.docker_image}:${var.docker_image_tag}"
     always_on        = var.always_on
+    health_check_path = var.health_check_path
   }
 
   dynamic "identity" {

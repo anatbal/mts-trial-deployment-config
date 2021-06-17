@@ -9,6 +9,7 @@ module "fhir_server" {
   docker_image         = "mcr.microsoft.com/healthcareapis/r4-fhir-server"
   docker_image_tag     = "latest"
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  health_check_path    = "/metadata"
 
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id

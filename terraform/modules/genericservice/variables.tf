@@ -79,6 +79,10 @@ variable "integration_subnet_id" {
   type = string
 }
 
+variable "health_check_path" {
+  type = string
+}
+
 variable "identity_type" {
   type    = string
   default = ""

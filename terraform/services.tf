@@ -28,6 +28,7 @@ module "trial_app_service_site" {
   docker_image         = var.site_image_name
   docker_image_tag     = var.site_image_tag
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  health_check_path    = "/actuator/health"
 
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id
@@ -61,6 +62,7 @@ module "trial_app_service_practitioner" {
   docker_image         = var.practitioner_image_name
   docker_image_tag     = var.practitioner_image_tag
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  health_check_path    = "/actuator/health"
 
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id
@@ -94,6 +96,7 @@ module "trial_app_service_role" {
   docker_image         = var.role_image_name
   docker_image_tag     = var.role_image_tag
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  health_check_path    = "/actuator/health"
 
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id
@@ -135,6 +138,7 @@ module "roles_sql_server" {
   environment            = var.environment
   is_failover_deployment = var.is_failover_deployment
   monitor_workspace_id   = azurerm_log_analytics_workspace.monitor_workspace.id
+  health_check_path    = "/actuator/health"
 
   enable_private_endpoint = var.enable_private_endpoint
   subnet_id               = azurerm_subnet.endpointsubnet.id
@@ -171,6 +175,8 @@ module "trial_app_service_init" {
   docker_image         = var.init_service_image_name
   docker_image_tag     = var.init_service_image_tag
   monitor_workspace_id = azurerm_log_analytics_workspace.monitor_workspace.id
+  health_check_path    = "/actuator/health"
+
   identity_type        = "SystemAssigned"
   storage_account = ({
     "name"         = azurerm_storage_account.initstorageaccount.name
