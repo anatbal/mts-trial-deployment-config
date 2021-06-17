@@ -64,13 +64,13 @@ data "azurerm_mssql_database" "sqldb" {
 }
 
 data "azurerm_private_endpoint_connection" "example" {
-  count               = var.is_failover_deployment ? 1 : 0
+  count               = var.is_failover_deployment && var.enable_private_endpoint ? 1 : 0
   name                = "pe-${var.trial_name}-${var.application}-${var.environment}"
   resource_group_name = data.azurerm_mssql_server.primary[0].resource_group_name
 }
 
 resource "azurerm_private_dns_a_record" "sql_server_dns_record2" {
-  count               = var.is_failover_deployment ? 1 : 0
+  count               = var.is_failover_deployment && var.enable_private_endpoint ? 1 : 0
   name                = data.azurerm_mssql_server.primary[0].name
   zone_name           = "privatelink.database.windows.net"
   resource_group_name = var.rg_name
@@ -79,7 +79,7 @@ resource "azurerm_private_dns_a_record" "sql_server_dns_record2" {
 }
 
 resource "azurerm_private_dns_a_record" "sql_server_dns_record" {
-  count               = var.is_failover_deployment ? 1 : 0
+  count               = var.is_failover_deployment && var.enable_private_endpoint ? 1 : 0
   name                = azurerm_mssql_server.sql_server.name
   zone_name           = "privatelink.database.windows.net"
   resource_group_name = data.azurerm_mssql_server.primary[0].resource_group_name
