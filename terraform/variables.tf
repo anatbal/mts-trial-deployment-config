@@ -23,7 +23,7 @@ variable "location" {
 variable "failover_location" {
   type        = string
   description = "Azure region where to create resources."
-  default     = "centralus"
+  default     = "eastus"
 }
 
 
