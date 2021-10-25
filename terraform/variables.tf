@@ -14,12 +14,7 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "location" {
-  type        = string
-  description = "Azure region where to create resources."
-  default     = "eastus2"
-}
-
+variable "location" { type = string }
 
 variable "sc_config_git_uri" {
   type        = string
